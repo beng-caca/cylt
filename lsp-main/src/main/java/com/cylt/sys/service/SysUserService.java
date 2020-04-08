@@ -65,7 +65,7 @@ public class SysUserService {
         //密码加密
         sysUser.setPassword(DESUtil.encrypt(sysUser.getPassword(),DESUtil.KEY));
         //刷新缓存
-        redisUtil.del(sysUser,sysUser.getUsername());
+        redisUtil.del(sysUser);
         redisUtil.set(sysUser.getUsername(),sysUser);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysUser);
@@ -88,7 +88,7 @@ public class SysUserService {
      * @return
      */
     public void delete(SysUser sysUser) {
-        redisUtil.del(sysUser,sysUser.getUsername());
+        redisUtil.del(sysUser);
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysUser);
     }
 

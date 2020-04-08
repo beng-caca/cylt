@@ -34,7 +34,7 @@ public class RabbitMQUtil {
      */
     public void update(String featuresName, BasePojo obj) {
 
-        redisUtil.del(obj,obj.getId());
+        redisUtil.del(obj);
         redisUtil.set(obj.getId(),obj);
         send(featuresName,RabbitMQDictionary.SAVE, obj);
     }

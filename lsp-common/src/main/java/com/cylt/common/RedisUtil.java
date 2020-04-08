@@ -83,36 +83,35 @@ public class RedisUtil {
     /**
      * 删除缓存
      *
-     * @param basePojo 删除类
-     * @param ids      可以传一个值 或多个
+     * @param pojo 删除数据
      */
     @SuppressWarnings("unchecked")
-    public Boolean del(BasePojo basePojo, String... ids) {
-        String key = getKey(basePojo);
-        if (ids != null && ids.length > 0) {
-            if (ids.length == 1) {
-                String str = key.replace("?", ids[0]);
-                logger.info("delete:" + str);
-                return redisTemplate.delete(str);
-            } else {
-                for (String id : ids) {
-                    id = key.replace("?", id);
-                    logger.info("delete:" + id);
-                }
-                return redisTemplate.delete(CollectionUtils.arrayToList(ids)) != 0;
-            }
-        }
-        return false;
+    public Boolean del(BasePojo pojo) {
+        String key = getKeyId(pojo);
+        logger.info("delete:" + key);
+        return redisTemplate.delete(key);
     }
 
+
     /**
-     * 删除缓存
+     * 批量删除缓存
      *
-     * @param rootPojo 删除类
+     * @param pojoList 要删除的数据
      */
     @SuppressWarnings("unchecked")
-    public Boolean del(BasePojo rootPojo) {//TODO 这里需要重写
-        return del(rootPojo, rootPojo.getId());
+    public Boolean del(List<BasePojo> pojoList) {
+        List<String> ids = new ArrayList<>();
+        String id;
+        if (pojoList != null && pojoList.size() > 0) {
+            for (BasePojo pojo : pojoList) {
+                id = getKeyId(pojo);
+                ids.add(id);
+                logger.info("delete:" + id);
+            }
+            return redisTemplate.delete(ids) != 0;
+
+        }
+        return false;
     }
 
     //============================String=============================
@@ -690,7 +689,7 @@ public class RedisUtil {
         StringBuffer buffer = new StringBuffer();
         //表名:id=?:属性名=?:属性名=?:属性名=?................
         buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(":");
-        buffer.append("id=").append(basePojo.getId() == null ? "*" : basePojo.getId()).append(":");
+        buffer.append("id=").append(basePojo.getId() == null || "".equals(basePojo.getId()) ? "*" : basePojo.getId()).append(":");
         String columnVal;
         //遍历其他属性名
         for(Field field : values){
@@ -710,6 +709,19 @@ public class RedisUtil {
                 }
             }
         }
+        return buffer.toString();
+    }
+
+    /**
+     * 取实体类的key id
+     * @param basePojo 实体pojo
+     * @return
+     */
+    private String getKeyId(BasePojo basePojo){
+        StringBuffer buffer = new StringBuffer();
+        //表名:id=?:
+        buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(":");
+        buffer.append("id=").append(basePojo.getId()).append(":*");
         return buffer.toString();
     }
 
