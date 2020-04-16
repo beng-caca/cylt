@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Controller
-@RequestMapping(value = "sys/user", produces = "text/plain;charset=utf-8")
+@RequestMapping(value = "sys/user", produces = "text/html;charset=utf-8")
 public class SysUserController extends BaseController {
 
     /**

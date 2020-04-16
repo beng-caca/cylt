@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#b01").click(function(){
+                //htmlobj=$.ajax({url:"http://10.124.88.233:8080/shac-jis/",async:false});
+                $.post($("#url").val(),{"username":"admin","password":"123456"},function(result){
+                    $("#myDiv").html(result);
+                },function(result){
+                    $("#myDiv").html(result);
+                });
+            });
+            $("#b02").click(function(){
+                $.post($("#url1").val(),{suggest:null},function(result){
+                    $("#myDiv").html(result);
+                },function(result){
+                    $("#myDiv").html(result);
+                });
+            });
+            $("#b03").click(function(){
+                $.post($("#url2").val(),{suggest:null},function(result){
+                    $("#myDiv").html(result);
+                },function(result){
+                    $("#myDiv").html(result);
+                });
+            });
+            $("#b04").click(function(){
+                $.post($("#url3").val(),{suggest:null},function(result){
+                    $("#myDiv").html(result);
+                },function(result){
+                    $("#myDiv").html(result);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+
+<div id="myDiv"><h2>请求结果</h2></div>
+<input type="text" style="width: 260px;" value="http://localhost:8888/login" id="url">
+<button id="b01" type="button">请求</button>
+<a href="http://localhost:8888/login" id="a1">http://localhost:8888/login</a></br>
+<input type="text" style="width: 260px;" value="http://localhost:16745/apis/login" id="url1">
+<button id="b02" type="button">请求</button>
+<a href="http://localhost:16745/apis/login" id="a2">http://localhost:16745/apis/login</a></br>
+<input type="text" style="width: 260px;" value="http://10.124.88.251:8080/shac-jis/" id="url2">
+<button id="b03" type="button">请求</button>
+<a href="http://10.124.88.251:8080/shac-jis/" id="a3">http://10.124.88.251:8080/shac-jis/</a></br>
+<input type="text" style="width: 260px;" value="http://localhost:8888" id="url3">
+<button id="b04" type="button">请求</button>
+<a href="http://localhost:8888" id="a4">http://localhost:8888</a></br>
+</body>
+</html>

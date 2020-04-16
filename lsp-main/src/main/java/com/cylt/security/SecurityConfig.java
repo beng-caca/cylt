@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
+@CrossOrigin
 @EnableWebSecurity // 启用Spring Security的Web安全支持
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -50,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .httpBasic()
                 //未登录时，进行json格式的提示，很喜欢这种写法，不用单独写一个又一个的类
                 .authenticationEntryPoint((request, response, authException) -> {
-                    response.setContentType("application/json;charset=utf-8");
+                    response.setContentType("text/html;charset=utf-8");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                     PrintWriter out = response.getWriter();
                     Map<String, Object> map = new HashMap<String, Object>();
@@ -66,23 +69,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated() //必须授权才能范围
 
                 .and()
-                .formLogin() //使用自带的登录
-                .permitAll()
-                //登录失败，返回json
-                .failureHandler((request, response, ex) -> {
-                    failureHandler(response, ex);
-                })
-                //登录成功，返回json
-                .successHandler((request, response, authentication) -> {
-                    successHandler(response, authentication);
-                })
-                .and()
-                .exceptionHandling()
-                //没有权限，返回json
-                .accessDeniedHandler((request, response, ex) -> {
-                    accessDeniedHandler(response, ex);
-                })
-                .and()
                 .logout()
                 //退出成功，返回json
                 .logoutSuccessHandler((request, response, authentication) -> {
@@ -91,10 +77,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
         http.addFilterAt(customAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         //开启跨域访问
-        http.cors().disable();
+        http.cors();
         //开启模拟请求，比如API POST测试工具的测试，不开启时，API POST为报403错误
         http.csrf().disable();
     }
+
 
     /**
      * 自定义登录处理
@@ -132,7 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         map.put("code", 200);
         map.put("message", "退出成功");
         map.put("data", authentication);
-        resp.setContentType("application/json;charset=utf-8");
+        resp.setContentType("text/html;charset=utf-8");
         PrintWriter out = resp.getWriter();
         out.write(objectMapper.writeValueAsString(map));
         out.flush();
@@ -147,7 +134,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @throws IOException
      */
     protected void accessDeniedHandler(HttpServletResponse resp, AccessDeniedException ex) throws IOException {
-        resp.setContentType("application/json;charset=utf-8");
+        resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
         PrintWriter out = resp.getWriter();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -169,7 +156,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         map.put("code", 200);
         map.put("message", "登录成功");
         map.put("data", authentication);
-        resp.setContentType("application/json;charset=utf-8");
+        resp.setContentType("text/html;charset=utf-8");
         PrintWriter out = resp.getWriter();
         out.write(objectMapper.writeValueAsString(map));
         out.flush();
@@ -183,11 +170,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @throws IOException
      */
     protected void failureHandler(HttpServletResponse resp, AuthenticationException ex) throws IOException {
-        resp.setContentType("application/json;charset=utf-8");
+        resp.setContentType("text/html;charset=utf-8");
         resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter out = resp.getWriter();
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("code", 401);
+        map.put("code", 402);
         if (ex instanceof UsernameNotFoundException || ex instanceof BadCredentialsException) {
             map.put("message", "用户名或密码错误");
         } else if (ex instanceof DisabledException) {
