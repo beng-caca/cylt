@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+axios.default.withCredentials = true
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
@@ -51,21 +52,23 @@ class HttpRequest {
       return { data, status }
     }, error => {
       this.destroy(url)
-      let errorInfo = error.response
-      if (!errorInfo) {
-        const { request: { statusText, status }, config } = JSON.parse(JSON.stringify(error))
-        errorInfo = {
-          statusText,
-          status,
-          request: { responseURL: config.url }
-        }
-      }
-      addErrorLog(errorInfo)
-      return Promise.reject(error)
+      //let errorInfo = error.response
+      // if (!errorInfo) {
+      //   const { request: { statusText, status }, config } = JSON.parse(JSON.stringify(error))
+      //   errorInfo = {
+      //     statusText,
+      //     status,
+      //     request: { responseURL: config.url }
+      //   }
+      // }
+      //addErrorLog(errorInfo)
+      return Promise.reject(error.response)
     })
   }
   request (options) {
-    const instance = axios.create()
+    const instance = axios.create({
+      withCredentials: true // cros with cookie
+    })
     options = Object.assign(this.getInsideConfig(), options)
     this.interceptors(instance, options.url)
     return instance(options)
