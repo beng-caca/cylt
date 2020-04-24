@@ -89,7 +89,8 @@ public class RedisUtil {
     public Boolean del(BasePojo pojo) {
         String key = getKeyId(pojo);
         logger.info("delete:" + key);
-        return redisTemplate.delete(key);
+        Set<String> set = redisTemplate.keys(key);
+        return redisTemplate.delete(set) != 0;
     }
 
 
@@ -100,12 +101,12 @@ public class RedisUtil {
      */
     @SuppressWarnings("unchecked")
     public Boolean del(List<BasePojo> pojoList) {
-        List<String> ids = new ArrayList<>();
+        Set<String> ids = new HashSet<>();
         String id;
         if (pojoList != null && pojoList.size() > 0) {
             for (BasePojo pojo : pojoList) {
                 id = getKeyId(pojo);
-                ids.add(id);
+                ids = redisTemplate.keys(id);
                 logger.info("delete:" + id);
             }
             return redisTemplate.delete(ids) != 0;

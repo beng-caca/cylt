@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import routes from './routers'
 import store from '@/store'
 import iView from 'iview'
-import { setToken, getToken, setTitle } from '@/libs/util'
+import { getToken, setTitle } from '@/libs/util'
 import config from '@/config'
 const { homeName } = config
 
@@ -15,12 +15,16 @@ const router = new Router({
 const LOGIN_PAGE_NAME = 'login'
 
 const turnTo = (to, access, next) => {
+  if (access === undefined) { // 未登录 重新登录
+    next({ replace: true, name: 'login' })
+    return
+  }
   if (to.name.indexOf('error_') !== -1) { // 跳过权限检测
     next()
     return
   }
-
-  if (access.some(_ => _ === to.name)) {
+  let sss = true
+  if (sss) { // TODO  这里权限还没写完 access.some(_ => _ === to.name)
     next() // 有权限，可访问
   } else {
     next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
@@ -29,8 +33,9 @@ const turnTo = (to, access, next) => {
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
+  store.dispatch('getMenuData').then(res => {})
   if (store.state.from === to.name) {
-    return;
+    return
   } else {
     store.state.from = to.name
   }
@@ -53,10 +58,13 @@ router.beforeEach((to, from, next) => {
         // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
         turnTo(to, ss, next)
       }).catch(() => {
-        setToken('')
-        next({
-          name: 'login'
-        })
+        // setToken('')
+        // next({
+        //   name: 'login'
+        // })
+        let ss = ['home', 'aasd']
+        // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
+        turnTo(to, ss, next)
       })
     }
   }

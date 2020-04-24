@@ -1,4 +1,5 @@
 export default {
+  systemName: 'lsp system',
   home: 'Home',
   login: 'Login',
   components: 'Components',
@@ -42,5 +43,32 @@ export default {
   tree_table_page: 'Tree Table',
   org_tree_page: 'Org Tree',
   drag_drawer_page: 'Draggable Drawer',
-  tree_select_page: 'Tree Selector'
+  tree_select_page: 'Tree Selector',
+
+  // sys
+  system: {
+    info: ' Info',
+    save: 'Save',
+    del: 'Delete',
+    success: 'Success',
+    tree: ' Tree',
+    warning: 'Warning',
+    // menu
+    menu: {
+      name: 'Menu Name',
+      icon: 'Menu Icon',
+      component: 'Page path',
+      showMenu: 'Is Display',
+      sys: 'System',
+      menu: 'Menu',
+      role: 'Role',
+      user: 'User'
+    },
+    validate: {
+      notNull: ' Cannot be empty！'
+    },
+    confirm: {
+      del: 'Are you sure you want to delete this record ? '
+    }
+  }
 }

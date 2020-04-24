@@ -33,7 +33,7 @@ export default [
     redirect: '/home',
     component: Main,
     meta: {
-      hideInMenu: true,
+      hideInMenu: false,
       notCache: true
     },
     children: [
@@ -41,8 +41,8 @@ export default [
         path: '/home',
         name: 'home',
         meta: {
-          hideInMenu: true,
-          title: '首页',
+          hideInMenu: false,
+          title: 'home',
           notCache: true,
           icon: 'md-home'
         },
@@ -486,5 +486,36 @@ export default [
       hideInMenu: true
     },
     component: () => import('@/view/error-page/404.vue')
+  },
+  {
+    path: '/sys',
+    name: 'system.menu.sys',
+    component: Main,
+    meta: {
+      icon: 'ios-cog',
+      hideInBread: false,
+      title: 'sys'
+    },
+    children: [{
+      path: 'menu',
+      name: 'system.menu.menu',
+      meta: {
+        icon: 'md-menu',
+        hideInBread: false,
+        title: '菜单'
+      },
+      component: () => import('@/view/sys/menu.vue')
+    }, {
+      path: 'user',
+      name: 'system.menu.user',
+      meta: {
+        icon: 'ios-contact',
+        hideInBread: false,
+        title: '菜单'
+      },
+      component: () => import('@/view/sys/menu.vue')
+    }
+    ]
   }
+
 ]

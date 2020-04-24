@@ -17,7 +17,7 @@ public abstract class BaseController {
      * @return json
      */
     protected String getJson(Object obj) {
-        return JSON.toJSONString(obj);
+        return JSON.toJSONStringWithDateFormat(obj,"yyyy-MM-dd HH:mm:ss");
     }
 
     /**

@@ -394,6 +394,39 @@ export const scrollTop = (el, from = 0, to, duration = 500, endCallback) => {
 export const setTitle = (routeItem, vm) => {
   const handledRoute = getRouteTitleHandled(routeItem)
   const pageTitle = showTitle(handledRoute, vm)
-  const resTitle = pageTitle ? `${title} - ${pageTitle}` : title
+  let systemName = vm.$t('systemName')
+  const resTitle = pageTitle ? `${systemName} - ${pageTitle}` : title
   window.document.title = resTitle
+}
+/**
+ * 递归添加树列表（不限制级别）
+ * @param menus
+ * @param data
+ * @returns {*}
+ */
+export const addTreeList = (datas, data, addTree) => {
+  let len = datas.length
+  let childrenLen = 0
+  // 遍历当前节点
+  if (len !== 0 && data.pid !== undefined) {
+    for (let i = 0; i < len; i++) {
+      if (datas[i].id === data.pid) {
+        datas[i].children[datas[i].children.length] = addTree(data)
+        break
+      } else {
+        childrenLen = datas[i].children.length
+        if (childrenLen !== 0) {
+          // 递归调用本方法 查出当前data归属于那个子节点
+          datas[i].children = addTreeList(datas[i].children, data)
+          // 判断如果添加子级成功就返回
+          if (datas[i].children.length !== childrenLen) {
+            break
+          }
+        }
+      }
+    }
+  } else {
+    datas[datas.length] = addTree(data)
+  }
+  return datas
 }

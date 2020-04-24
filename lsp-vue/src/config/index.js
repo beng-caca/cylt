@@ -1,8 +1,8 @@
 export default {
   /**
-   * @description 配置显示在浏览器标签的title
+   * @description 配置显示在浏览器标签的title by wuyh:观察一手 如果没啥问题就删掉
    */
-  title: 'iView-admin',
+  // title: 'cylt',
   /**
    * @description token在Cookie中存储的天数，默认1天
    */

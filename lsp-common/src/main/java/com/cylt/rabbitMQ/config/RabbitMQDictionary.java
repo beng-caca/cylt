@@ -13,6 +13,9 @@ public class RabbitMQDictionary {
     //功能名:sys_user
     public final static String USER = SYS + DELIMITER + "user";
 
+    //功能名:sys_user
+    public final static String MENU = SYS + DELIMITER + "menu";
+
 
     //---------------------------------------------------------------------------------------------
     //基本模块功能

@@ -1,4 +1,5 @@
 export default {
+  systemName: 'lsp系统',
   home: '首頁',
   login: '登錄',
   components: '组件',
@@ -42,5 +43,32 @@ export default {
   tree_table_page: '樹狀表格',
   org_tree_page: '組織結構樹',
   drag_drawer_page: '可拖動抽屜',
-  tree_select_page: '樹狀下拉選擇器'
+  tree_select_page: '樹狀下拉選擇器',
+
+  // sys
+  system: {
+    info: '信息',
+    save: '保存',
+    del: '保存',
+    success: '操作成功',
+    tree: '树',
+    warning: '警告',
+    // menu
+    menu: {
+      name: '菜单名称',
+      icon: '菜单图标',
+      component: '页面路径',
+      showMenu: '是否显示',
+      sys: '系统',
+      menu: '菜单',
+      role: '角色',
+      user: '用户'
+    },
+    validate: {
+      notNull: '不能为空！'
+    },
+    confirm: {
+      del: '确定要删除此记录吗 ? '
+    }
+  }
 }

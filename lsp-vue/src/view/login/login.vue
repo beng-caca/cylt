@@ -30,12 +30,16 @@ export default {
     handleSubmit ({ username, password }) {
       this.handleLogin({ username, password }).then(res => {
         store.state.user = res
-          this.$router.push({
-            name: this.$config.homeName
-          })
-      },res => {
-
-      })
+        this.$router.push({
+          name: this.$config.homeName
+        })
+      }, res => {
+        this.$Message['error']({
+          background: true,
+          content: res.data.message
+        })
+      }
+      )
     }
   }
 }

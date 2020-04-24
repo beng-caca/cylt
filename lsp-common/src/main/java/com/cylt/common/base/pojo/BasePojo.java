@@ -85,4 +85,12 @@ public class BasePojo implements java.io.Serializable {
     public void setId(String id) {
         this.id = id;
     }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
 }

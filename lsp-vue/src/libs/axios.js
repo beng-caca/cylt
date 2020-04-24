@@ -1,5 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
+import qs from 'qs'
 axios.default.withCredentials = true
 // import { Spin } from 'iview'
 const addErrorLog = errorInfo => {
@@ -36,6 +37,7 @@ class HttpRequest {
   interceptors (instance, url) {
     // 请求拦截
     instance.interceptors.request.use(config => {
+      config.data = qs.stringify(config.data)
       // 添加全局的loading...
       if (!Object.keys(this.queue).length) {
         // Spin.show() // 不建议开启，因为界面不友好
@@ -52,7 +54,15 @@ class HttpRequest {
       return { data, status }
     }, error => {
       this.destroy(url)
-      //let errorInfo = error.response
+      console.log(error)
+      if (error.message === 'Network Error') {
+        this.$router.replace({
+          name: this.$config.homeName
+        })
+      } else if (error.message === '403') {
+
+      }
+      let errorInfo = error.response
       // if (!errorInfo) {
       //   const { request: { statusText, status }, config } = JSON.parse(JSON.stringify(error))
       //   errorInfo = {
@@ -61,7 +71,7 @@ class HttpRequest {
       //     request: { responseURL: config.url }
       //   }
       // }
-      //addErrorLog(errorInfo)
+      addErrorLog(errorInfo)
       return Promise.reject(error.response)
     })
   }

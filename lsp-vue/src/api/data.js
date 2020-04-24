@@ -49,3 +49,10 @@ export const getTreeSelectData = () => {
     method: 'get'
   })
 }
+
+export const getMenuList = () => {
+  return axios.request({
+    url: '/sys/menu/list',
+    method: 'get'
+  })
+}

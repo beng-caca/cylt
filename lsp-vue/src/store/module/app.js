@@ -9,11 +9,13 @@ import {
   routeEqual,
   getRouteTitleHandled,
   localSave,
-  localRead
+  localRead,
+  addTreeList
 } from '@/libs/util'
-import { saveErrorLogger } from '@/api/data'
+import { saveErrorLogger, getMenuList } from '@/api/data'
 import router from '@/router'
-import routers from '@/router/routers'
+import store from '@/store'
+// import routers from '@/router/routers'
 import config from '@/config'
 const { homeName } = config
 
@@ -32,10 +34,12 @@ export default {
     homeRoute: {},
     local: localRead('local'),
     errorList: [],
-    hasReadErrorPage: false
+    hasReadErrorPage: false,
+    menuList: []
   },
   getters: {
-    menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
+    // menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),
+    menuList: (state, getters, rootState) => getMenuByRouter(state.menuList),
     errorCount: state => state.errorList.length
   },
   mutations: {
@@ -85,6 +89,35 @@ export default {
     },
     setHasReadErrorLoggerStatus (state, status = true) {
       state.hasReadErrorPage = status
+    },
+    setMenuList (state, list) {
+      if (state.menuList.length !== 0) {
+        return
+      }
+      let len = list.length
+      let data = []
+      let menus
+      for (let i = 0; i < len; i++) {
+        menus = list[i]
+        data = addTreeList(data, menus, (data) => {
+          return {
+            id: data.id,
+            pid: data.pid,
+            name: data.name,
+            meta: {
+              hideInMenu: !data.showMenu,
+              icon: data.icon,
+              title: data.name
+            },
+            component: () => import('@' + data.component),
+            children: []
+          }
+        })
+      }
+      for (let i in data) {
+        state.menuList.push(data[i])
+      }
+      state.hasInfo = true
     }
   },
   actions: {
@@ -101,6 +134,20 @@ export default {
       saveErrorLogger(info).then(() => {
         commit('addError', data)
       })
+    },
+
+    getMenuData ({ commit, rootState }) {
+      if (store.state.menuList !== undefined && store.state.menuList.length !== 0) {
+        commit('setMenuList', store.state.menuList)
+      } else {
+        debugger
+        getMenuList().then(res => {
+          store.state.menuList = res.data
+          commit('setMenuList', res.data)
+        }).catch(e => {
+          console.log(e)
+        })
+      }
     }
   }
 }
