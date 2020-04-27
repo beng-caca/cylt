@@ -3,6 +3,7 @@ package com.cylt.common;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cylt.common.base.pojo.BasePojo;
+import com.cylt.common.base.pojo.Page;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -159,16 +160,6 @@ public class RedisUtil {
      * @return 值
      */
     public Object get(BasePojo rootPojo) {
-        // 设置序列化
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(
-                Object.class);
-        ObjectMapper om = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
-        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);// value序列化
-
         //取当前key类型
         String key = getKey(rootPojo);
         logger.info("select:" + key);
@@ -176,7 +167,8 @@ public class RedisUtil {
         for(String str : set){
             key = str;
         }
-        return key == null ? null : redisTemplate.opsForValue().get(key);
+        JSONObject jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(key));
+        return jsonObj.toJavaObject(rootPojo.getClass());
     }
 
     /**
@@ -185,22 +177,58 @@ public class RedisUtil {
      * @param rootPojo
      * @return 值
      */
-    @Transactional
     public Object list(BasePojo rootPojo) {
         //获取所有属性名 设置key
         String key = getKey(rootPojo);
-        //取当前key类型
-//        String key = rootPojo.getClass().getAnnotation(Redis.class).key();
-//        key = key.replace("?", "*");
         logger.info("select:" + key);
-        Set<String> set = redisTemplate.keys(key);
+        Set<String> ids = redisTemplate.keys(key);
+
         List<BasePojo> list = new ArrayList<>();
         JSONObject jsonObj;
-        for(String str : set){
-            jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(str));
+        // 开始查询分页内数据
+        for (String id : ids) {
+            jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(id));
             list.add(jsonObj.toJavaObject(rootPojo.getClass()));
         }
         return list;
+    }
+
+
+    /**
+     * 查询数据列表
+     *
+     * @param rootPojo
+     * @return 值
+     */
+    public Page list(BasePojo rootPojo, Page page) {
+        //获取所有属性名 设置key
+        String key = getKey(rootPojo);
+        logger.info("select:" + key);
+        Set<String> ids = redisTemplate.keys(key);
+        List<BasePojo> list = new ArrayList<>();
+        JSONObject jsonObj;
+
+        // 从哪里开始（页数 * 一页显示多少数据）
+        int index = 0;
+        if (page != null) {
+            index = (page.getPageNumber() - 1) * page.getSinglePage();
+        } else {
+            page = new Page();
+        }
+        // 赋值一共有多少条
+        page.setTotalNumber(ids.size());
+        // 要读多少条 如果是最后一页的话就能读多少读多少
+        int mexIndex = page.getTotalNumber() < (page.getSinglePage() + index) ? page.getTotalNumber(): (page.getSinglePage() + index);
+        // 将set转换成list方便抓取
+        List<String> idList = new ArrayList<>(ids);
+
+        // 开始查询分页内数据
+        for (;index < mexIndex;index++) {
+            jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(idList.get(index)));
+            list.add(jsonObj.toJavaObject(rootPojo.getClass()));
+        }
+        page.setPageList(list);
+        return page;
     }
 
 

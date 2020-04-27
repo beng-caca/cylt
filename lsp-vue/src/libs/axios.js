@@ -37,7 +37,24 @@ class HttpRequest {
   interceptors (instance, url) {
     // 请求拦截
     instance.interceptors.request.use(config => {
-      config.data = qs.stringify(config.data)
+      if (config.data && typeof (config.data) !== 'string') {
+        config.data = qs.stringify(config.data)
+        // 兼容js对象嵌套
+        while (config.data.indexOf('%5B') !== -1) {
+          // 判断plantSite[?]判断当前元素是否为嵌套数组 注：如果是嵌套数组则不做任何处理（先把[]替换成一个临时字符下面再将它还原回来）
+          if (!isNaN(config.data.substring(config.data.indexOf('%5B') + 3, config.data.indexOf('%5D')))) {
+            config.data = config.data.replace('%5B', '「')
+            config.data = config.data.replace('%5D', '」')
+          } else { // 否则当前元素是嵌套对象
+            config.data = config.data.replace('%5B', '.')
+            config.data = config.data.replace('%5D', '')
+          }
+        }
+        while (config.data.indexOf('「') !== -1) {
+          config.data = config.data.replace('「', '%5B')
+          config.data = config.data.replace('」', '%5D')
+        }
+      }
       // 添加全局的loading...
       if (!Object.keys(this.queue).length) {
         // Spin.show() // 不建议开启，因为界面不友好

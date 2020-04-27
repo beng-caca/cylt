@@ -53,6 +53,12 @@ export default {
     success: 'Success',
     tree: ' Tree',
     warning: 'Warning',
+    validate: {
+      notNull: ' Cannot be empty！'
+    },
+    confirm: {
+      del: 'Are you sure you want to delete this record ? '
+    },
     // menu
     menu: {
       name: 'Menu Name',
@@ -64,11 +70,11 @@ export default {
       role: 'Role',
       user: 'User'
     },
-    validate: {
-      notNull: ' Cannot be empty！'
-    },
-    confirm: {
-      del: 'Are you sure you want to delete this record ? '
+    user: {
+      username: 'login name',
+      name: 'name',
+      role: 'role',
+      enterpriseId: 'enterprise'
     }
   }
 }

@@ -83,3 +83,11 @@ export const restoreTrash = msg_id => {
     }
   })
 }
+
+export const getUserList = (data) => {
+  return axios.request({
+    url: '/sys/user/list',
+    data,
+    method: 'post'
+  })
+}

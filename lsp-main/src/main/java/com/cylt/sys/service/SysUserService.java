@@ -3,6 +3,8 @@ package com.cylt.sys.service;
 import com.cylt.common.DESUtil;
 import com.cylt.common.RedisUtil;
 import com.cylt.common.SysUser;
+import com.cylt.common.base.pojo.Page;
+import com.cylt.pojo.sys.SysMenu;
 import com.cylt.sys.dao.SysUserDao;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.rabbitMQ.util.RabbitMQUtil;
@@ -30,13 +32,21 @@ public class SysUserService {
 
 
     /**
-     *
+     * 查询用户列表
      * @param user
      * @return
      */
-    public List<SysUser> list(SysUser user) {
-        List<SysUser> s = (List<SysUser>) redisUtil.list(user);
-        return s;
+    public Page list(SysUser user, Page page) {
+        page = redisUtil.list(user, page);
+        // 如果当前一个用户都没有 就和同步一下
+        if (page.getPageList().size() == 0) {
+            List<SysUser> list = sysUserDao.findAll();
+            for(SysUser users : list){
+                redisUtil.set(users);
+            }
+            page = redisUtil.list(user, page);
+        }
+        return page;
     }
     /**
      * 查询用户

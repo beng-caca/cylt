@@ -67,7 +67,7 @@ public class BasePojo implements java.io.Serializable {
     @Column(name = "CREATE_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    public Date createTime;
+    private Date createTime;
 
     /**
      * <p>Field updateTime:修改时间 </p>
@@ -76,7 +76,7 @@ public class BasePojo implements java.io.Serializable {
     @Column(name = "UPDATE_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    public Date updateTime;
+    private Date updateTime;
 
     public String getId() {
         return id;
@@ -116,5 +116,13 @@ public class BasePojo implements java.io.Serializable {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getUpdateBy() {
+        return updateBy;
+    }
+
+    public void setUpdateBy(String updateBy) {
+        this.updateBy = updateBy;
     }
 }

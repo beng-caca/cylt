@@ -7,7 +7,8 @@ import {
   hasRead,
   removeReaded,
   restoreTrash,
-  getUnreadCount
+  getUnreadCount,
+  getUserList
 } from '@/api/user'
 import { setToken, getToken } from '@/libs/util'
 
@@ -23,7 +24,14 @@ export default {
     messageUnreadList: [],
     messageReadedList: [],
     messageTrashList: [],
-    messageContentStore: {}
+    messageContentStore: {},
+    userList: [],
+    loading: false,
+    query: {
+      pageNumber: 1,
+      totalNumber: 0,
+      singlePage: 20
+    }
   },
   mutations: {
     setAvatar (state, avatarPath) {
@@ -65,6 +73,14 @@ export default {
       const msgItem = state[from].splice(index, 1)[0]
       msgItem.loading = false
       state[to].unshift(msgItem)
+    },
+    setUserList (state, page) {
+      state.userList = page.pageList
+      state.query = page
+      state.query.pageList = []
+    },
+    setLoading (state, isLoading) {
+      state.loading = isLoading
     }
   },
   getters: {
@@ -207,6 +223,20 @@ export default {
             to: 'messageReadedList',
             msg_id
           })
+          resolve()
+        }).catch(error => {
+          reject(error)
+        })
+      })
+    },
+    // 读取用户列表
+    getUserList ({ state, commit }) {
+      commit('setLoading', true)
+      console.log(state.query)
+      return new Promise((resolve, reject) => {
+        getUserList(state.query).then((obj) => {
+          commit('setUserList', obj.data)
+          commit('setLoading', false)
           resolve()
         }).catch(error => {
           reject(error)

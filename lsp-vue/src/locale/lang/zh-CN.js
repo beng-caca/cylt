@@ -53,6 +53,12 @@ export default {
     success: '操作成功',
     tree: '树',
     warning: '警告',
+    validate: {
+      notNull: '不能为空！'
+    },
+    confirm: {
+      del: '确定要删除此记录吗 ? '
+    },
     // menu
     menu: {
       name: '菜单名称',
@@ -64,11 +70,11 @@ export default {
       role: '角色',
       user: '用户'
     },
-    validate: {
-      notNull: '不能为空！'
-    },
-    confirm: {
-      del: '确定要删除此记录吗 ? '
+    user: {
+      username: '登录名',
+      name: '用户名',
+      role: '角色',
+      enterpriseId: '企业'
     }
   }
 }

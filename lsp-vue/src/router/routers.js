@@ -513,7 +513,7 @@ export default [
         hideInBread: false,
         title: '菜单'
       },
-      component: () => import('@/view/sys/menu.vue')
+      component: () => import('@/view/sys/user.vue')
     }
     ]
   }
