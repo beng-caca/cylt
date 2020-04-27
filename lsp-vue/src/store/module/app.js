@@ -94,28 +94,23 @@ export default {
       if (state.menuList.length !== 0) {
         return
       }
-      let len = list.length
-      let data = []
-      let menus
-      for (let i = 0; i < len; i++) {
-        menus = list[i]
-        data = addTreeList(data, menus, (data) => {
-          return {
-            id: data.id,
-            pid: data.pid,
-            name: data.name,
-            meta: {
-              hideInMenu: !data.showMenu,
-              icon: data.icon,
-              title: data.name
-            },
-            component: () => import('@' + data.component),
-            children: []
-          }
-        })
-      }
-      for (let i in data) {
-        state.menuList.push(data[i])
+      list = addTreeList(list, (data) => {
+        return {
+          id: data.id,
+          pid: data.pid,
+          name: data.name,
+          data: data,
+          meta: {
+            hideInMenu: !data.showMenu,
+            icon: data.icon,
+            title: data.name
+          },
+          component: () => import('@' + data.component),
+          children: []
+        }
+      })
+      for (let i in list) {
+        state.menuList.push(list[i])
       }
       state.hasInfo = true
     }
@@ -140,7 +135,6 @@ export default {
       if (store.state.menuList !== undefined && store.state.menuList.length !== 0) {
         commit('setMenuList', store.state.menuList)
       } else {
-        debugger
         getMenuList().then(res => {
           store.state.menuList = res.data
           commit('setMenuList', res.data)

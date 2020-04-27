@@ -1,5 +1,7 @@
 package com.cylt.common;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.cylt.common.base.pojo.BasePojo;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -16,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
+import javax.transaction.Transactional;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -93,6 +96,38 @@ public class RedisUtil {
         return redisTemplate.delete(set) != 0;
     }
 
+    /**
+     * 删除树结构缓存 （默认父子关系为 pid）
+     *
+     * @param pojo 删除数据
+     */
+    public void delTree(BasePojo pojo) {
+        delTree(pojo, "PID");
+    }
+
+
+    /**
+     * 删除树结构缓存 （自定义父关系）
+     *
+     * 注：暂时只删除一层 以后如果需求多的话可以改成删除多层 ，思路 ：把父级关系配置在pojo里 直接取注解
+     * @param pojo 删除数据
+     */
+    public void delTree(BasePojo pojo, String... pidStrs) {
+        // 删除当前节点
+        del(pojo);
+        String key;
+        Set<String> keys = new HashSet<>();
+        // 删除子节点
+        for (String pidStr : pidStrs) {
+            key = "*" + pidStr + "=" + pojo.getId() + ":*";
+            keys.addAll(redisTemplate.keys(key));
+        }
+        for (String id : keys) {
+            logger.info("delete children:" + id);
+        }
+        redisTemplate.delete(keys);
+    }
+
 
     /**
      * 批量删除缓存
@@ -150,17 +185,8 @@ public class RedisUtil {
      * @param rootPojo
      * @return 值
      */
+    @Transactional
     public Object list(BasePojo rootPojo) {
-        // 设置序列化
-        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<Object>(
-                Object.class);
-        ObjectMapper om = new ObjectMapper();
-        om.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        jackson2JsonRedisSerializer.setObjectMapper(om);
-        redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);// value序列化
-
         //获取所有属性名 设置key
         String key = getKey(rootPojo);
         //取当前key类型
@@ -169,8 +195,10 @@ public class RedisUtil {
         logger.info("select:" + key);
         Set<String> set = redisTemplate.keys(key);
         List<BasePojo> list = new ArrayList<>();
+        JSONObject jsonObj;
         for(String str : set){
-            list.add((BasePojo) redisTemplate.opsForValue().get(str));
+            jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(str));
+            list.add(jsonObj.toJavaObject(rootPojo.getClass()));
         }
         return list;
     }
@@ -189,7 +217,13 @@ public class RedisUtil {
             String key = getKey(rootPojo);
             key = key.replace("?", id);
             logger.info("save:" + key);
-            redisTemplate.opsForValue().set(key, rootPojo);
+            if(rootPojo.getCreateTime() == null) {
+                rootPojo.setCreateTime(new Date());
+            }
+            if(rootPojo.getUpdateTime() == null) {
+                rootPojo.setUpdateTime(new Date());
+            }
+            redisTemplate.opsForValue().set(key, JSON.toJSONStringWithDateFormat(rootPojo,"yyyy-MM-dd HH:mm:ss"));
             return true;
         } catch (Exception e) {
             e.printStackTrace();

@@ -10,24 +10,18 @@ export default {
   },
   mutations: {
     menuList (state, list) {
-      let len = list.length
-      let data = []
-      let menus
-      for (let i = 0; i < len; i++) {
-        menus = list[i]
-        data = addTreeList(data, menus, (data) => {
-          return {
-            id: data.id,
-            pid: data.pid,
-            icon: data.icon,
-            title: data.name,
-            expand: true,
-            data: data,
-            children: []
-          }
-        })
-      }
-      state.menuList = data
+      list = addTreeList(list, (data) => {
+        return {
+          id: data.id,
+          pid: data.pid,
+          icon: data.icon,
+          title: data.name,
+          expand: true,
+          data: data,
+          children: []
+        }
+      })
+      state.menuList = list
     },
     getMenu (state, data) {
       state.info = data

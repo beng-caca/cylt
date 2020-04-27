@@ -7,9 +7,9 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 菜单列表
@@ -58,6 +58,10 @@ public class SysMenu extends BasePojo {
     @Column(name = "SHOW_MENU")
     private Boolean showMenu;
 
+    @OneToMany(mappedBy = "pid" ,cascade = { CascadeType.REMOVE})
+    private List<SysMenu> childrenList = new ArrayList<>();
+
+
     public String getPid() {
         return pid;
     }
@@ -92,6 +96,14 @@ public class SysMenu extends BasePojo {
 
     public Boolean getShowMenu() {
         return showMenu;
+    }
+
+    public List<SysMenu> getChildrenList() {
+        return childrenList;
+    }
+
+    public void setChildrenList(List<SysMenu> childrenList) {
+        this.childrenList = childrenList;
     }
 
     public void setShowMenu(Boolean showMenu) {

@@ -77,7 +77,7 @@ public class SysMenuService {
      * @return
      */
     public void delete(SysMenu sysMenu) {
-        redisUtil.del(sysMenu);
+        redisUtil.delTree(sysMenu);
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysMenu);
     }
 

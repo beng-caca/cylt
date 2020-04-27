@@ -61,6 +61,6 @@ public class SysMenuService {
      * @return
      */
     public void delete(SysMenu sysMenu) {
-        sysMenuDao.delete(sysMenu);
+        sysMenuDao.deleteById(sysMenu.getId());
     }
 }

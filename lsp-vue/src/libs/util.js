@@ -2,6 +2,7 @@ import Cookies from 'js-cookie'
 // cookie保存的天数
 import config from '@/config'
 import { forEach, hasOneOf, objEqual } from '@/libs/tools'
+
 const { title, cookieExpires, useI18n } = config
 
 export const TOKEN_KEY = 'token'
@@ -12,8 +13,11 @@ export const setToken = (token) => {
 
 export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY)
-  if (token) return token
-  else return false
+  if (token) {
+    return token
+  } else {
+    return false
+  }
 }
 
 export const hasChild = (item) => {
@@ -22,9 +26,14 @@ export const hasChild = (item) => {
 
 const showThisMenuEle = (item, access) => {
   if (item.meta && item.meta.access && item.meta.access.length) {
-    if (hasOneOf(item.meta.access, access)) return true
-    else return false
-  } else return true
+    if (hasOneOf(item.meta.access, access)) {
+      return true
+    } else {
+      return false
+    }
+  } else {
+    return true
+  }
 }
 /**
  * @param {Array} list 通过路由列表得到菜单列表
@@ -86,7 +95,9 @@ export const getRouteTitleHandled = (route) => {
     if (typeof meta.title === 'function') {
       meta.__titleIsFunction__ = true
       title = meta.title(router)
-    } else title = meta.title
+    } else {
+      title = meta.title
+    }
   }
   meta.title = title
   router.meta = meta
@@ -97,10 +108,16 @@ export const showTitle = (item, vm) => {
   let { title, __titleIsFunction__ } = item.meta
   if (!title) return
   if (useI18n) {
-    if (title.includes('{{') && title.includes('}}') && useI18n) title = title.replace(/({{[\s\S]+?}})/, (m, str) => str.replace(/{{([\s\S]*)}}/, (m, _) => vm.$t(_.trim())))
-    else if (__titleIsFunction__) title = item.meta.title
-    else title = vm.$t(item.name)
-  } else title = (item.meta && item.meta.title) || item.name
+    if (title.includes('{{') && title.includes('}}') && useI18n) {
+      title = title.replace(/({{[\s\S]+?}})/, (m, str) => str.replace(/{{([\s\S]*)}}/, (m, _) => vm.$t(_.trim())))
+    } else if (__titleIsFunction__) {
+      title = item.meta.title
+    } else {
+      title = vm.$t(item.name)
+    }
+  } else {
+    title = (item.meta && item.meta.title) || item.name
+  }
   return title
 }
 
@@ -146,8 +163,11 @@ export const getHomeRoute = (routers, homeName = 'home') => {
 export const getNewTagList = (list, newRoute) => {
   const { name, path, meta } = newRoute
   let newList = [...list]
-  if (newList.findIndex(item => item.name === name) >= 0) return newList
-  else newList.push({ name, path, meta })
+  if (newList.findIndex(item => item.name === name) >= 0) {
+    return newList
+  } else {
+    newList.push({ name, path, meta })
+  }
   return newList
 }
 
@@ -156,8 +176,11 @@ export const getNewTagList = (list, newRoute) => {
  * @param {*} route 路由列表
  */
 const hasAccess = (access, route) => {
-  if (route.meta && route.meta.access) return hasOneOf(access, route.meta.access)
-  else return true
+  if (route.meta && route.meta.access) {
+    return hasOneOf(access, route.meta.access)
+  } else {
+    return true
+  }
 }
 
 /**
@@ -205,8 +228,11 @@ export const getNextRoute = (list, route) => {
     res = getHomeRoute(list)
   } else {
     const index = list.findIndex(item => routeEqual(item, route))
-    if (index === list.length - 1) res = list[list.length - 2]
-    else res = list[index + 1]
+    if (index === list.length - 1) {
+      res = list[list.length - 2]
+    } else {
+      res = list[index + 1]
+    }
   }
   return res
 }
@@ -242,8 +268,11 @@ export const getArrayFromFile = (file) => {
       }).map(item => {
         return item[0].split(',')
       })
-      if (format === 'csv') resolve(arr)
-      else reject(new Error('[Format Error]:你上传的不是Csv文件'))
+      if (format === 'csv') {
+        resolve(arr)
+      } else {
+        reject(new Error('[Format Error]:你上传的不是Csv文件'))
+      }
     }
   })
 }
@@ -307,8 +336,11 @@ export const findNodeDownward = (ele, tag) => {
     let len = ele.childNodes.length
     while (++i < len) {
       let child = ele.childNodes[i]
-      if (child.tagName === tagName) return child
-      else return findNodeDownward(child, tag)
+      if (child.tagName === tagName) {
+        return child
+      } else {
+        return findNodeDownward(child, tag)
+      }
     }
   }
 }
@@ -399,25 +431,48 @@ export const setTitle = (routeItem, vm) => {
   window.document.title = resTitle
 }
 /**
+ * 遍历树信息并排序
+ * @param list
+ * @param addTree
+ * @returns {Array}
+ */
+export const addTreeList = (list, addTree) => {
+  let data = []
+  let len = list.length
+  let menus
+  // 先按新建时间排序
+  list.sort((a, b) => {
+    return Date.parse(a.createTime) - Date.parse(b.createTime)
+  })
+  for (let i = 0; i < len; i++) {
+    menus = list[i]
+    data = addTrees(data, menus, addTree)
+  }
+  return data
+}
+
+/**
  * 递归添加树列表（不限制级别）
  * @param menus
  * @param data
  * @returns {*}
  */
-export const addTreeList = (datas, data, addTree) => {
+export const addTrees = (datas, data, addTree) => {
   let len = datas.length
   let childrenLen = 0
-  // 遍历当前节点
+  // 判断当前节点是不是根节点
   if (len !== 0 && data.pid !== undefined) {
+    // 遍历当前节点
     for (let i = 0; i < len; i++) {
+      // 判断是不是当前的子节点
       if (datas[i].id === data.pid) {
         datas[i].children[datas[i].children.length] = addTree(data)
         break
-      } else {
+      } else { // 如果不是当前节点的子节点 那就再在子节点里找找 看看有没有
         childrenLen = datas[i].children.length
         if (childrenLen !== 0) {
           // 递归调用本方法 查出当前data归属于那个子节点
-          datas[i].children = addTreeList(datas[i].children, data)
+          datas[i].children = addTrees(datas[i].children, data, addTree)
           // 判断如果添加子级成功就返回
           if (datas[i].children.length !== childrenLen) {
             break

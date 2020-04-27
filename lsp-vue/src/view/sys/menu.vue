@@ -31,7 +31,7 @@
         </Form>
       </Card>
     </split-pane>
-    <Modal v-model="modal2" width="360">
+    <Modal v-model="delConfirm" width="360">
       <p slot="header" style="color:#f60;text-align:center">
         <Icon type="ios-information-circle"></Icon>
         <span>{{ $t('system.warning') }}</span>
@@ -53,7 +53,7 @@ export default {
     store.dispatch('getSysMenuList')
     return {
       offset: 0.4,
-      modal2: false,
+      delConfirm: false,
       offsetVertical: '10px',
       ruleValidate: {
         name: [
@@ -137,7 +137,7 @@ export default {
             },
             on: {
               click: () => {
-                this.modal2 = true
+                this.delConfirm = true
                 this.del = { root, node, data }
               }
             }
@@ -147,7 +147,7 @@ export default {
     },
     remove () {
       let { root, node, data } = this.del
-      this.modal2 = false
+      this.delConfirm = false
       store.dispatch('delSysMenu', data.id).then(res => {
         const parentKey = root.find(el => el === node).parent
         const parent = root.find(el => el.nodeKey === parentKey).node
