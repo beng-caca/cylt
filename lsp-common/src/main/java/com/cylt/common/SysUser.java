@@ -36,7 +36,7 @@ public class SysUser extends BasePojo implements UserDetails {
     @Column(name = "PASSWORD")
     private String password;
     //用户名
-    @Redis
+    @Redis(vagueQuery = true)
     @Column(name = "NAME")
     private String name;
     //企业id

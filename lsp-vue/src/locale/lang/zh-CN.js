@@ -48,13 +48,20 @@ export default {
   // sys
   system: {
     info: '信息',
+    updatePassword: '修改密码',
+    logout: '退出登录',
     save: '保存',
-    del: '保存',
+    add: '添加',
+    del: '删除',
+    query: '查询',
     success: '操作成功',
+    fail: '操作失败',
     tree: '树',
+    pleaseEnter: '请输入',
     warning: '警告',
     validate: {
-      notNull: '不能为空！'
+      notNull: '不能为空！',
+      noRepeat: '不可重复！'
     },
     confirm: {
       del: '确定要删除此记录吗 ? '
@@ -74,7 +81,8 @@ export default {
       username: '登录名',
       name: '用户名',
       role: '角色',
-      enterpriseId: '企业'
+      enterpriseId: '企业',
+      password: '密码'
     }
   }
 }

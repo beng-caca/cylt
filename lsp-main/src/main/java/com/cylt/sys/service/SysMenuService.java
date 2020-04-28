@@ -1,17 +1,18 @@
 package com.cylt.sys.service;
 
 import com.cylt.common.RedisUtil;
-import com.cylt.common.base.pojo.Page;
 import com.cylt.pojo.sys.SysMenu;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.rabbitMQ.util.RabbitMQUtil;
 import com.cylt.sys.dao.SysMenuDao;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.UUID;
 
+@Transactional
 @Service("sysMenuService")
 public class SysMenuService {
 
@@ -43,6 +44,7 @@ public class SysMenuService {
                 redisUtil.set(menu);
             }
         }
+        list = (List<SysMenu>) redisUtil.list(user);
         return list;
     }
     /**

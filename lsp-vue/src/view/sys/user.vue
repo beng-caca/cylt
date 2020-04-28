@@ -1,18 +1,35 @@
 <template>
   <div class="split-pane-page-wrapper">
+    <Form inline  style="padding: 10px;margin-bottom: 20px;border: 2px solid #e8eaec;">
+      <FormItem prop="username">
+        <Input type="text" v-model="$store.state.user.query.username" :placeholder="$t('system.user.username')">
+        </Input>
+      </FormItem>
+      <FormItem prop="name">
+        <Input type="text" v-model="$store.state.user.query.name" :placeholder="$t('system.user.name')">
+        </Input>
+      </FormItem>
+      <FormItem>
+        <Button type="primary" @click="query()">{{ $t('system.query') }}</Button>
+      </FormItem>
+
+      <Divider dashed class="divider"/>
+      <div class="operation">
+        <Button type="primary" @click="add()">{{ $t('system.add') }}</Button>
+      </div>
+    </Form>
     <Table
       :loading="$store.state.user.loading"
       context-menu
       show-context-menu
       :columns="columns1"
       :data="$store.state.user.userList"
-      @on-contextmenu="handleContextMenu"
       border
       stripe
     >
-      <template slot="contextMenu">
-        <DropdownItem @click.native="handleContextMenuEdit">编辑</DropdownItem>
-        <DropdownItem @click.native="handleContextMenuDelete" style="color: #ed4014">删除</DropdownItem>
+      <template slot-scope="{ row, index }" slot="action">
+        <Button type="primary" size="small" style="margin-right: 5px" @click="info(row, index)">{{ $t('system.info') }}</Button>
+        <Button type="error" size="small" @click="delInit(row)">{{ $t('system.del') }}</Button>
       </template>
     </Table>
     <Page
@@ -34,9 +51,42 @@
         <p>{{ $t('system.confirm.del') }}</p>
       </div>
       <div slot="footer">
-        <Button type="error" size="large" long @click="remove">{{ $t('system.del') }}</Button>
+        <Button type="error" size="large" long @click="del()">{{ $t('system.del') }}</Button>
       </div>
     </Modal>
+    <Drawer
+      :title="$t('system.menu.user') + $t('system.info')"
+      v-model="isInfo"
+      width="30%"
+    >
+      <Form ref="formValidate" :model="$store.state.user.info" :rules="validate">
+        <Row :gutter="32">
+          <Col span="24">
+            <FormItem :label="$t('system.user.username')"  prop="username">
+              <Input v-model="$store.state.user.info.username" :placeholder="$t('system.pleaseEnter') + $t('system.user.username')" />
+            </FormItem>
+          </Col>
+          <Col span="24" v-show="$store.state.user.info.password === undefined">
+            <FormItem :label="$t('system.user.password')"  prop="password">
+              <Input v-model="$store.state.user.info.password" :placeholder="$t('system.pleaseEnter') + $t('system.user.password')" />
+            </FormItem>
+          </Col>
+          <Col span="24">
+            <FormItem :label="$t('system.user.name')"  prop="name">
+              <Input v-model="$store.state.user.info.name" :placeholder="$t('system.pleaseEnter') + $t('system.user.name')" />
+            </FormItem>
+          </Col>
+          <Col span="24">
+            <FormItem :label="$t('system.user.enterpriseId')"  prop="enterpriseId">
+              <Input v-model="$store.state.user.info.enterpriseId" :placeholder="$t('system.pleaseEnter') + $t('system.user.enterpriseId')" />
+            </FormItem>
+          </Col>
+        </Row>
+      </Form>
+      <div class="demo-drawer-footer">
+        <Button type="primary" @click="save()">{{ $t('system.save') }}</Button>
+      </div>
+    </Drawer>
   </div>
 </template>
 <script>
@@ -46,72 +96,81 @@ export default {
     store.dispatch('getUserList')
     return {
       columns1: [
-        {
-          type: 'index',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: this.$t('system.user.username'),
-          key: 'username'
-        }, {
-          title: this.$t('system.user.name'),
-          key: 'name'
-        },
-        {
-          title: this.$t('system.user.enterpriseId'),
-          key: 'enterpriseId'
-        }
+        { type: 'index', width: 60, align: 'center' },
+        { title: this.$t('system.user.username'), key: 'username' },
+        { title: this.$t('system.user.name'), key: 'name' },
+        { title: this.$t('system.user.enterpriseId'), key: 'enterpriseId' },
+        { title: 'Action', slot: 'action', width: 150, align: 'center' }
       ],
       contextLine: 0,
-      delConfirm: false
+      delConfirm: false,
+      isInfo: false,
+      validate: {
+        username: [
+          { required: true, message: this.$t('system.user.name') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: this.$t('system.user.name') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        ],
+        enterpriseId: [
+          { required: true, message: this.$t('system.user.enterpriseId') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
-    remove () {
-      let { root, node, data } = this.del
+    del () {
+      let data = this.deldata
       this.delConfirm = false
-      store.dispatch('delSysMenu', data.id).then(res => {
-        const parentKey = root.find(el => el === node).parent
-        const parent = root.find(el => el.nodeKey === parentKey).node
-        const index = parent.children.indexOf(data)
-        parent.children.splice(index, 1)
-        this.$Message.success(this.$t('system.success'))
+      store.dispatch('delUser', data.id).then(res => {
+        if (res.data.code === 200) {
+          this.query()
+          this.$Message.success(this.$t('system.success'))
+        } else {
+          this.$Message.error(this.$t('system.fail'))
+        }
       })
     },
-    insertInit (data) {
-      store.dispatch('insertMenu', data.id)
-    },
-    updateInit (root, node, data) {
-      store.dispatch('getSysMenu', data)
+    delInit (data) {
+      this.deldata = data
+      this.delConfirm = true
     },
     save () {
       this.$refs['formValidate'].validate((valid) => {
         if (valid) {
-          store.dispatch('saveSysMenu').then(res => {
-            this.$Message.success(this.$t('system.success'))
+          store.dispatch('saveUser').then(res => {
+            if (res.data.code === 200) {
+              this.query()
+              this.$Message.success(this.$t('system.success'))
+              this.isInfo = false
+            } else if (res.data.message === '用户名已存在！') {
+              this.$Message.error(this.$t('system.user.username') + this.$t('system.validate.noRepeat'))
+            } else {
+              this.$Message.error(this.$t('system.fail'))
+            }
           })
         }
       })
     },
+    add () {
+      store.dispatch('getUserInfo', {})
+      this.isInfo = true
+    },
+    query () {
+      store.dispatch('getUserList')
+    },
+    info (row) {
+      store.dispatch('getUserInfo', row)
+      this.isInfo = true
+    },
     changePage (pageNumber) {
       this.$store.state.user.query.pageNumber = pageNumber
-      store.dispatch('getUserList')
+      this.query()
     },
     changeSizePage (pageSizeNumber) {
       this.$store.state.user.query.pageNumber = 1
       this.$store.state.user.query.singlePage = pageSizeNumber
-      store.dispatch('getUserList')
-    },
-    handleContextMenu (row) {
-      const index = this.data1.findIndex(item => item.name === row.name)
-      this.contextLine = index + 1
-    },
-    handleContextMenuEdit () {
-      this.$Message.info('Click edit of line' + this.contextLine)
-    },
-    handleContextMenuDelete () {
-      this.$Message.info('Click delete of line' + this.contextLine)
+      this.query()
     }
   }
 }
@@ -119,5 +178,14 @@ export default {
 <style lang="less">
   .split-pane-page-wrapper{
     height: 100%;
+  }
+  /*.ivu-form-item{*/
+    /*margin-bottom: 4px;*/
+  /*}*/
+  .divider{
+    margin: 2px 0px
+  }
+  .operation{
+    text-align: right;
   }
 </style>

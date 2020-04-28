@@ -4,22 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.common.base.pojo.Page;
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
-import javax.transaction.Transactional;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -168,7 +160,7 @@ public class RedisUtil {
             key = str;
         }
         JSONObject jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(key));
-        return jsonObj.toJavaObject(rootPojo.getClass());
+        return jsonObj != null ? jsonObj.toJavaObject(rootPojo.getClass()) : null;
     }
 
     /**
@@ -179,7 +171,7 @@ public class RedisUtil {
      */
     public Object list(BasePojo rootPojo) {
         //获取所有属性名 设置key
-        String key = getKey(rootPojo);
+        String key = getKey(rootPojo,true);
         logger.info("select:" + key);
         Set<String> ids = redisTemplate.keys(key);
 
@@ -202,7 +194,7 @@ public class RedisUtil {
      */
     public Page list(BasePojo rootPojo, Page page) {
         //获取所有属性名 设置key
-        String key = getKey(rootPojo);
+        String key = getKey(rootPojo, true);
         logger.info("select:" + key);
         Set<String> ids = redisTemplate.keys(key);
         List<BasePojo> list = new ArrayList<>();
@@ -747,6 +739,15 @@ public class RedisUtil {
      * @return
      */
     private String getKey(BasePojo basePojo){
+        return getKey(basePojo, false);
+    }
+    /**
+     * 取实体类的key
+     * @param basePojo 实体pojo
+     * @param isVagueQuery 是否取模糊key
+     * @return
+     */
+    private String getKey(BasePojo basePojo,Boolean isVagueQuery){
         //获取所有属性名 设置key
         Field[] values = basePojo.getClass().getDeclaredFields();
         StringBuffer buffer = new StringBuffer();
@@ -763,6 +764,11 @@ public class RedisUtil {
                     columnVal = (String) field.get(basePojo);
                     if(null == columnVal || "".equals(columnVal)){
                         columnVal = "*";
+                    } else if (isVagueQuery) {// 判断是否允许模糊匹配
+                        // 判断此字段是不是模糊查询
+                        if (field.getAnnotation(Redis.class).vagueQuery()) {
+                            columnVal = "*" + columnVal + "*";
+                        }
                     }
                     buffer.append(field.getAnnotation(Column.class).name())
                             .append("=").append(columnVal).append(":");

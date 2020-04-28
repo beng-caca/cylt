@@ -49,7 +49,7 @@ router.beforeEach((to, from, next) => {
       name: homeName // 跳转到homeName页
     })
   } else {
-    if (store.state.user.id) {
+    if (store.state.user.thisUser) {
       let ss = ['home', 'aasd']
       turnTo(to, ss, next)
     } else {

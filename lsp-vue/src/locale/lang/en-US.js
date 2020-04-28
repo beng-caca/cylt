@@ -50,11 +50,16 @@ export default {
     info: ' Info',
     save: 'Save',
     del: 'Delete',
+    add: 'add',
+    query: 'query',
     success: 'Success',
+    fail: 'Fail',
     tree: ' Tree',
     warning: 'Warning',
+    pleaseEnter: 'Please Enter ',
     validate: {
-      notNull: ' Cannot be empty！'
+      notNull: ' Cannot be empty！',
+      noRepeat: ' Non repeatable！'
     },
     confirm: {
       del: 'Are you sure you want to delete this record ? '
@@ -63,6 +68,8 @@ export default {
     menu: {
       name: 'Menu Name',
       icon: 'Menu Icon',
+      updatePassword: 'update Password',
+      logout: 'logout',
       component: 'Page path',
       showMenu: 'Is Display',
       sys: 'System',
@@ -74,7 +81,8 @@ export default {
       username: 'login name',
       name: 'name',
       role: 'role',
-      enterpriseId: 'enterprise'
+      enterpriseId: 'enterprise',
+      password: 'password'
     }
   }
 }

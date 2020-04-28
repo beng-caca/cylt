@@ -9,11 +9,13 @@ import com.cylt.sys.dao.SysUserDao;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.rabbitMQ.util.RabbitMQUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.UUID;
 
+@Transactional
 @Service("sysUserService")
 public class SysUserService {
 
@@ -71,9 +73,9 @@ public class SysUserService {
                 return "用户名已存在！";
             }
             sysUser.setId(UUID.randomUUID().toString());
+            //密码加密
+            sysUser.setPassword(DESUtil.encrypt(sysUser.getPassword(),DESUtil.KEY));
         }
-        //密码加密
-        sysUser.setPassword(DESUtil.encrypt(sysUser.getPassword(),DESUtil.KEY));
         //刷新缓存
         redisUtil.del(sysUser);
         redisUtil.set(sysUser.getUsername(),sysUser);

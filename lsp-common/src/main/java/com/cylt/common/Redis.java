@@ -11,11 +11,9 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Redis {
-    String isIndex() default "";
-
-
-
-
-
+    /**
+     * 是否模糊查询
+     */
+    boolean vagueQuery() default false;
 
 }

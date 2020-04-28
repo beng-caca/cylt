@@ -24,8 +24,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'handleLogin',
-      'getUserInfo'
+      'handleLogin'
     ]),
     handleSubmit ({ username, password }) {
       this.handleLogin({ username, password }).then(res => {
