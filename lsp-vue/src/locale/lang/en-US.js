@@ -59,7 +59,8 @@ export default {
     pleaseEnter: 'Please Enter ',
     validate: {
       notNull: ' Cannot be empty！',
-      noRepeat: ' Non repeatable！'
+      noRepeat: ' Non repeatable！',
+      error: ' error'
     },
     confirm: {
       del: 'Are you sure you want to delete this record ? '
@@ -68,7 +69,6 @@ export default {
     menu: {
       name: 'Menu Name',
       icon: 'Menu Icon',
-      updatePassword: 'update Password',
       logout: 'logout',
       component: 'Page path',
       showMenu: 'Is Display',
@@ -82,6 +82,9 @@ export default {
       name: 'name',
       role: 'role',
       enterpriseId: 'enterprise',
+      updatePassword: 'update Password',
+      originalPassword: 'Original password',
+      newPassword: 'new password',
       password: 'password'
     }
   }

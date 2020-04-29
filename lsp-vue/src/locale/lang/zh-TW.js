@@ -61,7 +61,8 @@ export default {
     pleaseEnter: '请输入',
     validate: {
       notNull: '不能为空！',
-      noRepeat: '不可重复！'
+      noRepeat: '不可重复！',
+      error: '错误'
     },
     confirm: {
       del: '确定要删除此记录吗 ? '
@@ -82,6 +83,9 @@ export default {
       name: '用户名',
       role: '角色',
       enterpriseId: '企业',
+      updatePassword: '修改密码',
+      originalPassword: '原密码',
+      newPassword: '新密码',
       password: '密码'
     }
   }

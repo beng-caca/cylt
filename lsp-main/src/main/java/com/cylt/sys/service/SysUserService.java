@@ -8,6 +8,7 @@ import com.cylt.pojo.sys.SysMenu;
 import com.cylt.sys.dao.SysUserDao;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.rabbitMQ.util.RabbitMQUtil;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -104,4 +105,26 @@ public class SysUserService {
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysUser);
     }
 
+    /**
+     * 修改用户密码
+     * @param originalPassword
+     * @param newPassword
+     * @return
+     */
+    public boolean updatePassword(String originalPassword, String newPassword) {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+        // 判断当前用户的密码是否等于原密码 如果等于就改密码 否则不作操作
+        if(user.getPassword().equals(DESUtil.encrypt(originalPassword,DESUtil.KEY))){
+            // 为新密码加密
+            user.setPassword(DESUtil.encrypt(newPassword,DESUtil.KEY));
+            //刷新缓存
+            redisUtil.del(user);
+            redisUtil.set(user.getUsername(),user);
+            //发送消息队列持久保存到数据库
+            rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,user);
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

@@ -61,3 +61,11 @@ export const del = (id) => {
     method: 'post'
   })
 }
+
+export const updatePassword = (data) => {
+  return axios.request({
+    url: 'sys/user/updatePassword',
+    data,
+    method: 'post'
+  })
+}

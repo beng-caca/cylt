@@ -4,7 +4,8 @@ import {
   getUserList,
   save as saveUser,
   del as delUser,
-  getThisUser
+  getThisUser,
+  updatePassword
 } from '@/api/user'
 import { setToken } from '@/libs/util'
 
@@ -137,6 +138,10 @@ export default {
     // 保存用户
     delUser ({ state }, id) {
       return delUser(id)
+    },
+    // 修改密码
+    updatePassword ({ state }, password) {
+      return updatePassword(password)
     }
   }
 }
