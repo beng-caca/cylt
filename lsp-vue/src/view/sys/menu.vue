@@ -2,11 +2,11 @@
   <div class="split-pane-page-wrapper">
     <split-pane v-model="offset">
       <Card  slot="left" class="pane"  style="height:100%;display:block;overflow-y:auto;" dis-hover>
-        <p slot="title">{{ $t('system.menu.menu') + $t('system.tree') }}</p>
+        <p slot="title">{{ $t('menu.sys.menu') + $t('system.tree') }}</p>
         <Tree :data="$store.state.menu.menuList" :render="renderContent"></Tree>
       </Card>
       <Card slot="right" class="pane" style="height:100%;" dis-hover>
-        <p slot="title">{{ $t('system.menu.menu') + $t('system.info') + ' - ' + $t($store.state.menu.info.name) }}</p>
+        <p slot="title">{{ $t('menu.sys.menu') + $t('system.info') + ' - ' + $t($store.state.menu.info.name) }}</p>
         <Form ref="formValidate" :model="$store.state.menu.info" :rules="ruleValidate" :label-width="120">
           <FormItem  :label-width="120" prop="name">
             <span slot='label'>{{ $t('system.menu.name') }}</span>

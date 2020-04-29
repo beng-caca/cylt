@@ -65,18 +65,6 @@ export default {
     confirm: {
       del: 'Are you sure you want to delete this record ? '
     },
-    // menu
-    menu: {
-      name: 'Menu Name',
-      icon: 'Menu Icon',
-      logout: 'logout',
-      component: 'Page path',
-      showMenu: 'Is Display',
-      sys: 'System',
-      menu: 'Menu',
-      role: 'Role',
-      user: 'User'
-    },
     user: {
       username: 'login name',
       name: 'name',
@@ -86,6 +74,20 @@ export default {
       originalPassword: 'Original password',
       newPassword: 'new password',
       password: 'password'
+    }
+  },
+  // menu
+  menu: {
+    name: 'Menu Name',
+    icon: 'Menu Icon',
+    logout: 'logout',
+    component: 'Page path',
+    showMenu: 'Is Display',
+    sys: {
+      name: 'System',
+      menu: 'Menu',
+      role: 'Role',
+      user: 'User'
     }
   }
 }

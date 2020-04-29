@@ -28,7 +28,7 @@ export default {
     ]),
     handleSubmit ({ username, password }) {
       this.handleLogin({ username, password }).then(res => {
-        store.state.user = res
+        store.state.thisUser = res
         this.$router.push({
           name: this.$config.homeName
         })

@@ -61,4 +61,16 @@ public class SysUserController extends BaseController {
         }
         return responseFail("原密码错误！");
     }
+
+
+    /**
+     * 获取当前登录用户
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "getThisUser")
+    public String getThisUser() {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+        return getJson(user);
+    }
 }

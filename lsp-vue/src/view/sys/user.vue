@@ -55,7 +55,7 @@
       </div>
     </Modal>
     <Drawer
-      :title="$t('system.menu.user') + $t('system.info')"
+      :title="$t('menu.sys.user') + $t('system.info')"
       v-model="isInfo"
       width="30%"
     >
@@ -93,6 +93,7 @@
 import store from '@/store'
 export default {
   data () {
+    console.log(this.$store.state)
     store.dispatch('getUserList')
     return {
       columns1: [

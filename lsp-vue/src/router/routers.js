@@ -489,7 +489,7 @@ export default [
   },
   {
     path: '/sys',
-    name: 'system.menu.sys',
+    name: 'menu.sys.name',
     component: Main,
     meta: {
       icon: 'ios-cog',
@@ -498,7 +498,7 @@ export default [
     },
     children: [{
       path: 'menu',
-      name: 'system.menu.menu',
+      name: 'menu.sys.menu',
       meta: {
         icon: 'md-menu',
         hideInBread: false,
@@ -507,7 +507,7 @@ export default [
       component: () => import('@/view/sys/menu.vue')
     }, {
       path: 'user',
-      name: 'system.menu.user',
+      name: 'menu.sys.user',
       meta: {
         icon: 'ios-contact',
         hideInBread: false,

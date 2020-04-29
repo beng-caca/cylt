@@ -67,17 +67,6 @@ export default {
     confirm: {
       del: '确定要删除此记录吗 ? '
     },
-    // menu
-    menu: {
-      name: '菜单名称',
-      icon: '菜单图标',
-      component: '页面路径',
-      showMenu: '是否显示',
-      sys: '系统',
-      menu: '菜单',
-      role: '角色',
-      user: '用户'
-    },
     user: {
       username: '登录名',
       name: '用户名',
@@ -87,6 +76,19 @@ export default {
       originalPassword: '原密码',
       newPassword: '新密码',
       password: '密码'
+    }
+  },
+  // menu
+  menu: {
+    name: '菜单名称',
+    icon: '菜单图标',
+    component: '页面路径',
+    showMenu: '是否显示',
+    sys: {
+      name: '系统',
+      menu: '菜单',
+      role: '角色',
+      user: '用户'
     }
   }
 }
