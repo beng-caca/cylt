@@ -50,6 +50,7 @@ export default {
     info: '信息',
     updatePassword: '修改密码',
     logout: '退出登录',
+    operation: '操作',
     save: '保存',
     add: '添加',
     del: '删除',

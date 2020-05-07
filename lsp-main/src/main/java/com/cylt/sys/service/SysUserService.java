@@ -67,8 +67,10 @@ public class SysUserService {
      */
     public String save(SysUser sysUser) {
         if(null == sysUser.getId() || "".equals(sysUser.getId())){
+            SysUser userName = new SysUser();
+            userName.setUsername(sysUser.getUsername());
             //查询缓存里是否有重复
-            SysUser redisData = (SysUser) redisUtil.get(sysUser);
+            SysUser redisData = (SysUser) redisUtil.get(userName);
             //判断用户是否存在
             if(redisData != null){
                 return "用户名已存在！";

@@ -50,6 +50,7 @@ export default {
     info: ' Info',
     save: 'Save',
     del: 'Delete',
+    operation: 'operation',
     add: 'add',
     query: 'query',
     success: 'Success',

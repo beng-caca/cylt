@@ -9,19 +9,19 @@
         <p slot="title">{{ $t('menu.sys.menu') + $t('system.info') + ' - ' + $t($store.state.menu.info.name) }}</p>
         <Form ref="formValidate" :model="$store.state.menu.info" :rules="ruleValidate" :label-width="120">
           <FormItem  :label-width="120" prop="name">
-            <span slot='label'>{{ $t('system.menu.name') }}</span>
+            <span slot='label'>{{ $t('menu.name') }}</span>
             <Input v-model="$store.state.menu.info.name"/>
           </FormItem>
           <FormItem :label-width="120" prop="icon">
-            <span slot='label'>{{ $t('system.menu.icon') }}</span>
+            <span slot='label'>{{ $t('menu.icon') }}</span>
             <Input v-model="$store.state.menu.info.icon"/>
           </FormItem>
           <FormItem prop="component"  :label-width="120">
-            <span slot='label'>{{ $t('system.menu.component') }}</span>
+            <span slot='label'>{{ $t('menu.component') }}</span>
             <Input v-model="$store.state.menu.info.component"/>
           </FormItem>
           <FormItem :label-width="120" prop="showMenu">
-            <span slot='label'>{{ $t('system.menu.showMenu') }}</span>
+            <span slot='label'>{{ $t('menu.showMenu') }}</span>
               <i-switch v-model="$store.state.menu.info.showMenu" size="large">
               </i-switch>
           </FormItem>

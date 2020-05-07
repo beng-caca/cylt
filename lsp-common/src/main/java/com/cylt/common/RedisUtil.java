@@ -1,7 +1,7 @@
 package com.cylt.common;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.common.base.pojo.Page;
 import org.slf4j.Logger;
@@ -11,6 +11,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.lang.reflect.Field;
 import java.util.*;
@@ -154,13 +155,20 @@ public class RedisUtil {
     public Object get(BasePojo rootPojo) {
         //取当前key类型
         String key = getKey(rootPojo);
-        logger.info("select:" + key);
+        // 判断是不是级联调用 ，如果是就不循环打log了
+        StackTraceElement[] ste = new Exception().getStackTrace();
+        if(!"getRelationship".equals(ste[1].getMethodName())){
+            logger.info("select:{}", key);
+        } else {
+            logger.info("   select:{}", key);
+        }
         Set<String> set = redisTemplate.keys(key);
         for(String str : set){
             key = str;
         }
-        JSONObject jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(key));
-        return jsonObj != null ? jsonObj.toJavaObject(rootPojo.getClass()) : null;
+        BasePojo obj = JSON.parseObject((String) redisTemplate.opsForValue().get(key), rootPojo.getClass());
+        getRelationship(obj);
+        return obj;
     }
 
     /**
@@ -172,15 +180,23 @@ public class RedisUtil {
     public Object list(BasePojo rootPojo) {
         //获取所有属性名 设置key
         String key = getKey(rootPojo,true);
-        logger.info("select:" + key);
+        // 判断是不是级联调用 ，如果是就多打个缩进
+        StackTraceElement[] ste = new Exception().getStackTrace();
+        if(!"getRelationship".equals(ste[1].getMethodName())){
+            logger.info("select:{}", key);
+        } else {
+            logger.info("   select:{}", key);
+        }
         Set<String> ids = redisTemplate.keys(key);
 
         List<BasePojo> list = new ArrayList<>();
-        JSONObject jsonObj;
+        BasePojo obj;
         // 开始查询分页内数据
         for (String id : ids) {
-            jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(id));
-            list.add(jsonObj.toJavaObject(rootPojo.getClass()));
+            //转移的问题 去找set方法
+            obj = JSON.parseObject((String) redisTemplate.opsForValue().get(id), rootPojo.getClass());
+            getRelationship(obj);
+            list.add(obj);
         }
         return list;
     }
@@ -195,10 +211,16 @@ public class RedisUtil {
     public Page list(BasePojo rootPojo, Page page) {
         //获取所有属性名 设置key
         String key = getKey(rootPojo, true);
-        logger.info("select:" + key);
+        // 判断是不是级联调用 ，如果是就不循环打log了
+        StackTraceElement[] ste = new Exception().getStackTrace();
+        if(!"getRelationship".equals(ste[1].getMethodName())){
+            logger.info("select:{}", key);
+        } else {
+            logger.info("   select:{}", key);
+        }
         Set<String> ids = redisTemplate.keys(key);
         List<BasePojo> list = new ArrayList<>();
-        JSONObject jsonObj;
+        BasePojo obj;
 
         // 从哪里开始（页数 * 一页显示多少数据）
         int index = 0;
@@ -216,8 +238,10 @@ public class RedisUtil {
 
         // 开始查询分页内数据
         for (;index < mexIndex;index++) {
-            jsonObj = JSON.parseObject((String) redisTemplate.opsForValue().get(idList.get(index)));
-            list.add(jsonObj.toJavaObject(rootPojo.getClass()));
+            obj = JSON.parseObject((String) redisTemplate.opsForValue().get(idList.get(index)),rootPojo.getClass());
+            getRelationship(obj);
+            // 在这里解析jpa
+            list.add(obj);
         }
         page.setPageList(list);
         return page;
@@ -243,7 +267,8 @@ public class RedisUtil {
             if(rootPojo.getUpdateTime() == null) {
                 rootPojo.setUpdateTime(new Date());
             }
-            redisTemplate.opsForValue().set(key, JSON.toJSONStringWithDateFormat(rootPojo,"yyyy-MM-dd HH:mm:ss"));
+            redisTemplate.opsForValue().set(key, JSON.toJSONStringWithDateFormat(rootPojo, "yyyy-MM-dd HH:mm:ss",
+                    SerializerFeature.UseSingleQuotes));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -792,6 +817,34 @@ public class RedisUtil {
         buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(":");
         buffer.append("id=").append(basePojo.getId()).append(":*");
         return buffer.toString();
+    }
+
+    private void getRelationship(BasePojo basePojo){
+        //获取所有属性名 设置key
+        Field[] values = basePojo.getClass().getDeclaredFields();
+        BasePojo children;
+        Field pid = null;
+        //遍历其他属性名
+        try{
+            for(Field field : values){
+                // 判断当前字段是否为一对多
+                if(field.getAnnotation(OneToMany.class) != null){
+                    OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+                    children = (BasePojo) field.getDeclaringClass().newInstance();
+                    pid = basePojo.getClass().getDeclaredField(oneToMany.mappedBy());
+
+                    field.setAccessible(true);//对私有字段的访问取消权限检查。暴力访问。
+                    pid.setAccessible(true);//对私有字段的访问取消权限检查。暴力访问。
+
+                    pid.set(children, basePojo.getId());
+                    Object obj = list(children);
+                    field.set(basePojo,obj);
+                }
+            }
+        } catch (Exception e){
+            //这里取属性出错了 先略过
+            logger.error(e.getMessage());
+        }
     }
 
 }

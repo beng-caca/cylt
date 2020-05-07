@@ -43,8 +43,8 @@ public class SysMenuService {
             for(SysMenu menu : list){
                 redisUtil.set(menu);
             }
+            list = (List<SysMenu>) redisUtil.list(user);
         }
-        list = (List<SysMenu>) redisUtil.list(user);
         return list;
     }
     /**

@@ -66,7 +66,7 @@
               <Input v-model="$store.state.user.info.username" :placeholder="$t('system.pleaseEnter') + $t('system.user.username')" />
             </FormItem>
           </Col>
-          <Col span="24" v-show="$store.state.user.info.password === undefined">
+          <Col span="24" v-show="$store.state.user.info.id === undefined">
             <FormItem :label="$t('system.user.password')"  prop="password">
               <Input v-model="$store.state.user.info.password" :placeholder="$t('system.pleaseEnter') + $t('system.user.password')" />
             </FormItem>
@@ -84,7 +84,7 @@
         </Row>
       </Form>
       <div class="demo-drawer-footer">
-        <Button type="primary" @click="save()">{{ $t('system.save') }}</Button>
+        <Button size="large" long type="primary" @click="save()">{{ $t('system.save') }}</Button>
       </div>
     </Drawer>
   </div>
@@ -93,7 +93,6 @@
 import store from '@/store'
 export default {
   data () {
-    console.log(this.$store.state)
     store.dispatch('getUserList')
     return {
       columns1: [
@@ -101,7 +100,7 @@ export default {
         { title: this.$t('system.user.username'), key: 'username' },
         { title: this.$t('system.user.name'), key: 'name' },
         { title: this.$t('system.user.enterpriseId'), key: 'enterpriseId' },
-        { title: 'Action', slot: 'action', width: 150, align: 'center' }
+        { title: this.$t('system.operation'), slot: 'action', width: 150, align: 'center' }
       ],
       contextLine: 0,
       delConfirm: false,
