@@ -80,8 +80,7 @@ public class SysUserService {
             sysUser.setPassword(DESUtil.encrypt(sysUser.getPassword(),DESUtil.KEY));
         }
         //刷新缓存
-        redisUtil.del(sysUser);
-        redisUtil.set(sysUser.getUsername(),sysUser);
+        redisUtil.save(sysUser);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysUser);
         return "保存成功";

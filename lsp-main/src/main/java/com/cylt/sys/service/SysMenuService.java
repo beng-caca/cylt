@@ -66,8 +66,7 @@ public class SysMenuService {
             sysMenu.setId(UUID.randomUUID().toString());
         }
         //刷新缓存
-        redisUtil.del(sysMenu);
-        redisUtil.set(sysMenu);
+        redisUtil.save(sysMenu);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysMenu);
         return "保存成功";
@@ -80,7 +79,7 @@ public class SysMenuService {
      * @return
      */
     public void delete(SysMenu sysMenu) {
-        redisUtil.delTree(sysMenu);
+        redisUtil.del(sysMenu);
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysMenu);
     }
 
