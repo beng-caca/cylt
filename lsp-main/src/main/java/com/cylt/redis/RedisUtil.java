@@ -1,8 +1,9 @@
-package com.cylt.common;
+package com.cylt.redis;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.common.base.pojo.Page;
 import org.slf4j.Logger;
@@ -15,9 +16,7 @@ import javax.persistence.Column;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 

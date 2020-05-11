@@ -13,8 +13,11 @@ public class RabbitMQDictionary {
     //功能名:sys_user
     public final static String USER = SYS + DELIMITER + "user";
 
-    //功能名:sys_user
+    //功能名:sys_menu
     public final static String MENU = SYS + DELIMITER + "menu";
+
+    //功能名:sys_role
+    public final static String ROLE = SYS + DELIMITER + "role";
 
 
     //---------------------------------------------------------------------------------------------

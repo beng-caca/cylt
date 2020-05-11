@@ -1,4 +1,4 @@
-package com.cylt.common;
+package com.cylt.redis;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -36,7 +36,7 @@ public class RedisConfig extends CachingConfigurerSupport {
         // 配置连接工厂
         template.setConnectionFactory(factory);
         //打开事务支持
-        template.setEnableTransactionSupport(true);
+        //template.setEnableTransactionSupport(true);
 
         //使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值（默认使用JDK的序列化方式）
         Jackson2JsonRedisSerializer jacksonSeial = new Jackson2JsonRedisSerializer(Object.class);
@@ -116,16 +116,16 @@ public class RedisConfig extends CachingConfigurerSupport {
         return redisTemplate.opsForZSet();
     }
 
-    /**
-     * redis事务管理器
-     * @param dataSource
-     * @return
-     * @throws SQLException
-     */
-    @Bean
-    public PlatformTransactionManager transactionManager(DataSource dataSource) throws SQLException {
-        return new DataSourceTransactionManager(dataSource);
-    }
+//    /**
+//     * redis事务管理器
+//     * @param dataSource
+//     * @return
+//     * @throws SQLException
+//     */
+//    @Bean
+//    public PlatformTransactionManager transactionManager(DataSource dataSource) throws SQLException {
+//        return new DataSourceTransactionManager(dataSource);
+//    }
 
 
 }

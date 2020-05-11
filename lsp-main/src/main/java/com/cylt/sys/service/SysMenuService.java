@@ -1,9 +1,8 @@
 package com.cylt.sys.service;
 
-import com.cylt.common.RedisUtil;
+import com.cylt.common.base.service.BaseService;
 import com.cylt.pojo.sys.SysMenu;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
-import com.cylt.rabbitMQ.util.RabbitMQUtil;
 import com.cylt.sys.dao.SysMenuDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,22 +11,18 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 菜单Service
+ */
 @Transactional
 @Service("sysMenuService")
-public class SysMenuService {
+public class SysMenuService extends BaseService {
 
 
     //模块名
     public final static String FEATURES_NAME = RabbitMQDictionary.MENU;
     @Resource
     private SysMenuDao sysMenuDao;
-
-
-    @Resource
-    private RedisUtil redisUtil;
-
-    @Resource
-    private RabbitMQUtil rabbitMQUtil;
 
 
     /**
@@ -67,6 +62,8 @@ public class SysMenuService {
         }
         //刷新缓存
         redisUtil.save(sysMenu);
+//        SysMenu menu = new SysMenu();
+//        sysMenuDao.save(menu);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysMenu);
         return "保存成功";

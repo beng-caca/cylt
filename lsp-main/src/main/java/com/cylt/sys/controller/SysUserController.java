@@ -5,14 +5,15 @@ import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.Page;
 import com.cylt.sys.service.SysUserService;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.security.Principal;
 
+/**
+ * 用户Controller
+ */
 @Controller
 @RequestMapping(value = "sys/user", produces = "text/html;charset=utf-8")
 public class SysUserController extends BaseController {

@@ -57,10 +57,10 @@ export default {
       offsetVertical: '10px',
       ruleValidate: {
         name: [
-          { required: true, message: this.$t('system.menu.name') + this.$t('system.validate.notNull'), trigger: 'blur' }
+          { required: true, message: this.$t('menu.name') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ],
         component: [
-          { required: true, message: this.$t('system.menu.component') + this.$t('system.validate.notNull'), trigger: 'blur' }
+          { required: true, message: this.$t('menu.component') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ]
       }
     }

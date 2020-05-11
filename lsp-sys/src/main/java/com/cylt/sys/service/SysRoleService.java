@@ -2,9 +2,11 @@ package com.cylt.sys.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.cylt.pojo.sys.SysMenu;
+import com.cylt.common.SysUser;
+import com.cylt.pojo.sys.SysRole;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
-import com.cylt.sys.dao.SysMenuDao;
+import com.cylt.sys.dao.SysRoleDao;
+import com.cylt.sys.dao.SysUserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -15,16 +17,16 @@ import javax.annotation.Resource;
 import java.util.Map;
 
 /**
- * 菜单service
+ * 角色service
  */
 @Component
-@RabbitListener(queues = RabbitMQDictionary.MENU)
-public class SysMenuService {
+@RabbitListener(queues = RabbitMQDictionary.ROLE)
+public class SysRoleService {
 
-    public static Logger logger = LoggerFactory.getLogger(SysMenuService.class);
+    public static Logger logger = LoggerFactory.getLogger(SysRoleService.class);
 
     @Resource
-    private SysMenuDao sysMenuDao;
+    private SysRoleDao sysRoleDao;
 
     @RabbitHandler
     public void process(Map testMessage) {
@@ -32,10 +34,10 @@ public class SysMenuService {
         switch((String) testMessage.get("action"))
         {
             case RabbitMQDictionary.DELETE :
-                delete(jsonObject.toJavaObject(SysMenu.class));
+                delete(jsonObject.toJavaObject(SysRole.class));
                 break;
             case RabbitMQDictionary.SAVE :
-                save(jsonObject.toJavaObject(SysMenu.class));
+                save(jsonObject.toJavaObject(SysRole.class));
                 break;
             default :
                 logger.error("方法名未找到：" + testMessage.get("action"));
@@ -44,21 +46,21 @@ public class SysMenuService {
 
     /**
      * 保存
-     * @param sysMenu
+     * @param role
      * @return
      */
-    public void save(SysMenu sysMenu) {
-        sysMenuDao.save(sysMenu);
+    public void save(SysRole role) {
+        sysRoleDao.save(role);
     }
 
 
 
     /**
      * 删除
-     * @param sysMenu
+     * @param role
      * @return
      */
-    public void delete(SysMenu sysMenu) {
-        sysMenuDao.deleteById(sysMenu.getId());
+    public void delete(SysRole role) {
+        sysRoleDao.delete(role);
     }
 }

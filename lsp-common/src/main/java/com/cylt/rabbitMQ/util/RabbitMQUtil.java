@@ -1,14 +1,12 @@
 package com.cylt.rabbitMQ.util;
 
 import com.alibaba.fastjson.JSON;
-import com.cylt.common.RedisUtil;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -22,22 +20,6 @@ public class RabbitMQUtil {
 
     @Autowired
     RabbitTemplate rabbitTemplate;
-
-
-    @Resource
-    private RedisUtil redisUtil;
-
-    /**
-     * 核心发送消息队列方法
-     * @param featuresName 模块名+功能名
-     * @param obj 参数
-     */
-    public void update(String featuresName, BasePojo obj) {
-
-        redisUtil.del(obj);
-        redisUtil.set(obj.getId(),obj);
-        send(featuresName,RabbitMQDictionary.SAVE, obj);
-    }
 
 
     /**

@@ -511,9 +511,18 @@ export default [
       meta: {
         icon: 'ios-contact',
         hideInBread: false,
-        title: '菜单'
+        title: '用户'
       },
       component: () => import('@/view/sys/user.vue')
+    }, {
+      path: 'role',
+      name: 'menu.sys.role',
+      meta: {
+        icon: 'md-contacts',
+        hideInBread: false,
+        title: '角色'
+      },
+      component: () => import('@/view/sys/role.vue')
     }
     ]
   }

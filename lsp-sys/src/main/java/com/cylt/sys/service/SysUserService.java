@@ -28,8 +28,6 @@ public class SysUserService {
 
     @RabbitHandler
     public void process(Map testMessage) {
-        //没调进来
-
         JSONObject jsonObject = JSON.parseObject((String) testMessage.get("data"));
         switch((String) testMessage.get("action"))
         {

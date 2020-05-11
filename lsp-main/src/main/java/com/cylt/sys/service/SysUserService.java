@@ -1,13 +1,11 @@
 package com.cylt.sys.service;
 
 import com.cylt.common.DESUtil;
-import com.cylt.common.RedisUtil;
 import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.Page;
-import com.cylt.pojo.sys.SysMenu;
+import com.cylt.common.base.service.BaseService;
 import com.cylt.sys.dao.SysUserDao;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
-import com.cylt.rabbitMQ.util.RabbitMQUtil;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,22 +14,18 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 用户Service
+ */
 @Transactional
 @Service("sysUserService")
-public class SysUserService {
+public class SysUserService extends BaseService {
 
 
     //模块名
     public final static String FEATURES_NAME = RabbitMQDictionary.USER;
     @Resource
     private SysUserDao sysUserDao;
-
-
-    @Resource
-    private RedisUtil redisUtil;
-
-    @Resource
-    private RabbitMQUtil rabbitMQUtil;
 
 
     /**

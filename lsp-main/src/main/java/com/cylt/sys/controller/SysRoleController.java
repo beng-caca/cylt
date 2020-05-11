@@ -1,8 +1,8 @@
 package com.cylt.sys.controller;
 
 import com.cylt.common.base.controller.BaseController;
-import com.cylt.pojo.sys.SysMenu;
-import com.cylt.sys.service.SysMenuService;
+import com.cylt.pojo.sys.SysRole;
+import com.cylt.sys.service.SysRoleService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,45 +11,45 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 菜单Controller
+ * 角色Controller
  */
 @Controller
-@RequestMapping(value = "sys/menu", produces = "text/html;charset=utf-8")
-public class SysMenuController extends BaseController {
+@RequestMapping(value = "sys/role", produces = "text/html;charset=utf-8")
+public class SysRoleController extends BaseController {
 
     /**
-     * 菜单 Service
+     * 角色Service
      */
     @Resource
-    private SysMenuService sysMenuService;
+    private SysRoleService sysRoleService;
 
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysMenu menu) {
-        List<SysMenu> list = sysMenuService.list(menu);
+    public String list(SysRole role) {
+        List<SysRole> list = sysRoleService.list(role);
         return getJson(list);
     }
 
     /**
-     * <p>Description: 根据ID取得菜单</p>
+     * 根据ID取得角色
      * @param id ID
-     * @return 订单
+     * @return 角色
      */
     @ResponseBody
     @RequestMapping(value = "get")
     public String get(String id) {
-        return getJson(sysMenuService.get(id));
+        return getJson(sysRoleService.get(id));
     }
 
     /**
-     * 保存菜单
-     * @param sysMenu 菜单
+     * 保存角色
+     * @param role 角色
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysMenu sysMenu) {
-        String msg = sysMenuService.save(sysMenu);
+    public String save(SysRole role) {
+        String msg = sysRoleService.save(role);
         if(!"保存成功".equals(msg)){
             return responseFail(msg);
         }
@@ -57,14 +57,14 @@ public class SysMenuController extends BaseController {
     }
 
     /**
-     * 删除菜单
-     * @param sysMenu 菜单
+     * 删除角色
+     * @param role 角色
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysMenu sysMenu) {
-        sysMenuService.delete(sysMenu);
+    public String delete(SysRole role) {
+        sysRoleService.delete(role);
         return responseSsuccess();
     }
 

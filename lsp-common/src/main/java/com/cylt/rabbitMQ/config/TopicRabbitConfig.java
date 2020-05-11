@@ -22,14 +22,28 @@ public class TopicRabbitConfig {
         return new TopicExchange(RabbitMQDictionary.SYS);
     }
 
-
+    /**
+     * 绑定用户持久层
+     */
     @Bean
     Binding bindingSysUser() {
         return BindingBuilder.bind(new Queue(RabbitMQDictionary.USER)).to(sys()).with(RabbitMQDictionary.USER);
     }
 
+    /**
+     * 绑定菜单持久层
+     */
     @Bean
     Binding bindingSysMenu() {
         return BindingBuilder.bind(new Queue(RabbitMQDictionary.MENU)).to(sys()).with(RabbitMQDictionary.MENU);
+    }
+
+
+    /**
+     * 绑定角色持久层
+     */
+    @Bean
+    Binding bindingSysRole() {
+        return BindingBuilder.bind(new Queue(RabbitMQDictionary.ROLE)).to(sys()).with(RabbitMQDictionary.ROLE);
     }
 }

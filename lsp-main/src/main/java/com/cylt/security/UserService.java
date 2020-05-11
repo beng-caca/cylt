@@ -1,6 +1,6 @@
 package com.cylt.security;
 
-import com.cylt.common.RedisUtil;
+import com.cylt.redis.RedisUtil;
 import com.cylt.common.SysUser;
 import com.cylt.sys.dao.SysUserDao;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.annotation.Resource;
 
