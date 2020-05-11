@@ -1,12 +1,8 @@
 <template>
   <div class="split-pane-page-wrapper">
     <Form inline  style="padding: 10px;margin-bottom: 20px;border: 2px solid #e8eaec;">
-      <FormItem prop="username">
-        <Input type="text" v-model="$store.state.user.query.username" :placeholder="$t('system.user.username')">
-        </Input>
-      </FormItem>
       <FormItem prop="name">
-        <Input type="text" v-model="$store.state.user.query.name" :placeholder="$t('system.user.name')">
+        <Input type="text" v-model="$store.state.role.query.roleName" :placeholder="$t('system.user.name')">
         </Input>
       </FormItem>
       <FormItem>
@@ -19,11 +15,11 @@
       </div>
     </Form>
     <Table
-      :loading="$store.state.user.loading"
+      :loading="$store.state.role.loading"
       context-menu
       show-context-menu
       :columns="columns1"
-      :data="$store.state.user.userList"
+      :data="$store.state.role.roleList"
       border
       stripe
     >
@@ -35,9 +31,9 @@
     <Page
       @on-change="changePage"
       @on-page-size-change="changeSizePage"
-      :page-size="$store.state.user.query.singlePage"
-      :total="$store.state.user.query.totalNumber"
-      :current="$store.state.user.query.pageNumber"
+      :page-size="$store.state.role.query.singlePage"
+      :total="$store.state.role.query.totalNumber"
+      :current="$store.state.role.query.pageNumber"
       :page-size-opts="[20,40,60,80,100]"
       style="text-align: right;margin-top: 5px;"
       show-total show-sizer >
@@ -55,30 +51,15 @@
       </div>
     </Modal>
     <Drawer
-      :title="$t('menu.sys.user') + $t('system.info')"
+      :title="$t('menu.sys.role') + $t('system.info') + ' - ' + $t($store.state.role.info.roleName)"
       v-model="isInfo"
       width="30%"
     >
-      <Form ref="formValidate" :model="$store.state.user.info" :rules="validate">
+      <Form ref="formValidate" :model="$store.state.role.info" :rules="validate">
         <Row :gutter="32">
           <Col span="24">
-            <FormItem :label="$t('system.user.username')"  prop="username">
-              <Input v-model="$store.state.user.info.username" :placeholder="$t('system.pleaseEnter') + $t('system.user.username')" />
-            </FormItem>
-          </Col>
-          <Col span="24" v-show="$store.state.user.info.id === undefined">
-            <FormItem :label="$t('system.user.password')"  prop="password">
-              <Input v-model="$store.state.user.info.password" :placeholder="$t('system.pleaseEnter') + $t('system.user.password')" />
-            </FormItem>
-          </Col>
-          <Col span="24">
-            <FormItem :label="$t('system.user.name')"  prop="name">
-              <Input v-model="$store.state.user.info.name" :placeholder="$t('system.pleaseEnter') + $t('system.user.name')" />
-            </FormItem>
-          </Col>
-          <Col span="24">
-            <FormItem :label="$t('system.user.enterpriseId')"  prop="enterpriseId">
-              <Input v-model="$store.state.user.info.enterpriseId" :placeholder="$t('system.pleaseEnter') + $t('system.user.enterpriseId')" />
+            <FormItem :label="$t('system.role.roleName')"  prop="roleName">
+              <Input v-model="$store.state.role.info.roleName" :placeholder="$t('system.pleaseEnter') + $t('system.role.roleName')" />
             </FormItem>
           </Col>
         </Row>
@@ -93,27 +74,29 @@
 import store from '@/store'
 export default {
   data () {
-    store.dispatch('getUserList')
+    store.dispatch('getRoleList')
     return {
       columns1: [
         { type: 'index', width: 60, align: 'center' },
-        { title: this.$t('system.user.username'), key: 'username' },
-        { title: this.$t('system.user.name'), key: 'name' },
-        { title: this.$t('system.user.enterpriseId'), key: 'enterpriseId' },
+        { title: this.$t('system.role.roleName'), key: 'roleName',
+          render: (h, params) => {
+            return h('div', [
+              h('Icon', {
+                props: {
+                  type: 'person'
+                }
+              }),
+              h('strong', this.$t(params.row.roleName))
+            ]);
+          }},
         { title: this.$t('system.operation'), slot: 'action', width: 150, align: 'center' }
       ],
       contextLine: 0,
       delConfirm: false,
       isInfo: false,
       validate: {
-        username: [
-          { required: true, message: this.$t('system.user.name') + this.$t('system.validate.notNull'), trigger: 'blur' }
-        ],
-        name: [
-          { required: true, message: this.$t('system.user.name') + this.$t('system.validate.notNull'), trigger: 'blur' }
-        ],
-        enterpriseId: [
-          { required: true, message: this.$t('system.user.enterpriseId') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        roleName: [
+          { required: true, message: this.$t('system.role.roleName') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ]
       }
     }
@@ -122,7 +105,7 @@ export default {
     del () {
       let data = this.deldata
       this.delConfirm = false
-      store.dispatch('delUser', data.id).then(res => {
+      store.dispatch('delSysRole', data.id).then(res => {
         if (res.data.code === 200) {
           this.query()
           this.$Message.success(this.$t('system.success'))
@@ -138,7 +121,7 @@ export default {
     save () {
       this.$refs['formValidate'].validate((valid) => {
         if (valid) {
-          store.dispatch('saveUser').then(res => {
+          store.dispatch('saveSysRole').then(res => {
             if (res.data.code === 200) {
               this.query()
               this.$Message.success(this.$t('system.success'))
@@ -149,23 +132,23 @@ export default {
       })
     },
     add () {
-      store.dispatch('getUserInfo', {})
+      store.dispatch('insertRole', {})
       this.isInfo = true
     },
     query () {
-      store.dispatch('getUserList')
+      store.dispatch('getRoleList')
     },
     info (row) {
-      store.dispatch('getUserInfo', row)
+      store.dispatch('getSysRole', row)
       this.isInfo = true
     },
     changePage (pageNumber) {
-      this.$store.state.user.query.pageNumber = pageNumber
+      this.$store.state.menu.query.pageNumber = pageNumber
       this.query()
     },
     changeSizePage (pageSizeNumber) {
-      this.$store.state.user.query.pageNumber = 1
-      this.$store.state.user.query.singlePage = pageSizeNumber
+      this.$store.state.menu.query.pageNumber = 1
+      this.$store.state.menu.query.singlePage = pageSizeNumber
       this.query()
     }
   }

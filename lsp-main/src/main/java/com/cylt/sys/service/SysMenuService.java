@@ -62,8 +62,6 @@ public class SysMenuService extends BaseService {
         }
         //刷新缓存
         redisUtil.save(sysMenu);
-//        SysMenu menu = new SysMenu();
-//        sysMenuDao.save(menu);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysMenu);
         return "保存成功";

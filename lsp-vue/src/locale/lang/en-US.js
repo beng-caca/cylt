@@ -75,6 +75,15 @@ export default {
       originalPassword: 'Original password',
       newPassword: 'new password',
       password: 'password'
+    },
+    role: {
+      roleName: 'role Name',
+      roles: {
+        sysAdmin: 'sys Admin',
+        financeAdmin: 'finance Admin',
+        custAdmin: 'cust Admin',
+        orderAdmin: 'order Admin'
+      }
     }
   },
   // menu

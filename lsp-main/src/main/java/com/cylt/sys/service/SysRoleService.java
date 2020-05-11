@@ -1,5 +1,6 @@
 package com.cylt.sys.service;
 
+import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.service.BaseService;
 import com.cylt.pojo.sys.SysRole;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
@@ -32,17 +33,17 @@ public class SysRoleService extends BaseService {
      * @param sysRole
      * @return
      */
-    public List<SysRole> list(SysRole sysRole) {
-        List<SysRole> list = (List<SysRole>) redisUtil.list(sysRole);
+    public Page list(SysRole sysRole, Page page) {
+        page = redisUtil.list(sysRole, page);
         // 如果当前一个菜单都没有 就和同步一下
-        if (list.size() == 0) {
-            list = sysRoleDao.findAll();
+        if (page.getPageList().size() == 0) {
+            List<SysRole> list = sysRoleDao.findAll();
             for(SysRole role : list){
-                redisUtil.set(role);
+                redisUtil.save(role);
             }
-            list = (List<SysRole>) redisUtil.list(sysRole);
+            page = redisUtil.list(sysRole, page);
         }
-        return list;
+        return page;
     }
     /**
      * 查询菜单

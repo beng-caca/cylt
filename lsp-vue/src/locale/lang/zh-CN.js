@@ -77,6 +77,15 @@ export default {
       originalPassword: '原密码',
       newPassword: '新密码',
       password: '密码'
+    },
+    role: {
+      roleName: '角色名称',
+      roles: {
+        sysAdmin: '系统管理员',
+        financeAdmin: '财务管理员',
+        custAdmin: '客户管理员',
+        orderAdmin: '订单管理员'
+      }
     }
   },
   // menu

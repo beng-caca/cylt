@@ -1,6 +1,8 @@
 package com.cylt.sys.controller;
 
+import com.cylt.common.SysUser;
 import com.cylt.common.base.controller.BaseController;
+import com.cylt.common.base.pojo.Page;
 import com.cylt.pojo.sys.SysRole;
 import com.cylt.sys.service.SysRoleService;
 import org.springframework.stereotype.Controller;
@@ -25,9 +27,9 @@ public class SysRoleController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysRole role) {
-        List<SysRole> list = sysRoleService.list(role);
-        return getJson(list);
+    public String list(SysRole role, Page page) {
+        page = sysRoleService.list(role, page);
+        return getJson(page);
     }
 
     /**
