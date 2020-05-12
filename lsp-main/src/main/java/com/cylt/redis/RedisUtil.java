@@ -12,11 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -203,7 +203,6 @@ public class RedisUtil {
 
         List<BasePojo> list = new ArrayList<>();
         BasePojo obj;
-        // 开始查询分页内数据
         for (String id : ids) {
             //转移的问题 去找set方法
             obj = JSON.parseObject((String) redisTemplate.opsForValue().get(id), rootPojo.getClass());
@@ -822,6 +821,24 @@ public class RedisUtil {
     }
 
     /**
+     * 取实体类的key
+     * @param field 实体pojo
+     * @return
+     */
+    private String getJoinTableKey(Field field){
+        // 初始化多对多key模板
+        StringBuffer key = new StringBuffer();
+        // 表名
+        key.append(field.getAnnotation(JoinTable.class).name()).append(":");
+        // 主键
+        key.append(field.getAnnotation(JoinTable.class).joinColumns()[0].name()).append("={0}").append(":");
+        // 外键
+        key.append(field.getAnnotation(JoinTable.class).inverseJoinColumns()[0].name()).append("={1}").append(":");
+        return key.toString();
+    }
+
+
+    /**
      * 取实体类的key id
      * @param basePojo 实体pojo
      * @return
@@ -852,7 +869,7 @@ public class RedisUtil {
                 // 判断当前字段是否为一对多
                 if (field.getAnnotation(OneToMany.class) != null) {
                     OneToMany oneToMany = field.getAnnotation(OneToMany.class);
-                    children = (BasePojo) field.getDeclaringClass().newInstance();
+                    children = newInstance(field);
                     pid = basePojo.getClass().getDeclaredField(oneToMany.mappedBy());
                     //对私有字段的访问取消权限检查。暴力访问。
                     field.setAccessible(true);
@@ -861,6 +878,31 @@ public class RedisUtil {
                     pid.set(children, basePojo.getId());
                     Object obj = list(children);
                     field.set(basePojo,obj);
+                    // 判断当前字段是否为多对多
+                } else if (field.getAnnotation(ManyToMany.class) != null) {
+                    //key
+                    String keyTemplate;
+                    List<BasePojo> list = new ArrayList<>();
+                    if(field.getAnnotation(JoinTable.class) != null){
+                        // 初始化多对多key模板
+                        keyTemplate = getJoinTableKey(field);
+                        String key = MessageFormat.format(keyTemplate, basePojo.getId(),"*");
+                        Set<String> relationshipIds = redisTemplate.keys(key);
+                        //因为*是正则表达式里的关键字 所以没法调用 只能把它hi换成~
+                        key = key.replace("*","~");
+                        //创建遍历临时存放id的变量
+                        BasePojo pojoId;
+                        for(String id : relationshipIds){
+                            pojoId = newInstance(field);
+                            pojoId.setId(id.replace(key.split("~")[0],"")
+                                    .replace(key.split("~")[1],""));
+                            list.add(get(pojoId));
+                        }
+                        field.setAccessible(true);
+                        field.set(basePojo,list);
+                    } else {
+                        //TODO 反向关联这里还没写 相互级联查询会死循环 想想办法解决
+                    }
                 } else if (field.getAnnotation(OneToOne.class) != null) {
                     // TODO 一对一的等遇到了在写
 
@@ -872,6 +914,26 @@ public class RedisUtil {
     }
 
     /**
+     * new一个未知数组的泛型
+     * @param field
+     * @return
+     */
+    private BasePojo newInstance(Field field) {
+        BasePojo pojo = null;
+        try{
+            // 当前集合的泛型类型
+            Type genericType = field.getGenericType();
+            ParameterizedType pt = (ParameterizedType) genericType;
+            // 得到泛型里的class类型对象
+            Class<?> actualTypeArgument = (Class<?>)pt.getActualTypeArguments()[0];
+            pojo = (BasePojo) actualTypeArgument.newInstance();
+            } catch (Exception e){
+                logger.error("取级联数据发生了问题", e.getMessage());
+            }
+        return pojo;
+    }
+
+    /**
      * 保存对象关系
      * @param basePojo 业务对象
      */
@@ -879,6 +941,8 @@ public class RedisUtil {
         //获取所有属性名 设置key
         Field[] values = basePojo.getClass().getDeclaredFields();
         List<BasePojo> relationshipList = new ArrayList<>();
+        //临时多对多key
+        String key;
         //遍历其他属性名
         try{
             for(Field field : values){
@@ -889,6 +953,20 @@ public class RedisUtil {
                     List<BasePojo> list = (List<BasePojo>) field.get(basePojo);
                     for(BasePojo pojo : list){
                         relationshipList.add(pojo);
+                    }
+                    // 判断是否为多对多属性 如果是多对多注解判断是不是维护关系的一方
+                } else if (field.getAnnotation(ManyToMany.class) != null && field.getAnnotation(JoinTable.class) != null) {
+                    // 初始化多对多key模板
+                    key = getJoinTableKey(field);
+                    //先清空源数据 然后替换成新的
+                    Set<String> ids = redisTemplate.keys(MessageFormat.format(key, basePojo.getId(),"*"));
+                    redisTemplate.delete(ids);
+                    //对私有字段的访问取消权限检查。暴力访问。
+                    field.setAccessible(true);
+                    //读取当前多对多关系数据 并保存到
+                    List<BasePojo> list = (List<BasePojo>) field.get(basePojo);
+                    for(BasePojo pojo : list){
+                        redisTemplate.opsForValue().set(MessageFormat.format(key, basePojo.getId(),pojo.getId()), "");
                     }
                 } else if (field.getAnnotation(OneToOne.class) != null) {
                     // TODO 一对一的等遇到了在写
@@ -911,7 +989,8 @@ public class RedisUtil {
                 // 反射出当前要序列化的字段
                 Field obj = object.getClass().getDeclaredField(name);
                 // 判断当前字段如果是jpa的级联属性就不参加序列化
-                if(obj.getAnnotation(OneToMany.class) != null || obj.getAnnotation(OneToOne.class) != null){
+                if(obj.getAnnotation(OneToMany.class) != null || obj.getAnnotation(OneToOne.class) != null
+                        || obj.getAnnotation(ManyToMany.class) != null){
                     return false;
                 }
             } catch (NoSuchFieldException e) {

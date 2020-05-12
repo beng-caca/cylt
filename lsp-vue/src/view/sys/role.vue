@@ -1,8 +1,8 @@
 <template>
   <div class="split-pane-page-wrapper">
     <Form inline  style="padding: 10px;margin-bottom: 20px;border: 2px solid #e8eaec;">
-      <FormItem prop="name">
-        <Input type="text" v-model="$store.state.role.query.roleName" :placeholder="$t('system.user.name')">
+      <FormItem prop="roleName">
+        <Input type="text" v-model="$store.state.role.query.roleName" :placeholder="$t('system.role.roleName')">
         </Input>
       </FormItem>
       <FormItem>
@@ -78,17 +78,14 @@ export default {
     return {
       columns1: [
         { type: 'index', width: 60, align: 'center' },
-        { title: this.$t('system.role.roleName'), key: 'roleName',
+        { title: this.$t('system.role.roleName'),
+          key: 'roleName',
           render: (h, params) => {
             return h('div', [
-              h('Icon', {
-                props: {
-                  type: 'person'
-                }
-              }),
               h('strong', this.$t(params.row.roleName))
-            ]);
-          }},
+            ])
+          }
+        },
         { title: this.$t('system.operation'), slot: 'action', width: 150, align: 'center' }
       ],
       contextLine: 0,
@@ -136,7 +133,7 @@ export default {
       this.isInfo = true
     },
     query () {
-      store.dispatch('getRoleList')
+      store.dispatch('getRoleList', this.$store.state.role.query)
     },
     info (row) {
       store.dispatch('getSysRole', row)

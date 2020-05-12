@@ -68,6 +68,12 @@ export default {
       if (page !== undefined) {
         state.userList = page.pageList
         state.query.totalNumber = page.totalNumber
+        for (let i in state.userList) {
+          for (let x in state.userList[i].roleList) {
+            state.userList[i].roleList[x] = state.userList[i].roleList[x].id
+          }
+        }
+
       }
     },
     setLoading (state, isLoading) {

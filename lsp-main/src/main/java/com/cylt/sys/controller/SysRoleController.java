@@ -32,6 +32,19 @@ public class SysRoleController extends BaseController {
         return getJson(page);
     }
 
+
+    /**
+     * 不分页查询列表
+     * @param role
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "noPageList")
+    public String list(SysRole role) {
+        List<SysRole> list = sysRoleService.list(role);
+        return getJson(list);
+    }
+
     /**
      * 根据ID取得角色
      * @param id ID

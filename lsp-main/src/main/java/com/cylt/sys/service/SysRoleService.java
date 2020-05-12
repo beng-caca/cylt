@@ -45,6 +45,16 @@ public class SysRoleService extends BaseService {
         }
         return page;
     }
+
+    /**
+     * 查询列表
+     * @param sysRole
+     * @return
+     */
+    public List<SysRole> list(SysRole sysRole) {
+        return (List<SysRole>) redisUtil.list(sysRole);
+    }
+
     /**
      * 查询菜单
      * @param id

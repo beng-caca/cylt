@@ -1,6 +1,7 @@
 package com.cylt.common;
 
 import com.cylt.common.base.pojo.BasePojo;
+import com.cylt.pojo.sys.SysRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ResultCheckStyle;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * 用户类
@@ -28,21 +30,40 @@ public class SysUser extends BasePojo implements UserDetails {
      */
     private static final long serialVersionUID = 1L;
 
-    //登录用户名
+    /**
+     * 登录名
+     */
     @Redis
     @Column(name = "USER_NAME")
     private String username;
-    //登录密码
+
+    /**
+     * 登录密码
+     */
     @Column(name = "PASSWORD")
     private String password;
-    //用户名
+
+    /**
+     * 用户名
+     */
     @Redis(vagueQuery = true)
     @Column(name = "NAME")
     private String name;
-    //企业id
+
+    /**
+     * 企业id
+     */
     @Redis
     @Column(name = "ENTERPRISE_ID")
     private String enterpriseId;
+
+    /**
+     * 角色列表
+     */
+    @ManyToMany
+    @JoinTable(name = "SYS_USER_ROLE",joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+    private List<SysRole> roleList;
 
     @Transient
     private Collection<? extends GrantedAuthority> authorities;
@@ -111,4 +132,11 @@ public class SysUser extends BasePojo implements UserDetails {
         this.enterpriseId = enterpriseId;
     }
 
+    public List<SysRole> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<SysRole> roleList) {
+        this.roleList = roleList;
+    }
 }

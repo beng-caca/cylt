@@ -1,6 +1,7 @@
 package com.cylt.pojo.sys;
 
 import com.cylt.common.Redis;
+import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
 import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
@@ -27,11 +28,17 @@ public class SysRole extends BasePojo {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 菜单父主键
+     * 角色名称
      */
-    @Redis
+    @Redis(vagueQuery = true)
     @Column(name = "ROLE_NAME")
     private String roleName;
+
+    /**
+     * 用户列表
+     */
+    @ManyToMany(mappedBy = "roleList")
+    private List<SysUser> userList;
 
     public String getRoleName() {
         return roleName;
@@ -39,5 +46,13 @@ public class SysRole extends BasePojo {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public List<SysUser> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<SysUser> userList) {
+        this.userList = userList;
     }
 }

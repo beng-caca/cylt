@@ -1,12 +1,20 @@
 import axios from '@/libs/api.request'
 
-export const getRoleList = () => {
+export const getRoleList = (data) => {
   return axios.request({
     url: '/sys/role/list',
-    method: 'get'
+    data: data,
+    method: 'post'
   })
 }
 
+export const getRoleNoPageList = (data) => {
+  return axios.request({
+    url: '/sys/role/noPageList',
+    data: data,
+    method: 'post'
+  })
+}
 export const save = (data) => {
   return axios.request({
     url: '/sys/role/save',

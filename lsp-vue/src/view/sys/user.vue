@@ -81,9 +81,14 @@
               <Input v-model="$store.state.user.info.enterpriseId" :placeholder="$t('system.pleaseEnter') + $t('system.user.enterpriseId')" />
             </FormItem>
           </Col>
+          <Col span="24">
+            <Select v-model="$store.state.user.info.roleList" multiple>
+              <Option v-for="item in $store.state.role.roleNoPageList" :value="item.id" :key="item.id">{{ $t(item.roleName) }}</Option>
+            </Select>
+          </Col>
         </Row>
       </Form>
-      <div class="demo-drawer-footer">
+      <div class="demo-drawer-footer" style="padding-top:20px;">
         <Button size="large" long type="primary" @click="save()">{{ $t('system.save') }}</Button>
       </div>
     </Drawer>
@@ -138,6 +143,16 @@ export default {
     save () {
       this.$refs['formValidate'].validate((valid) => {
         if (valid) {
+          // 通过ID查询角色对象
+          let roleList = this.$store.state.user.info.roleList
+          let sourceRoleList = this.$store.state.role.roleNoPageList
+          let index
+          for (let i in roleList) {
+            index = sourceRoleList.findIndex((obj) => {
+              return obj.id === roleList[i]
+            })
+            roleList[i] = sourceRoleList[index]
+          }
           store.dispatch('saveUser').then(res => {
             if (res.data.code === 200) {
               this.query()
@@ -154,6 +169,7 @@ export default {
     },
     add () {
       store.dispatch('getUserInfo', {})
+      store.dispatch('getRoleNoPageList')
       this.isInfo = true
     },
     query () {
@@ -161,6 +177,7 @@ export default {
     },
     info (row) {
       store.dispatch('getUserInfo', row)
+      store.dispatch('getRoleNoPageList')
       this.isInfo = true
     },
     changePage (pageNumber) {
