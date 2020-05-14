@@ -52,6 +52,7 @@ export default {
     logout: '退出登录',
     operation: '操作',
     save: '保存',
+    edit: '编辑',
     add: '添加',
     del: '删除',
     query: '查询',

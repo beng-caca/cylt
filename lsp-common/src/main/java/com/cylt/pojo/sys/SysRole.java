@@ -40,6 +40,14 @@ public class SysRole extends BasePojo {
     @ManyToMany(mappedBy = "roleList")
     private List<SysUser> userList;
 
+
+
+    /**
+     * 菜单权限
+     */
+    @OneToMany(mappedBy = "roleId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SysJurisdiction> jurisdictionList = new ArrayList<>();
+
     public String getRoleName() {
         return roleName;
     }
@@ -54,5 +62,13 @@ public class SysRole extends BasePojo {
 
     public void setUserList(List<SysUser> userList) {
         this.userList = userList;
+    }
+
+    public List<SysJurisdiction> getJurisdictionList() {
+        return jurisdictionList;
+    }
+
+    public void setJurisdictionList(List<SysJurisdiction> jurisdictionList) {
+        this.jurisdictionList = jurisdictionList;
     }
 }

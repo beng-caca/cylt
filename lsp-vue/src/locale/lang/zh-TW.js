@@ -49,6 +49,7 @@ export default {
   system: {
     info: '信息',
     save: '保存',
+    edit: '编辑',
     del: '删除',
     operation: '操作',
     updatePassword: '修改密码',

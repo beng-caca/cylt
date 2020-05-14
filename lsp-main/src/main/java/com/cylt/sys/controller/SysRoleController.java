@@ -1,6 +1,5 @@
 package com.cylt.sys.controller;
 
-import com.cylt.common.SysUser;
 import com.cylt.common.base.controller.BaseController;
 import com.cylt.common.base.pojo.Page;
 import com.cylt.pojo.sys.SysRole;
@@ -27,7 +26,7 @@ public class SysRoleController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysRole role, Page page) {
+    public String list(SysRole role, Page page) throws Exception {
         page = sysRoleService.list(role, page);
         return getJson(page);
     }
@@ -63,7 +62,7 @@ public class SysRoleController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysRole role) {
+    public String save(SysRole role) throws Exception {
         String msg = sysRoleService.save(role);
         if(!"保存成功".equals(msg)){
             return responseFail(msg);
@@ -78,7 +77,7 @@ public class SysRoleController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysRole role) {
+    public String delete(SysRole role) throws Exception {
         sysRoleService.delete(role);
         return responseSsuccess();
     }

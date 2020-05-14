@@ -1,6 +1,7 @@
 package com.cylt.pojo.sys;
 
 import com.cylt.common.Redis;
+import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
 import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
@@ -9,51 +10,44 @@ import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
- * 角色
+ * 角色权限表
  */
 @Component
 @Entity
 @Table(name = "SYS_JURISDICTION")
-@Where(clause = "DEL_STATE = '0'")
-@SQLDelete(sql = "UPDATE SYS_JURISDICTION SET DEL_STATE = '1' WHERE id=?", check = ResultCheckStyle.COUNT)
 public class SysJurisdiction extends BasePojo {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
     /**
-     * 角色主键
+     * 角色名称
      */
     @Redis
     @Column(name = "ROLE_ID")
     private String roleId;
 
     /**
-     * 菜单主键
+     * 角色名称
      */
     @Redis
     @Column(name = "MENU_ID")
     private String menuId;
 
     /**
-     * 删除标识
+     * 是否有删除权限
      */
-    @Redis
     @Column(name = "DEL")
-    private Boolean del;
+    private boolean del;
 
     /**
-     * 修改标识
+     * 是否有编辑权限
      */
-    @Redis
     @Column(name = "EDIT")
-    private Boolean edit;
-
+    private boolean edit;
 
     public String getRoleId() {
         return roleId;
@@ -71,19 +65,19 @@ public class SysJurisdiction extends BasePojo {
         this.menuId = menuId;
     }
 
-    public Boolean getDel() {
+    public boolean getDel() {
         return del;
     }
 
-    public void setDel(Boolean del) {
+    public void setDel(boolean del) {
         this.del = del;
     }
 
-    public Boolean getEdit() {
+    public boolean getEdit() {
         return edit;
     }
 
-    public void setEdit(Boolean edit) {
+    public void setEdit(boolean edit) {
         this.edit = edit;
     }
 }

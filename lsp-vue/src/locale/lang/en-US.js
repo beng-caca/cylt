@@ -49,6 +49,7 @@ export default {
   system: {
     info: ' Info',
     save: 'Save',
+    edit: 'edit',
     del: 'Delete',
     operation: 'operation',
     add: 'add',

@@ -39,7 +39,7 @@ public class SysUserController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysUser sysUser) {
+    public String save(SysUser sysUser) throws Exception {
         String msg = sysUserService.save(sysUser);
         if(!"保存成功".equals(msg)){
             return responseFail(msg);
@@ -49,14 +49,14 @@ public class SysUserController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysUser sysUser) {
+    public String delete(SysUser sysUser) throws Exception {
         sysUserService.delete(sysUser);
         return responseSsuccess();
     }
 
     @ResponseBody
     @RequestMapping(value = "updatePassword")
-    public String updatePassword(String originalPassword, String newPassword) {
+    public String updatePassword(String originalPassword, String newPassword) throws Exception {
         if(sysUserService.updatePassword(originalPassword, newPassword)){
             return responseSsuccess();
         }

@@ -58,6 +58,9 @@ public class SysMenu extends BasePojo {
     @Column(name = "SHOW_MENU")
     private Boolean showMenu;
 
+    /**
+     * 子菜单
+     */
     @OneToMany(mappedBy = "pid" ,cascade = { CascadeType.REMOVE})
     private List<SysMenu> childrenList = new ArrayList<>();
 

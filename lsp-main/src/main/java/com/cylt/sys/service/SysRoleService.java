@@ -33,7 +33,7 @@ public class SysRoleService extends BaseService {
      * @param sysRole
      * @return
      */
-    public Page list(SysRole sysRole, Page page) {
+    public Page list(SysRole sysRole, Page page) throws Exception {
         page = redisUtil.list(sysRole, page);
         // 如果当前一个菜单都没有 就和同步一下
         if (page.getPageList().size() == 0) {
@@ -69,10 +69,7 @@ public class SysRoleService extends BaseService {
      * @param sysRole
      * @return
      */
-    public String save(SysRole sysRole) {
-        if(null == sysRole.getId() || "".equals(sysRole.getId())){
-            sysRole.setId(UUID.randomUUID().toString());
-        }
+    public String save(SysRole sysRole) throws Exception {
         //刷新缓存
         redisUtil.save(sysRole);
         //发送消息队列持久保存到数据库
@@ -86,7 +83,7 @@ public class SysRoleService extends BaseService {
      * @param sysRole 角色
      * @return
      */
-    public void delete(SysRole sysRole) {
+    public void delete(SysRole sysRole) throws Exception {
         redisUtil.del(sysRole);
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysRole);
     }

@@ -59,7 +59,7 @@ public class SysUserService extends BaseService {
      * @param sysUser
      * @return
      */
-    public String save(SysUser sysUser) {
+    public String save(SysUser sysUser) throws Exception {
         if(null == sysUser.getId() || "".equals(sysUser.getId())){
             SysUser userName = new SysUser();
             userName.setUsername(sysUser.getUsername());
@@ -95,7 +95,7 @@ public class SysUserService extends BaseService {
      * @param sysUser 删除用户
      * @return
      */
-    public void delete(SysUser sysUser) {
+    public void delete(SysUser sysUser) throws Exception {
         redisUtil.del(sysUser);
         rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysUser);
     }
@@ -106,7 +106,7 @@ public class SysUserService extends BaseService {
      * @param newPassword
      * @return
      */
-    public boolean updatePassword(String originalPassword, String newPassword) {
+    public boolean updatePassword(String originalPassword, String newPassword) throws Exception {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
         // 判断当前用户的密码是否等于原密码 如果等于就改密码 否则不作操作
         if(user.getPassword().equals(DESUtil.encrypt(originalPassword,DESUtil.KEY))){

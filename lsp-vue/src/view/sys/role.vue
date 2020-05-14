@@ -62,6 +62,10 @@
               <Input v-model="$store.state.role.info.roleName" :placeholder="$t('system.pleaseEnter') + $t('system.role.roleName')" />
             </FormItem>
           </Col>
+
+          <Col span="24">
+            <Tree :data="$store.state.role.info.newJurisdictionList" @on-check-change="changeJurisdiction" show-checkbox :render="renderContent"></Tree>
+          </Col>
         </Row>
       </Form>
       <div class="demo-drawer-footer">
@@ -72,6 +76,7 @@
 </template>
 <script>
 import store from '@/store'
+import { ergodicTree } from '@/libs/util'
 export default {
   data () {
     store.dispatch('getRoleList')
@@ -147,6 +152,77 @@ export default {
       this.$store.state.menu.query.pageNumber = 1
       this.$store.state.menu.query.singlePage = pageSizeNumber
       this.query()
+    },
+    renderContent (h, { root, node, data }) {
+      // 判断是不是第一次执行
+      let isFirst = data.nodeKey !== 0
+      return h('span', {
+        style: {
+          display: 'inline-block',
+          width: '100%'
+        }
+      }, [
+        h('span', [
+          h('Icon', {
+            props: {
+              type: data.data.icon
+            },
+            style: {
+              marginRight: '8px'
+            }
+          }),
+          h('span', this.$t(data.name))
+        ]),
+        h('span', {
+          style: {
+            display: 'inline-block',
+            float: 'right',
+            marginRight: '32px'
+          }
+        }, [
+          isFirst
+            ? h('Checkbox', {
+              props: {
+                value: data.edit
+              },
+              on: {
+                'on-change': (val) => {
+                  data.edit = val
+                }
+              }
+            }
+            )
+            : h('span', this.$t('system.edit')),
+          isFirst ? h('checkbox', {
+            props: {
+              value: data.del
+            },
+            on: {
+              'on-change': (val) => {
+                data.del = val
+              }
+            },
+            style: {
+              marginLeft: '17px'
+            }
+          }
+          ) : h('span', {
+            props: {
+              type: data.icon
+            },
+            style: {
+              marginLeft: '11px'
+            }
+          }, this.$t('system.del'))
+        ])
+      ])
+    },
+    changeJurisdiction (datas, checked) {
+      // 遍历当前所有子节点 将权限同步
+      ergodicTree([checked], (data) => {
+        data.del = data.checked
+        data.edit = data.checked
+      })
     }
   }
 }

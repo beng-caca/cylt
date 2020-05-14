@@ -485,3 +485,18 @@ export const addTrees = (datas, data, addTree) => {
   }
   return datas
 }
+
+/**
+ * 递归遍历树结构里所有节点
+ * @param datas 要遍历的数据
+ * @param fun 回调处理方法
+ * @returns {*}
+ */
+export const ergodicTree = (datas, fun) => {
+  for (let i in datas) {
+    fun(datas[i])
+    if (datas[i].children !== undefined) {
+      ergodicTree(datas[i].children, fun)
+    }
+  }
+}

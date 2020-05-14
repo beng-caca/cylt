@@ -81,55 +81,36 @@ public class RedisUtil {
     }
 
     /**
-     * 删除缓存
+     * 通过id删除缓存
      *
      * @param pojo 删除数据
      */
-    @SuppressWarnings("unchecked")
-    public Boolean del(BasePojo pojo) {
+    public Boolean del(BasePojo pojo) throws Exception {
         String key = getKeyId(pojo);
+        return del(key);
+    }
+
+
+    /**
+     * 按照key删除缓存
+     * @param key
+     * @return
+     */
+    private Boolean del(String key) throws Exception{
+        BasePojo pojo;
         Set<String> set = redisTemplate.keys(key);
         for(String str : set){
             key = str;
         }
         logger.info("delete:" + key);
-        pojo = JSON.parseObject((String) redisTemplate.opsForValue().get(key), pojo.getClass());
+        pojo = JSON.parseObject((String) redisTemplate.opsForValue().get(key), BasePojo.class);
+        if(pojo == null){
+            return false;
+        }
         setRelationship(pojo);
         // 删除关系数据
         del(getRelationship(pojo));
         return redisTemplate.delete(set) != 0;
-    }
-
-    /**
-     * 删除树结构缓存 （默认父子关系为 pid）
-     *
-     * @param pojo 删除数据
-     */
-    public void delTree(BasePojo pojo) {
-        delTree(pojo, "PID");
-    }
-
-
-    /**
-     * 删除树结构缓存 （自定义父关系）
-     *
-     * 注：暂时只删除一层 以后如果需求多的话可以改成删除多层 ，思路 ：把父级关系配置在pojo里 直接取注解
-     * @param pojo 删除数据
-     */
-    public void delTree(BasePojo pojo, String... pidStrs) {
-        // 删除当前节点
-        del(pojo);
-        String key;
-        Set<String> keys = new HashSet<>();
-        // 删除子节点
-        for (String pidStr : pidStrs) {
-            key = "*" + pidStr + "=" + pojo.getId() + ":*";
-            keys.addAll(redisTemplate.keys(key));
-        }
-        for (String id : keys) {
-            logger.info("delete children:" + id);
-        }
-        redisTemplate.delete(keys);
     }
 
 
@@ -139,7 +120,7 @@ public class RedisUtil {
      * @param pojoList 要删除的数据
      */
     @SuppressWarnings("unchecked")
-    public Boolean del(List<BasePojo> pojoList) {
+    public Boolean del(List<BasePojo> pojoList) throws Exception {
         Set<String> ids = new HashSet<>();
         String id;
         if (pojoList != null && pojoList.size() > 0) {
@@ -290,9 +271,12 @@ public class RedisUtil {
      *
      * @param rootPojo 要保存的数据
      */
-    public void save(BasePojo rootPojo) {
+    public void save(BasePojo rootPojo) throws Exception{
         if(rootPojo == null){
             return;
+        }
+        if(null == rootPojo.getId() || "".equals(rootPojo.getId())){
+            rootPojo.setId(UUID.randomUUID().toString());
         }
         // 通过ID查询是否有数据
         String key = getKeyId(rootPojo);
@@ -324,7 +308,7 @@ public class RedisUtil {
      * 批量保存到redis（目前没有想到效率比较高的方式 等想到了再改）
      * @param pojoList 要保存的数据
      */
-    public void save(List<BasePojo> pojoList) {
+    public void save(List<BasePojo> pojoList) throws Exception{
         for(BasePojo pojo : pojoList){
             save(pojo);
         }
@@ -870,7 +854,7 @@ public class RedisUtil {
                 if (field.getAnnotation(OneToMany.class) != null) {
                     OneToMany oneToMany = field.getAnnotation(OneToMany.class);
                     children = newInstance(field);
-                    pid = basePojo.getClass().getDeclaredField(oneToMany.mappedBy());
+                    pid = children.getClass().getDeclaredField(oneToMany.mappedBy());
                     //对私有字段的访问取消权限检查。暴力访问。
                     field.setAccessible(true);
                     pid.setAccessible(true);
@@ -888,7 +872,7 @@ public class RedisUtil {
                         keyTemplate = getJoinTableKey(field);
                         String key = MessageFormat.format(keyTemplate, basePojo.getId(),"*");
                         Set<String> relationshipIds = redisTemplate.keys(key);
-                        //因为*是正则表达式里的关键字 所以没法调用 只能把它hi换成~
+                        //因为*是正则表达式里的关键字 所以没法调用 只能把它换成~
                         key = key.replace("*","~");
                         //创建遍历临时存放id的变量
                         BasePojo pojoId;
@@ -937,12 +921,14 @@ public class RedisUtil {
      * 保存对象关系
      * @param basePojo 业务对象
      */
-    private List<BasePojo> getRelationship(BasePojo basePojo){
+    private List<BasePojo> getRelationship(BasePojo basePojo) throws Exception {
         //获取所有属性名 设置key
         Field[] values = basePojo.getClass().getDeclaredFields();
         List<BasePojo> relationshipList = new ArrayList<>();
         //临时多对多key
         String key;
+        BasePojo children;
+        Field many;
         //遍历其他属性名
         try{
             for(Field field : values){
@@ -950,19 +936,35 @@ public class RedisUtil {
                 if (field.getAnnotation(OneToMany.class) != null) {
                     //对私有字段的访问取消权限检查。暴力访问。
                     field.setAccessible(true);
+
+                    OneToMany oneToMany = field.getAnnotation(OneToMany.class);
+                    // 判断一下是否先删除一下 重新同步
+                    if (oneToMany.orphanRemoval()) {
+                        // 取到关系对象实体
+                        children = newInstance(field);
+                        // 取到关系字段实体 并将主表id set到关系表的关联字段里
+                        many = children.getClass().getDeclaredField(oneToMany.mappedBy());
+                        many.setAccessible(true);
+                        many.set(children, basePojo.getId());
+                        del(getKey(children));
+                    }
+
                     List<BasePojo> list = (List<BasePojo>) field.get(basePojo);
                     for(BasePojo pojo : list){
                         relationshipList.add(pojo);
                     }
                     // 判断是否为多对多属性 如果是多对多注解判断是不是维护关系的一方
                 } else if (field.getAnnotation(ManyToMany.class) != null && field.getAnnotation(JoinTable.class) != null) {
+                    //对私有字段的访问取消权限检查。暴力访问。
+                    field.setAccessible(true);
                     // 初始化多对多key模板
                     key = getJoinTableKey(field);
                     //先清空源数据 然后替换成新的
                     Set<String> ids = redisTemplate.keys(MessageFormat.format(key, basePojo.getId(),"*"));
                     redisTemplate.delete(ids);
-                    //对私有字段的访问取消权限检查。暴力访问。
-                    field.setAccessible(true);
+                    if(field.get(basePojo) == null){
+                        continue;
+                    }
                     //读取当前多对多关系数据 并保存到
                     List<BasePojo> list = (List<BasePojo>) field.get(basePojo);
                     for(BasePojo pojo : list){
@@ -974,7 +976,8 @@ public class RedisUtil {
                 }
             }
         } catch (Exception e){
-            logger.error("取级联数据发生了问题" + e.getMessage());
+            logger.error("保存关系时发生了问题" + e.getMessage());
+            throw new Exception("保存关系时发生了问题");
         }
         return relationshipList;
     }
