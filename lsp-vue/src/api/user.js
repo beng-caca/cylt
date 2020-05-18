@@ -39,9 +39,10 @@ export const getUserList = (data) => {
 }
 
 export const getThisUser = () => {
+  let data = {}
   return axios.request({
     url: 'sys/user/getThisUser',
-    undefined,
+    data,
     method: 'post'
   })
 }

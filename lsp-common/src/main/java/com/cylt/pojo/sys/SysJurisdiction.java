@@ -1,18 +1,12 @@
 package com.cylt.pojo.sys;
 
 import com.cylt.common.Redis;
-import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
-import org.hibernate.annotations.ResultCheckStyle;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.List;
 
 /**
  * 角色权限表

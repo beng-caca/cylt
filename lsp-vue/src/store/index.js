@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import createVuexAlong from 'vuex-along'
 
 import user from './module/user'
 import app from './module/app'
@@ -23,5 +24,10 @@ export default new Vuex.Store({
     app,
     menu,
     role
-  }
+  },
+  plugins: [
+    createVuexAlong({
+      name: 'cylt' // 设置保存的集合名字，避免同站点下的多项目数据冲突
+    })
+  ]
 })

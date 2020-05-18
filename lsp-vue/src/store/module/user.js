@@ -7,7 +7,6 @@ import {
   getThisUser,
   updatePassword
 } from '@/api/user'
-import { setToken } from '@/libs/util'
 
 export default {
   state: {
@@ -36,9 +35,18 @@ export default {
     setAccess (state, access) {
       state.access = access
     },
-    setToken (state, token) {
-      state.token = token
-      setToken(token)
+    login (state, user) {
+      state.thisUser = user
+      state.thisUser.access = ['home']
+      for (let r in user.roleList) {
+        let roleList = user.roleList[r]
+        for (let j in roleList.jurisdictionList) {
+          state.thisUser.access.push(roleList.jurisdictionList[j].menuId)
+        }
+      }
+    },
+    logout (state) {
+      state.thisUser = {}
     },
     setHasGetInfo (state, status) {
       state.hasGetInfo = status
@@ -73,7 +81,6 @@ export default {
             state.userList[i].roleList[x] = state.userList[i].roleList[x].id
           }
         }
-
       }
     },
     setLoading (state, isLoading) {
@@ -93,7 +100,7 @@ export default {
           password
         }).then(res => {
           const data = res.data.data.principal
-          commit('setToken', data.id)
+          commit('login', data)
           resolve(data)
         }).catch(err => {
           reject(err)
@@ -104,8 +111,7 @@ export default {
     handleLogOut ({ state, commit }) {
       return new Promise((resolve, reject) => {
         logout().then(() => {
-          commit('setToken', '')
-          commit('setAccess', [])
+          commit('logout')
           resolve()
         }).catch(err => {
           reject(err)

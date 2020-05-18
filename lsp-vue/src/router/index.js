@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import routes from './routers'
 import store from '@/store'
 import iView from 'iview'
-import { getToken, setTitle } from '@/libs/util'
+import { setTitle } from '@/libs/util'
 import config from '@/config'
 const { homeName } = config
 
@@ -23,8 +23,7 @@ const turnTo = (to, access, next) => {
     next()
     return
   }
-  let sss = true
-  if (sss) { // TODO  这里权限还没写完 access.some(_ => _ === to.name)
+  if (access.some(_ => _ === to.meta.id)) {
     next() // 有权限，可访问
   } else {
     next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
@@ -33,38 +32,38 @@ const turnTo = (to, access, next) => {
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
-  store.dispatch('getMenuData').then(res => {})
-  if (store.state.from === to.name) {
-    return
-  } else {
-    store.state.from = to.name
-  }
-  const token = getToken()
-  if (!token && to.name === LOGIN_PAGE_NAME) {
+  store.dispatch('getMenuData')
+  const thisUser = store.state.user.thisUser
+  if (!thisUser.id && to.name !== LOGIN_PAGE_NAME) {
+    // 未登录且要跳转的页面不是登录页
+    next({
+      name: LOGIN_PAGE_NAME // 跳转到登录页
+    })
+  } else if (!thisUser.id && to.name === LOGIN_PAGE_NAME) {
     // 未登陆且要跳转的页面是登录页
     next() // 跳转
-  } else if (token && to.name === LOGIN_PAGE_NAME) {
+  } else if (thisUser.id && to.name === LOGIN_PAGE_NAME) {
     // 已登录且要跳转的页面是登录页
     next({
       name: homeName // 跳转到homeName页
     })
   } else {
-    if (store.state.user.thisUser) {
-      let ss = ['home', 'aasd']
-      turnTo(to, ss, next)
+    if (store.state.user.thisUser && store.state.user.thisUser.id) {
+      turnTo(to, store.state.user.thisUser.access, next)
     } else {
-      store.dispatch('getUserInfo').then(user => {
-        let ss = ['home', 'aasd']
+      store.dispatch('getThisUser').then(user => {
+        store.state.user.thisUser = user.data
+        store.state.user.thisUser.access = ['home']
+        for (let r in user.data.roleList) {
+          let roleList = user.data.roleList[r]
+          for (let j in roleList.jurisdictionList) {
+            store.state.user.thisUser.access.push(roleList.jurisdictionList[j].menuId)
+          }
+        }
         // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-        turnTo(to, ss, next)
+        turnTo(to, store.state.user.thisUser.access, next)
       }).catch(() => {
-        // setToken('')
-        // next({
-        //   name: 'login'
-        // })
-        let ss = ['home', 'aasd']
-        // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
-        turnTo(to, ss, next)
+        next({ replace: true, name: LOGIN_PAGE_NAME }) // 取用户异常 返回登录页
       })
     }
   }

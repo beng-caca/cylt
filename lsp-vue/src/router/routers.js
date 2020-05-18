@@ -41,6 +41,7 @@ export default [
         path: '/home',
         name: 'home',
         meta: {
+          id: 'home',
           hideInMenu: false,
           title: 'home',
           notCache: true,
@@ -492,6 +493,7 @@ export default [
     name: 'menu.sys.name',
     component: Main,
     meta: {
+      id: '1',
       icon: 'ios-cog',
       hideInBread: false,
       title: 'sys'
@@ -500,6 +502,7 @@ export default [
       path: 'menu',
       name: 'menu.sys.menu',
       meta: {
+        id: '2',
         icon: 'md-menu',
         hideInBread: false,
         title: '菜单'
@@ -509,6 +512,7 @@ export default [
       path: 'user',
       name: 'menu.sys.user',
       meta: {
+        id: '3',
         icon: 'ios-contact',
         hideInBread: false,
         title: '用户'
@@ -518,6 +522,7 @@ export default [
       path: 'role',
       name: 'menu.sys.role',
       meta: {
+        id: '44081177-b04d-4d0c-8fa5-6856ba96d255',
         icon: 'md-contacts',
         hideInBread: false,
         title: '角色'

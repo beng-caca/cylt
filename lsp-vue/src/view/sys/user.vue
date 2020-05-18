@@ -14,7 +14,7 @@
       </FormItem>
 
       <Divider dashed class="divider"/>
-      <div class="operation">
+      <div class="operation" v-has="'add'">
         <Button type="primary" @click="add()">{{ $t('system.add') }}</Button>
       </div>
     </Form>

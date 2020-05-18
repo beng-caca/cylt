@@ -42,6 +42,26 @@ Vue.prototype.$config = config
 importDirective(Vue)
 Vue.directive('clickOutside', clickOutside)
 
+/**
+ * 判断有没有权限显示该按钮
+ */
+Vue.directive("has", {
+  inserted: function(el, binding) {
+    console.log(el)
+    console.log(router.options.routes)
+    // 获取按钮权限// 获取按钮权限
+    if (!Vue.prototype.$_has(binding.value)) {
+      el.parentNode.removeChild(el);
+    }
+  }
+})
+
+//// 权限检查方法（且把该方法添加到vue原型中）
+Vue.prototype.$_has = function(value) {
+  console.log(store)
+  return true;
+};
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
