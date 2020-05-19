@@ -1,5 +1,5 @@
 <template>
-  <div class="split-pane-page-wrapper">
+  <div data-menu="menu.sys.menu" class="split-pane-page-wrapper">
     <split-pane v-model="offset">
       <Card  slot="left" class="pane"  style="height:100%;display:block;overflow-y:auto;" dis-hover>
         <p slot="title">{{ $t('menu.sys.menu') + $t('system.tree') }}</p>
@@ -26,7 +26,7 @@
               </i-switch>
           </FormItem>
           <FormItem :label-width="120">
-            <Button type="primary" @click="save()">{{ $t('system.save') }}</Button>
+            <Button type="primary" v-jurisdiction="'edit'" @click="save()">{{ $t('system.save') }}</Button>
           </FormItem>
         </Form>
       </Card>
@@ -94,7 +94,7 @@ export default {
             marginRight: '32px'
           }
         }, [
-          h('Button', {
+          this.$jurisdiction('menu.sys.menu', 'edit') ? h('Button', {
             props: Object.assign({}, this.buttonProps, {
               icon: 'ios-add'
             }),
@@ -109,8 +109,8 @@ export default {
                 this.insertInit(data)
               }
             }
-          }),
-          h('Button', {
+          }) : h('span'),
+          this.$jurisdiction('menu.sys.menu', 'edit') ? h('Button', {
             props: Object.assign({}, this.buttonProps, {
               icon: 'md-create'
             }),
@@ -125,8 +125,8 @@ export default {
                 this.updateInit(root, node, data)
               }
             }
-          }),
-          h('Button', {
+          }) : h('span'),
+          this.$jurisdiction('menu.sys.menu', 'del') ? h('Button', {
             props: Object.assign({}, this.buttonProps, {
               icon: 'ios-close'
             }),
@@ -141,7 +141,7 @@ export default {
                 this.del = { root, node, data }
               }
             }
-          })
+          }) : h('span')
         ])
       ])
     },

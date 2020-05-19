@@ -1,5 +1,5 @@
 <template>
-  <div class="split-pane-page-wrapper">
+  <div data-menu="menu.sys.user" class="split-pane-page-wrapper">
     <Form inline  style="padding: 10px;margin-bottom: 20px;border: 2px solid #e8eaec;">
       <FormItem prop="username">
         <Input type="text" v-model="$store.state.user.query.username" :placeholder="$t('system.user.username')">
@@ -14,8 +14,8 @@
       </FormItem>
 
       <Divider dashed class="divider"/>
-      <div class="operation" v-has="'add'">
-        <Button type="primary" @click="add()">{{ $t('system.add') }}</Button>
+      <div class="operation">
+        <Button type="primary" v-jurisdiction="'edit'" @click="add()">{{ $t('system.add') }}</Button>
       </div>
     </Form>
     <Table
@@ -29,7 +29,7 @@
     >
       <template slot-scope="{ row, index }" slot="action">
         <Button type="primary" size="small" style="margin-right: 5px" @click="info(row, index)">{{ $t('system.info') }}</Button>
-        <Button type="error" size="small" @click="delInit(row)">{{ $t('system.del') }}</Button>
+        <Button type="error" v-jurisdiction="'del'" size="small" @click="delInit(row)">{{ $t('system.del') }}</Button>
       </template>
     </Table>
     <Page
@@ -88,7 +88,7 @@
           </Col>
         </Row>
       </Form>
-      <div class="demo-drawer-footer" style="padding-top:20px;">
+      <div v-jurisdiction="'edit'" class="demo-drawer-footer" style="padding-top:20px;">
         <Button size="large" long type="primary" @click="save()">{{ $t('system.save') }}</Button>
       </div>
     </Drawer>

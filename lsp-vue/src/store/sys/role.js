@@ -20,7 +20,6 @@ export default {
     },
     getRole (state, data) {
       state.info = data
-      console.log(state)
     },
     insertRole (state) {
       state.info = {}
@@ -38,11 +37,13 @@ export default {
         // 是否展开
         data.expand = true
         for (let i in state.info.jurisdictionList) {
-          if (data.id === state.info.jurisdictionList[i].menuId) {
-            data.checked = true
-            data.del = state.info.jurisdictionList[i].del
-            data.edit = state.info.jurisdictionList[i].edit
-            break
+          if (state.info.jurisdictionList[i].menu) {
+            if (data.id === state.info.jurisdictionList[i].menu.id) {
+              data.checked = true
+              data.del = state.info.jurisdictionList[i].del
+              data.edit = state.info.jurisdictionList[i].edit
+              break
+            }
           }
         }
       })
@@ -54,7 +55,7 @@ export default {
         if (data.checked) {
           let jurisdiction = {
             roleId: state.info.id,
-            menuId: data.data.id,
+            menu: data.data,
             del: data.del,
             edit: data.edit
           }

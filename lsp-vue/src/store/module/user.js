@@ -37,11 +37,12 @@ export default {
     },
     login (state, user) {
       state.thisUser = user
-      state.thisUser.access = ['home']
+      // 初始化权限列表
+      state.thisUser.access = [ { menu: { id: 'home' } } ]
       for (let r in user.roleList) {
         let roleList = user.roleList[r]
         for (let j in roleList.jurisdictionList) {
-          state.thisUser.access.push(roleList.jurisdictionList[j].menuId)
+          state.thisUser.access.push(roleList.jurisdictionList[j])
         }
       }
     },

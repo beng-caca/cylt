@@ -45,22 +45,60 @@ Vue.directive('clickOutside', clickOutside)
 /**
  * 判断有没有权限显示该按钮
  */
-Vue.directive("has", {
+Vue.directive("jurisdiction", {
   inserted: function(el, binding) {
-    console.log(el)
-    console.log(router.options.routes)
-    // 获取按钮权限// 获取按钮权限
-    if (!Vue.prototype.$_has(binding.value)) {
-      el.parentNode.removeChild(el);
+    // 取当前菜单
+    let menu = ''
+    let temporaryEl = el
+    while (temporaryEl) {
+      if (temporaryEl.dataset.menu) {
+        menu = temporaryEl.dataset.menu
+        break
+      }
+      temporaryEl = temporaryEl.parentElement
+    }
+    // 判断该按钮是否有权限
+    if (!jurisdiction(menu, binding.value)) {
+      el.parentNode.removeChild(el)
     }
   }
 })
 
-//// 权限检查方法（且把该方法添加到vue原型中）
-Vue.prototype.$_has = function(value) {
-  console.log(store)
-  return true;
-};
+
+/**
+ * 判断当前节点是否有权限 （js用的）
+ */
+Vue.prototype.$jurisdiction = jurisdiction
+
+/**
+ * 判断当前操作是否有权限
+ * @param menu 菜单名称
+ * @param operation 操作
+ * @return boolean 是否有权限
+ */
+function jurisdiction(menu, operation) {
+  // 取当前菜单的权限
+  let access = store.state.user.thisUser.access
+  let acces
+  for (let i in access) {
+    if(access[i].menu.name === menu){
+      acces = access[i]
+    }
+  }
+
+  // 判断是否显示该标签
+  let display
+  if (operation === 'edit') { // 判断是否有编辑权限
+    display = acces.edit
+  } else if (operation === 'del') { // 判断是否有删除权限
+    display = acces.del
+  }
+  return display
+}
+/**
+ * @description 全局注册应用配置
+ */
+Vue.prototype.jurisdiction = config
 
 /* eslint-disable no-new */
 new Vue({

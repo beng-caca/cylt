@@ -139,14 +139,33 @@ public class RedisUtil {
 
 
     /**
-     * 自定义ID获取数据
+     * 通过检索条件数据
      *
      * @param rootPojo
      * @return 值
      */
     public BasePojo get(BasePojo rootPojo) {
-        //取当前key类型
-        String key = getKey(rootPojo);
+        return get(getKey(rootPojo), rootPojo.getClass());
+    }
+
+    /**
+     * 通过id检索数据
+     *
+     * @param rootPojo
+     * @return 值
+     */
+    public BasePojo getId(BasePojo rootPojo) {
+        return get(getKeyId(rootPojo), rootPojo.getClass());
+    }
+
+    /**
+     * 通过key检索数据
+     *
+     * @param key
+     * @param clazz 泛型
+     * @return 值
+     */
+    public BasePojo get(String key, Class clazz) {
         // 判断是不是级联调用 ，如果是就加个缩进
         StackTraceElement[] ste = new Exception().getStackTrace();
         if(!"setRelationship".equals(ste[1].getMethodName())){
@@ -159,10 +178,12 @@ public class RedisUtil {
         for(String str : set){
             key = str;
         }
-        BasePojo obj = JSON.parseObject((String) redisTemplate.opsForValue().get(key), rootPojo.getClass());
+        BasePojo obj = (BasePojo) JSON.parseObject((String) redisTemplate.opsForValue().get(key), clazz);
         setRelationship(obj);
         return obj;
     }
+
+
 
     /**
      * 查询数据列表
@@ -256,7 +277,6 @@ public class RedisUtil {
                 rootPojo.setCreateTime(new Date());
             }
             rootPojo.setUpdateTime(new Date());
-
             redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
                     SerializerFeature.UseSingleQuotes,SerializerFeature.WriteDateUseDateFormat));
             return true;
@@ -887,13 +907,26 @@ public class RedisUtil {
                     } else {
                         //TODO 反向关联这里还没写 相互级联查询会死循环 想想办法解决
                     }
+                    // 判断当前字段是否为多对一
+                } else if (field.getAnnotation(ManyToOne.class) != null) {
+                    field.setAccessible(true);
+                    BasePojo join = (BasePojo) field.get(basePojo);
+                    if (join != null) {
+                        field.set(basePojo,getId(join));
+                    }
+
+                    // 判断当前字段是否为多对多
                 } else if (field.getAnnotation(OneToOne.class) != null) {
                     // TODO 一对一的等遇到了在写
 
                 }
             }
-        } catch (Exception e){
-            logger.error("取级联数据发生了问题", e.getMessage());
+        } catch (NoSuchFieldException noSuchFieldException){
+            logger.error(noSuchFieldException.getMessage());
+        } catch (IllegalAccessException accessException){
+            logger.error(accessException.getMessage());
+        } catch (IllegalArgumentException argumentException){
+            logger.error(argumentException.getMessage());
         }
     }
 

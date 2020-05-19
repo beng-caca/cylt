@@ -23,7 +23,7 @@ const turnTo = (to, access, next) => {
     next()
     return
   }
-  if (access.some(_ => _ === to.meta.id)) {
+  if (access.some(_ => _.menu.id === to.meta.id)) {
     next() // 有权限，可访问
   } else {
     next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
@@ -53,11 +53,12 @@ router.beforeEach((to, from, next) => {
     } else {
       store.dispatch('getThisUser').then(user => {
         store.state.user.thisUser = user.data
-        store.state.user.thisUser.access = ['home']
+        // 初始化权限列表
+        store.state.user.thisUser.access = [ { menu: { id: 'home' } } ]
         for (let r in user.data.roleList) {
           let roleList = user.data.roleList[r]
           for (let j in roleList.jurisdictionList) {
-            store.state.user.thisUser.access.push(roleList.jurisdictionList[j].menuId)
+            store.state.user.thisUser.access.push(roleList.jurisdictionList[j])
           }
         }
         // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']

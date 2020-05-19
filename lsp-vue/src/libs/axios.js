@@ -71,23 +71,14 @@ class HttpRequest {
       return { data, status }
     }, error => {
       this.destroy(url)
-      console.log(error)
       if (error.message === 'Network Error') {
         this.$router.replace({
           name: this.$config.homeName
         })
-      } else if (error.message === '403') {
-
+      } else if (error.response.data.message === '未登录') {
+        store.dispatch('handleLogOut')
       }
       let errorInfo = error.response
-      // if (!errorInfo) {
-      //   const { request: { statusText, status }, config } = JSON.parse(JSON.stringify(error))
-      //   errorInfo = {
-      //     statusText,
-      //     status,
-      //     request: { responseURL: config.url }
-      //   }
-      // }
       addErrorLog(errorInfo)
       return Promise.reject(error.response)
     })

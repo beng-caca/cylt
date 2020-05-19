@@ -4,9 +4,7 @@ import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * 角色权限表
@@ -25,13 +23,6 @@ public class SysJurisdiction extends BasePojo {
     private String roleId;
 
     /**
-     * 角色名称
-     */
-    @Redis
-    @Column(name = "MENU_ID")
-    private String menuId;
-
-    /**
      * 是否有删除权限
      */
     @Column(name = "DEL")
@@ -43,20 +34,19 @@ public class SysJurisdiction extends BasePojo {
     @Column(name = "EDIT")
     private boolean edit;
 
+    /**
+     * 菜单
+     */
+    @ManyToOne
+    @JoinColumn(name="MENU_ID")
+    private SysMenu menu;
+
     public String getRoleId() {
         return roleId;
     }
 
     public void setRoleId(String roleId) {
         this.roleId = roleId;
-    }
-
-    public String getMenuId() {
-        return menuId;
-    }
-
-    public void setMenuId(String menuId) {
-        this.menuId = menuId;
     }
 
     public boolean getDel() {
@@ -73,5 +63,13 @@ public class SysJurisdiction extends BasePojo {
 
     public void setEdit(boolean edit) {
         this.edit = edit;
+    }
+
+    public SysMenu getMenu() {
+        return menu;
+    }
+
+    public void setMenu(SysMenu menu) {
+        this.menu = menu;
     }
 }
