@@ -3,6 +3,7 @@ package com.cylt.sys.controller;
 import com.cylt.common.base.controller.BaseController;
 import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.Page;
+import com.cylt.common.base.pojo.Sort;
 import com.cylt.sys.service.SysUserService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用户Controller
@@ -26,7 +29,10 @@ public class SysUserController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysUser user, Page page) {
+    public String list(SysUser user, Page page) throws NoSuchFieldException {
+        List<Sort> sortList = new ArrayList<>();
+        sortList.add(new Sort("updateTime", false));
+        user.setSort(sortList);
          page = sysUserService.list(user, page);
         return getJson(page);
     }

@@ -1,6 +1,7 @@
 package com.cylt.common.base.pojo;
 
 
+import com.cylt.common.Redis;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>ClassName: BaseEntity</p>
@@ -29,10 +31,6 @@ import java.util.Date;
 @Setter
 public class BasePojo implements java.io.Serializable {
 
-    /**
-     * <p>Field serialVersionUID: serialVersionUID</p>
-     */
-    private static final long serialVersionUID = 6630825159500114033L;
     /**
      * id 主键
      */
@@ -63,6 +61,7 @@ public class BasePojo implements java.io.Serializable {
     /**
      * <p>Field createTime:新增时间 </p>
      */
+    @Redis
     @CreatedDate
     @Column(name = "CREATE_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -72,11 +71,19 @@ public class BasePojo implements java.io.Serializable {
     /**
      * <p>Field updateTime:修改时间 </p>
      */
+    @Redis
     @LastModifiedDate
     @Column(name = "UPDATE_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+
+
+    /**
+     * 排序条件
+     */
+    @Transient
+    private List<Sort> sort;
 
     public String getId() {
         return id;
@@ -124,5 +131,13 @@ public class BasePojo implements java.io.Serializable {
 
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
+    }
+
+    public List<Sort> getSort() {
+        return sort;
+    }
+
+    public void setSort(List<Sort> sort) {
+        this.sort = sort;
     }
 }

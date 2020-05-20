@@ -33,7 +33,7 @@ public class SysUserService extends BaseService {
      * @param user
      * @return
      */
-    public Page list(SysUser user, Page page) {
+    public Page list(SysUser user, Page page) throws NoSuchFieldException {
         page = redisUtil.list(user, page);
         // 如果当前一个用户都没有 就和同步一下
         if (page.getPageList().size() == 0) {
@@ -51,7 +51,9 @@ public class SysUserService extends BaseService {
      * @return
      */
     public SysUser get(String id) {
-        return sysUserDao.getOne(id);
+        SysUser user = new SysUser();
+        user.setId(id);
+        return (SysUser) redisUtil.getId(user);
     }
 
     /**

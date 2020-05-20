@@ -6,11 +6,17 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.common.base.pojo.Page;
+import com.cylt.common.base.pojo.Sort;
+import com.cylt.common.util.DateUtils;
+import com.cylt.common.util.StringUtil;
+import com.sun.tools.javac.util.ArrayUtils;
+import net.bytebuddy.description.field.FieldList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;
@@ -19,16 +25,18 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * redisTemplate封装
- *
  */
 @Component
 public class RedisUtil {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    private static final String DIVISION = ":";
 
     public RedisUtil(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -93,18 +101,19 @@ public class RedisUtil {
 
     /**
      * 按照key删除缓存
+     *
      * @param key
      * @return
      */
-    private Boolean del(String key) throws Exception{
+    private Boolean del(String key) throws Exception {
         BasePojo pojo;
         Set<String> set = redisTemplate.keys(key);
-        for(String str : set){
+        for (String str : set) {
             key = str;
         }
         logger.info("delete:" + key);
         pojo = JSON.parseObject((String) redisTemplate.opsForValue().get(key), BasePojo.class);
-        if(pojo == null){
+        if (pojo == null) {
             return false;
         }
         setRelationship(pojo);
@@ -168,21 +177,20 @@ public class RedisUtil {
     public BasePojo get(String key, Class clazz) {
         // 判断是不是级联调用 ，如果是就加个缩进
         StackTraceElement[] ste = new Exception().getStackTrace();
-        if(!"setRelationship".equals(ste[1].getMethodName())){
+        if (!"setRelationship".equals(ste[1].getMethodName())) {
             logger.info("select:{}", key);
         }
 //        else {
 //            logger.info("\tselect:{}", key);
 //        }
         Set<String> set = redisTemplate.keys(key);
-        for(String str : set){
+        for (String str : set) {
             key = str;
         }
         BasePojo obj = (BasePojo) JSON.parseObject((String) redisTemplate.opsForValue().get(key), clazz);
         setRelationship(obj);
         return obj;
     }
-
 
 
     /**
@@ -193,10 +201,10 @@ public class RedisUtil {
      */
     public Object list(BasePojo rootPojo) {
         //获取所有属性名 设置key
-        String key = getKey(rootPojo,true);
+        String key = getKey(rootPojo, true);
         // 判断是不是级联调用 ，如果是就多打个缩进
         StackTraceElement[] ste = new Exception().getStackTrace();
-        if(!"setRelationship".equals(ste[1].getMethodName())){
+        if (!"setRelationship".equals(ste[1].getMethodName())) {
             logger.info("select:{}", key);
         } else {
             logger.info("   select:{}", key);
@@ -221,17 +229,20 @@ public class RedisUtil {
      * @param rootPojo
      * @return 值
      */
-    public Page list(BasePojo rootPojo, Page page) {
+    public Page list(BasePojo rootPojo, Page page) throws NoSuchFieldException {
         //获取所有属性名 设置key
         String key = getKey(rootPojo, true);
         // 判断是不是级联调用 ，如果是就不循环打log了
         StackTraceElement[] ste = new Exception().getStackTrace();
-        if(!"setRelationship".equals(ste[1].getMethodName())){
+        if (!"setRelationship".equals(ste[1].getMethodName())) {
             logger.info("select:{}", key);
         } else {
             logger.info("   select:{}", key);
         }
+        // 查询该条件
         Set<String> ids = redisTemplate.keys(key);
+        // 按条件排序
+        ids = sortKeys(ids, rootPojo);
         List<BasePojo> list = new ArrayList<>();
         BasePojo obj;
 
@@ -245,19 +256,120 @@ public class RedisUtil {
         // 赋值一共有多少条
         page.setTotalNumber(ids.size());
         // 要读多少条 如果是最后一页的话就能读多少读多少
-        int mexIndex = page.getTotalNumber() < (page.getSinglePage() + index) ? page.getTotalNumber(): (page.getSinglePage() + index);
+        int mexIndex = page.getTotalNumber() < (page.getSinglePage() + index) ? page.getTotalNumber() : (page.getSinglePage() + index);
         // 将set转换成list方便抓取
         List<String> idList = new ArrayList<>(ids);
 
         // 开始查询分页内数据
-        for (;index < mexIndex;index++) {
-            obj = JSON.parseObject((String) redisTemplate.opsForValue().get(idList.get(index)),rootPojo.getClass());
+        for (; index < mexIndex; index++) {
+            obj = JSON.parseObject((String) redisTemplate.opsForValue().get(idList.get(index)), rootPojo.getClass());
             setRelationship(obj);
             // 在这里解析jpa
             list.add(obj);
         }
         page.setPageList(list);
         return page;
+    }
+
+
+    /**
+     * 排序sortKeys
+     *
+     * @param ids
+     * @param pojo
+     */
+    private Set<String> sortKeys(Set<String> ids, BasePojo pojo) throws NoSuchFieldException {
+        List<Sort> sortList = pojo.getSort();
+        if(sortList == null || sortList.size() == 0){
+            return ids;
+        }
+        Sort sort = sortList.get(0);
+        String field;
+        // 判断该对象里是否有此属性 如果没有就去父类里找
+        if(isExistFieldName(sort.getField(), pojo)){
+            field = pojo.getClass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+        } else {
+            field = pojo.getClass().getSuperclass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+        }
+        // 取到key用到的数据库存储的字段名
+        sort.setField(field);
+        Set<String> sortSet = new TreeSet<>((k1, k2) -> {
+            if (compareKey(getKeyField(k1, sort.getField()), getKeyField(k2, sort.getField()), sort)) {
+                return -1;
+            }
+            return 1;
+        });
+        sortSet.addAll(ids);
+        return sortSet;
+
+    }
+
+    /**
+     * 判断你一个类是否存在某个属性（字段）
+     *
+     * @param fieldName 字段
+     * @param obj   类对象
+     * @return true:存在，false:不存在, null:参数不合法
+     */
+    public static Boolean isExistFieldName(String fieldName, Object obj) {
+        if (obj == null || StringUtils.isEmpty(fieldName)) {
+            return null;
+        }
+        //获取这个类的所有属性
+        Field[] fields = obj.getClass().getDeclaredFields();
+        boolean flag = false;
+        //循环遍历所有的fields
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getName().equals(fieldName)) {
+                flag = true;
+                break;
+            }
+        }
+
+        return flag;
+    }
+
+
+    /**
+     * 比较两个key
+     *
+     * @param v1 value1
+     * @param v2 value2
+     * @param sort 排序规则
+     */
+    private Boolean compareKey(String v1, String v2, Sort sort) {
+        Boolean result = false;
+        // 判断该字符串是不是数字
+        if (StringUtil.isNumeric(v1)) {
+            if (Integer.decode(v1) < Integer.decode(v2)) {
+                result = true;
+            }
+        } else if(DateUtils.isValidDate(v1)) {
+            if (DateUtils.before(v2, v1)) {
+                result = true;
+            }
+        }  else {// 接下来该判断string了
+            result = v1.compareTo(v2) == 0;
+        }
+        // 如果不是正序就取反
+        if(!sort.getAsc()){
+            result = !result;
+        }
+        return result;
+    }
+
+    /**
+     * 取key属性值
+     *
+     * @param key    key
+     * @param column 属性名
+     * @return
+     */
+    private String getKeyField(String key, String column) {
+        // 属性值开始位置
+        int start = key.indexOf(column) + column.length() + 1;
+        int end = key.indexOf(DIVISION, start);
+        return key.substring(start, end);
     }
 
 
@@ -272,13 +384,14 @@ public class RedisUtil {
         try {
             //取当前key类型
             String key = getKey(rootPojo);
-            key = key.replace("?", id);
-            if(rootPojo.getCreateTime() == null) {
+            redisTemplate.delete(key);
+            if (rootPojo.getCreateTime() == null) {
                 rootPojo.setCreateTime(new Date());
             }
             rootPojo.setUpdateTime(new Date());
+            key = getKey(rootPojo);
             redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
-                    SerializerFeature.UseSingleQuotes,SerializerFeature.WriteDateUseDateFormat));
+                    SerializerFeature.UseSingleQuotes, SerializerFeature.WriteDateUseDateFormat));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -291,18 +404,18 @@ public class RedisUtil {
      *
      * @param rootPojo 要保存的数据
      */
-    public void save(BasePojo rootPojo) throws Exception{
-        if(rootPojo == null){
+    public void save(BasePojo rootPojo) throws Exception {
+        if (rootPojo == null) {
             return;
         }
-        if(null == rootPojo.getId() || "".equals(rootPojo.getId())){
+        if (null == rootPojo.getId() || "".equals(rootPojo.getId())) {
             rootPojo.setId(UUID.randomUUID().toString());
         }
         // 通过ID查询是否有数据
         String key = getKeyId(rootPojo);
         Set<String> set = redisTemplate.keys(key);
         // 判断有没有这个数据 如果没有则直接新建
-        if(set.size() == 0){
+        if (set.size() == 0) {
             logger.info("insert:" + key);
             set(rootPojo);
             return;
@@ -315,7 +428,7 @@ public class RedisUtil {
         String data = JSON.toJSONString(rootPojo, getJpaFilter(), SerializerFeature.UseSingleQuotes,
                 SerializerFeature.WriteDateUseDateFormat);
         // 判断新的和旧的是否一样 如果一样则不作操作  如果不一样则做修改
-        if(!data.equals(oldData)){
+        if (!data.equals(oldData)) {
             logger.info("update:" + key);
             redisTemplate.delete(key);
             set(rootPojo);
@@ -326,10 +439,11 @@ public class RedisUtil {
 
     /**
      * 批量保存到redis（目前没有想到效率比较高的方式 等想到了再改）
+     *
      * @param pojoList 要保存的数据
      */
-    public void save(List<BasePojo> pojoList) throws Exception{
-        for(BasePojo pojo : pojoList){
+    public void save(List<BasePojo> pojoList) throws Exception {
+        for (BasePojo pojo : pojoList) {
             save(pojo);
         }
     }
@@ -778,34 +892,48 @@ public class RedisUtil {
 
     /**
      * 取实体类的key
+     *
      * @param basePojo 实体pojo
      * @return
      */
-    private String getKey(BasePojo basePojo){
+    private String getKey(BasePojo basePojo) {
         return getKey(basePojo, false);
     }
+
     /**
      * 取实体类的key
-     * @param basePojo 实体pojo
+     *
+     * @param basePojo     实体pojo
      * @param isVagueQuery 是否取模糊key
      * @return
      */
-    private String getKey(BasePojo basePojo,Boolean isVagueQuery){
+    private String getKey(BasePojo basePojo, Boolean isVagueQuery) {
         //获取所有属性名 设置key
-        Field[] values = basePojo.getClass().getDeclaredFields();
+        List<Field> fieldList = new ArrayList<>();
+        fieldList.addAll(Arrays.asList(basePojo.getClass().getDeclaredFields()));
+        fieldList.addAll(Arrays.asList(basePojo.getClass().getSuperclass().getDeclaredFields()));
         StringBuffer buffer = new StringBuffer();
-        //表名:id=?:属性名=?:属性名=?:属性名=?................
-        buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(":");
-        buffer.append("id=").append(basePojo.getId() == null || "".equals(basePojo.getId()) ? "*" : basePojo.getId()).append(":");
-        String columnVal;
+        //表名|-|id=?|-|属性名=?|-|属性名=?|-|属性名=?................
+        buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(DIVISION);
+        buffer.append("id=").append(basePojo.getId() == null || "".equals(basePojo.getId()) ? "*" : basePojo.getId()).append(DIVISION);
+        String columnVal = "";
+        Object objColumnVal = "";
         //遍历其他属性名
-        for(Field field : values){
+        for (Field field : fieldList) {
             //如果是索引字段就拼接上"列名=value"
-            if(field.getAnnotation(Redis.class) != null){
-                try{
+            if (field.getAnnotation(Redis.class) != null) {
+                try {
                     field.setAccessible(true);//对私有字段的访问取消权限检查。暴力访问。
-                    columnVal = (String) field.get(basePojo);
-                    if(null == columnVal || "".equals(columnVal)){
+                    // 判断如果是date类型的就先格式化下
+                    objColumnVal = field.get(basePojo);
+                    if ("java.util.Date".equals(field.getGenericType().getTypeName())) {
+                        if(objColumnVal != null){
+                            columnVal = DateUtils.formatTime((Date) objColumnVal);
+                        }
+                    } else {
+                        columnVal = (String) objColumnVal;
+                    }
+                    if (null == columnVal || "".equals(columnVal)) {
                         columnVal = "*";
                     } else if (isVagueQuery) {// 判断是否允许模糊匹配
                         // 判断此字段是不是模糊查询
@@ -814,8 +942,8 @@ public class RedisUtil {
                         }
                     }
                     buffer.append(field.getAnnotation(Column.class).name())
-                            .append("=").append(columnVal).append(":");
-                } catch (Exception e){
+                            .append("=").append(columnVal).append(DIVISION);
+                } catch (Exception e) {
                     //这里取属性出错了 先略过
                     logger.error(e.getMessage());
                 }
@@ -826,41 +954,44 @@ public class RedisUtil {
 
     /**
      * 取实体类的key
+     *
      * @param field 实体pojo
      * @return
      */
-    private String getJoinTableKey(Field field){
+    private String getJoinTableKey(Field field) {
         // 初始化多对多key模板
         StringBuffer key = new StringBuffer();
         // 表名
-        key.append(field.getAnnotation(JoinTable.class).name()).append(":");
+        key.append(field.getAnnotation(JoinTable.class).name()).append(DIVISION);
         // 主键
-        key.append(field.getAnnotation(JoinTable.class).joinColumns()[0].name()).append("={0}").append(":");
+        key.append(field.getAnnotation(JoinTable.class).joinColumns()[0].name()).append("={0}").append(DIVISION);
         // 外键
-        key.append(field.getAnnotation(JoinTable.class).inverseJoinColumns()[0].name()).append("={1}").append(":");
+        key.append(field.getAnnotation(JoinTable.class).inverseJoinColumns()[0].name()).append("={1}").append(DIVISION);
         return key.toString();
     }
 
 
     /**
      * 取实体类的key id
+     *
      * @param basePojo 实体pojo
      * @return
      */
-    private String getKeyId(BasePojo basePojo){
+    private String getKeyId(BasePojo basePojo) {
         StringBuffer buffer = new StringBuffer();
         //表名:id=?:
-        buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(":");
-        buffer.append("id=").append(basePojo.getId()).append(":*");
+        buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(DIVISION);
+        buffer.append("id=").append(basePojo.getId()).append(DIVISION).append("*");
         return buffer.toString();
     }
 
     /**
      * 取对象关系
+     *
      * @param basePojo 业务对象
      */
-    private void setRelationship(BasePojo basePojo){
-        if(basePojo == null){
+    private void setRelationship(BasePojo basePojo) {
+        if (basePojo == null) {
             return;
         }
         //获取所有属性名 设置key
@@ -868,8 +999,8 @@ public class RedisUtil {
         BasePojo children;
         Field pid = null;
         //遍历其他属性名
-        try{
-            for(Field field : values){
+        try {
+            for (Field field : values) {
                 // 判断当前字段是否为一对多
                 if (field.getAnnotation(OneToMany.class) != null) {
                     OneToMany oneToMany = field.getAnnotation(OneToMany.class);
@@ -881,29 +1012,29 @@ public class RedisUtil {
 
                     pid.set(children, basePojo.getId());
                     Object obj = list(children);
-                    field.set(basePojo,obj);
+                    field.set(basePojo, obj);
                     // 判断当前字段是否为多对多
                 } else if (field.getAnnotation(ManyToMany.class) != null) {
                     //key
                     String keyTemplate;
                     List<BasePojo> list = new ArrayList<>();
-                    if(field.getAnnotation(JoinTable.class) != null){
+                    if (field.getAnnotation(JoinTable.class) != null) {
                         // 初始化多对多key模板
                         keyTemplate = getJoinTableKey(field);
-                        String key = MessageFormat.format(keyTemplate, basePojo.getId(),"*");
+                        String key = MessageFormat.format(keyTemplate, basePojo.getId(), "*");
                         Set<String> relationshipIds = redisTemplate.keys(key);
                         //因为*是正则表达式里的关键字 所以没法调用 只能把它换成~
-                        key = key.replace("*","~");
+                        key = key.replace("*", "~");
                         //创建遍历临时存放id的变量
                         BasePojo pojoId;
-                        for(String id : relationshipIds){
+                        for (String id : relationshipIds) {
                             pojoId = newInstance(field);
-                            pojoId.setId(id.replace(key.split("~")[0],"")
-                                    .replace(key.split("~")[1],""));
+                            pojoId.setId(id.replace(key.split("~")[0], "")
+                                    .replace(key.split("~")[1], ""));
                             list.add(get(pojoId));
                         }
                         field.setAccessible(true);
-                        field.set(basePojo,list);
+                        field.set(basePojo, list);
                     } else {
                         //TODO 反向关联这里还没写 相互级联查询会死循环 想想办法解决
                     }
@@ -912,7 +1043,7 @@ public class RedisUtil {
                     field.setAccessible(true);
                     BasePojo join = (BasePojo) field.get(basePojo);
                     if (join != null) {
-                        field.set(basePojo,getId(join));
+                        field.set(basePojo, getId(join));
                     }
 
                     // 判断当前字段是否为多对多
@@ -921,37 +1052,39 @@ public class RedisUtil {
 
                 }
             }
-        } catch (NoSuchFieldException noSuchFieldException){
+        } catch (NoSuchFieldException noSuchFieldException) {
             logger.error(noSuchFieldException.getMessage());
-        } catch (IllegalAccessException accessException){
+        } catch (IllegalAccessException accessException) {
             logger.error(accessException.getMessage());
-        } catch (IllegalArgumentException argumentException){
+        } catch (IllegalArgumentException argumentException) {
             logger.error(argumentException.getMessage());
         }
     }
 
     /**
      * new一个未知数组的泛型
+     *
      * @param field
      * @return
      */
     private BasePojo newInstance(Field field) {
         BasePojo pojo = null;
-        try{
+        try {
             // 当前集合的泛型类型
             Type genericType = field.getGenericType();
             ParameterizedType pt = (ParameterizedType) genericType;
             // 得到泛型里的class类型对象
-            Class<?> actualTypeArgument = (Class<?>)pt.getActualTypeArguments()[0];
+            Class<?> actualTypeArgument = (Class<?>) pt.getActualTypeArguments()[0];
             pojo = (BasePojo) actualTypeArgument.newInstance();
-            } catch (Exception e){
-                logger.error("取级联数据发生了问题", e.getMessage());
-            }
+        } catch (Exception e) {
+            logger.error("取级联数据发生了问题", e.getMessage());
+        }
         return pojo;
     }
 
     /**
      * 保存对象关系
+     *
      * @param basePojo 业务对象
      */
     private List<BasePojo> getRelationship(BasePojo basePojo) throws Exception {
@@ -963,8 +1096,8 @@ public class RedisUtil {
         BasePojo children;
         Field many;
         //遍历其他属性名
-        try{
-            for(Field field : values){
+        try {
+            for (Field field : values) {
                 // 判断当前字段是否为一对多
                 if (field.getAnnotation(OneToMany.class) != null) {
                     //对私有字段的访问取消权限检查。暴力访问。
@@ -983,7 +1116,7 @@ public class RedisUtil {
                     }
 
                     List<BasePojo> list = (List<BasePojo>) field.get(basePojo);
-                    for(BasePojo pojo : list){
+                    for (BasePojo pojo : list) {
                         relationshipList.add(pojo);
                     }
                     // 判断是否为多对多属性 如果是多对多注解判断是不是维护关系的一方
@@ -993,22 +1126,22 @@ public class RedisUtil {
                     // 初始化多对多key模板
                     key = getJoinTableKey(field);
                     //先清空源数据 然后替换成新的
-                    Set<String> ids = redisTemplate.keys(MessageFormat.format(key, basePojo.getId(),"*"));
+                    Set<String> ids = redisTemplate.keys(MessageFormat.format(key, basePojo.getId(), "*"));
                     redisTemplate.delete(ids);
-                    if(field.get(basePojo) == null){
+                    if (field.get(basePojo) == null) {
                         continue;
                     }
                     //读取当前多对多关系数据 并保存到
                     List<BasePojo> list = (List<BasePojo>) field.get(basePojo);
-                    for(BasePojo pojo : list){
-                        redisTemplate.opsForValue().set(MessageFormat.format(key, basePojo.getId(),pojo.getId()), "");
+                    for (BasePojo pojo : list) {
+                        redisTemplate.opsForValue().set(MessageFormat.format(key, basePojo.getId(), pojo.getId()), "");
                     }
                 } else if (field.getAnnotation(OneToOne.class) != null) {
                     // TODO 一对一的等遇到了在写
 
                 }
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             logger.error("保存关系时发生了问题" + e.getMessage());
             throw new Exception("保存关系时发生了问题");
         }
@@ -1017,16 +1150,17 @@ public class RedisUtil {
 
     /**
      * 过滤掉jpa级联属性
+     *
      * @return
      */
-    private PropertyFilter getJpaFilter(){
+    private PropertyFilter getJpaFilter() {
         return (object, name, value) -> {
-            try  {
+            try {
                 // 反射出当前要序列化的字段
                 Field obj = object.getClass().getDeclaredField(name);
                 // 判断当前字段如果是jpa的级联属性就不参加序列化
-                if(obj.getAnnotation(OneToMany.class) != null || obj.getAnnotation(OneToOne.class) != null
-                        || obj.getAnnotation(ManyToMany.class) != null){
+                if (obj.getAnnotation(OneToMany.class) != null || obj.getAnnotation(OneToOne.class) != null
+                        || obj.getAnnotation(ManyToMany.class) != null) {
                     return false;
                 }
             } catch (NoSuchFieldException e) {
