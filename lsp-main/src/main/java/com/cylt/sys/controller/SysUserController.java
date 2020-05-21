@@ -31,7 +31,8 @@ public class SysUserController extends BaseController {
     @RequestMapping(value = "list")
     public String list(SysUser user, Page page) throws NoSuchFieldException {
         List<Sort> sortList = new ArrayList<>();
-        sortList.add(new Sort("updateTime", false));
+        sortList.add(new Sort("name"));
+        sortList.add(new Sort("enterpriseId" ));
         user.setSort(sortList);
          page = sysUserService.list(user, page);
         return getJson(page);

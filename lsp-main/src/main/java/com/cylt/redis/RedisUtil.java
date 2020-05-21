@@ -280,21 +280,27 @@ public class RedisUtil {
      */
     private Set<String> sortKeys(Set<String> ids, BasePojo pojo) throws NoSuchFieldException {
         List<Sort> sortList = pojo.getSort();
-        if(sortList == null || sortList.size() == 0){
+        if (sortList == null || sortList.size() == 0) {
             return ids;
         }
-        Sort sort = sortList.get(0);
         String field;
-        // 判断该对象里是否有此属性 如果没有就去父类里找
-        if(isExistFieldName(sort.getField(), pojo)){
-            field = pojo.getClass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
-        } else {
-            field = pojo.getClass().getSuperclass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+        List<String> fields = new ArrayList<>();
+        List<Boolean> oreders = new ArrayList<>();
+        // 遍历转属性名
+        for(Sort sort : sortList){
+            // 判断该对象里是否有此属性 如果没有就去父类里找
+            if (isExistFieldName(sort.getField(), pojo)) {
+                field = pojo.getClass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+            } else {
+                field = pojo.getClass().getSuperclass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+            }
+            fields.add(field);
         }
-        // 取到key用到的数据库存储的字段名
-        sort.setField(field);
+        for(Sort sort : sortList){
+            oreders.add(sort.getAsc());
+        }
         Set<String> sortSet = new TreeSet<>((k1, k2) -> {
-            if (compareKey(getKeyField(k1, sort.getField()), getKeyField(k2, sort.getField()), sort)) {
+            if (compareKey(getKeyField(k1, fields), getKeyField(k2, fields), oreders)) {
                 return -1;
             }
             return 1;
@@ -308,7 +314,7 @@ public class RedisUtil {
      * 判断你一个类是否存在某个属性（字段）
      *
      * @param fieldName 字段
-     * @param obj   类对象
+     * @param obj       类对象
      * @return true:存在，false:不存在, null:参数不合法
      */
     public static Boolean isExistFieldName(String fieldName, Object obj) {
@@ -333,27 +339,41 @@ public class RedisUtil {
     /**
      * 比较两个key
      *
-     * @param v1 value1
-     * @param v2 value2
-     * @param sort 排序规则
+     * @param v1   value1
+     * @param v2   value2
+     * @param sortList 排序规则
      */
-    private Boolean compareKey(String v1, String v2, Sort sort) {
-        Boolean result = false;
-        // 判断该字符串是不是数字
-        if (StringUtil.isNumeric(v1)) {
-            if (Integer.decode(v1) < Integer.decode(v2)) {
-                result = true;
+    private Boolean compareKey(List<String> v1, List<String> v2, List<Boolean> sortList) {
+        boolean result = false;
+        String v1i;
+        String v2i;
+        // 遍历所有排序字段一一对比 然后再返回谁大小结果
+        for(int i = 0;i < v1.size();i++){
+            v1i = v1.get(i);
+            v2i = v2.get(i);
+            // 如果当前维度排序字段一样 则进入下一个排序维度
+            if(v1i.equals(v2i)){
+                continue;
             }
-        } else if(DateUtils.isValidDate(v1)) {
-            if (DateUtils.before(v2, v1)) {
-                result = true;
+
+            // 判断该字符串是不是数字
+            if (StringUtil.isNumeric(v1i)) {
+                if (Integer.decode(v1i) < Integer.decode(v2i)) {
+                    result = true;
+                }
+            } else if (DateUtils.isValidDate(v1i)) {
+                if (DateUtils.before(v2i, v1i)) {
+                    result = true;
+                }
+            } else {// 接下来该判断string了
+                result = v2i.compareTo(v1i) != 0;
             }
-        }  else {// 接下来该判断string了
-            result = v1.compareTo(v2) == 0;
-        }
-        // 如果不是正序就取反
-        if(!sort.getAsc()){
-            result = !result;
+
+            // 如果不是正序就取反
+            if (!sortList.get(i)) {
+                result = !result;
+            }
+            break;
         }
         return result;
     }
@@ -367,9 +387,25 @@ public class RedisUtil {
      */
     private String getKeyField(String key, String column) {
         // 属性值开始位置
-        int start = key.indexOf(column) + column.length() + 1;
+        int start = key.indexOf(DIVISION + column) + column.length() + 2;
         int end = key.indexOf(DIVISION, start);
         return key.substring(start, end);
+    }
+
+
+    /**
+     * 批量取key属性值
+     *
+     * @param key    key
+     * @param columns 属性名
+     * @return
+     */
+    private List<String> getKeyField(String key, List<String> columns) {
+        List<String> values = new ArrayList<>();
+        for(String column : columns){
+            values.add(getKeyField(key, column));
+        }
+        return values;
     }
 
 
@@ -927,7 +963,7 @@ public class RedisUtil {
                     // 判断如果是date类型的就先格式化下
                     objColumnVal = field.get(basePojo);
                     if ("java.util.Date".equals(field.getGenericType().getTypeName())) {
-                        if(objColumnVal != null){
+                        if (objColumnVal != null) {
                             columnVal = DateUtils.formatTime((Date) objColumnVal);
                         }
                     } else {
