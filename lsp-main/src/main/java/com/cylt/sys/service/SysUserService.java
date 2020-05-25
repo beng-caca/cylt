@@ -23,7 +23,7 @@ public class SysUserService extends BaseService {
 
 
     //模块名
-    public final static String FEATURES_NAME = RabbitMQDictionary.USER;
+    public final static String SERVICE_NAME = "sysUserService";
     @Resource
     private SysUserDao sysUserDao;
 
@@ -78,7 +78,7 @@ public class SysUserService extends BaseService {
         //刷新缓存
         redisUtil.save(sysUser);
         //发送消息队列持久保存到数据库
-        rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysUser);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, RabbitMQDictionary.SAVE, sysUser);
         return "保存成功";
     }
 
@@ -99,7 +99,7 @@ public class SysUserService extends BaseService {
      */
     public void delete(SysUser sysUser) throws Exception {
         redisUtil.del(sysUser);
-        rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysUser);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,sysUser);
     }
 
     /**
@@ -118,7 +118,7 @@ public class SysUserService extends BaseService {
             redisUtil.del(user);
             redisUtil.set(user.getUsername(),user);
             //发送消息队列持久保存到数据库
-            rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,user);
+            rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,user);
             return true;
         } else {
             return false;

@@ -21,7 +21,7 @@ public class SysRoleService extends BaseService {
 
 
     //模块名
-    public final static String FEATURES_NAME = RabbitMQDictionary.ROLE;
+    private final static String SERVICE_NAME = "sysRoleService";
 
     @Resource
     private SysRoleDao sysRoleDao;
@@ -73,7 +73,7 @@ public class SysRoleService extends BaseService {
         //刷新缓存
         redisUtil.save(sysRole);
         //发送消息队列持久保存到数据库
-        rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysRole);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,sysRole);
         return "保存成功";
     }
 
@@ -85,7 +85,7 @@ public class SysRoleService extends BaseService {
      */
     public void delete(SysRole sysRole) throws Exception {
         redisUtil.del(sysRole);
-        rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysRole);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,sysRole);
     }
 
 }

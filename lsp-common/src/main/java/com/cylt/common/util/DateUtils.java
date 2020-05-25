@@ -64,14 +64,28 @@ public class DateUtils {
      * @param time2 时间2
      * @return 差值
      */
-    public static int minus(String time1, String time2) {
+    public static float minus(String time1, String time2) {
         try {
             Date datetime1 = TIME_FORMAT.parse(time1);
             Date datetime2 = TIME_FORMAT.parse(time2);
+            return minus(datetime1, datetime2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 
+
+    /**
+     * 计算时间差值（单位为秒）
+     * @param datetime1 时间1
+     * @param datetime2 时间2
+     * @return 差值
+     */
+    public static float minus(Date datetime1, Date datetime2) {
+        try {
             long millisecond = datetime1.getTime() - datetime2.getTime();
-
-            return Integer.valueOf(String.valueOf(millisecond / 1000));
+            return millisecond / (float) 1000;
         } catch (Exception e) {
             e.printStackTrace();
         }

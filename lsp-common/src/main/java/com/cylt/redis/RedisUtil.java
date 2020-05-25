@@ -357,11 +357,11 @@ public class RedisUtil {
             }
 
             // 判断该字符串是不是数字
-            if (StringUtil.isNumeric(v1i)) {
+            if (StringUtil.isNumeric(v1i) && StringUtil.isNumeric(v2i)) {
                 if (Integer.decode(v1i) < Integer.decode(v2i)) {
                     result = true;
                 }
-            } else if (DateUtils.isValidDate(v1i)) {
+            } else if (DateUtils.isValidDate(v1i) && DateUtils.isValidDate(v2i)) {
                 if (DateUtils.before(v2i, v1i)) {
                     result = true;
                 }

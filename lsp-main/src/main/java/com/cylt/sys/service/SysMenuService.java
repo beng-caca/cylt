@@ -19,8 +19,10 @@ import java.util.UUID;
 public class SysMenuService extends BaseService {
 
 
+
     //模块名
-    public final static String FEATURES_NAME = RabbitMQDictionary.MENU;
+    private final static String SERVICE_NAME = "sysMenuService";
+
     @Resource
     private SysMenuDao sysMenuDao;
 
@@ -63,7 +65,7 @@ public class SysMenuService extends BaseService {
         //刷新缓存
         redisUtil.save(sysMenu);
         //发送消息队列持久保存到数据库
-        rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.SAVE,sysMenu);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,sysMenu);
         return "保存成功";
     }
 
@@ -75,7 +77,7 @@ public class SysMenuService extends BaseService {
      */
     public void delete(SysMenu sysMenu) throws Exception {
         redisUtil.del(sysMenu);
-        rabbitMQUtil.send(FEATURES_NAME,RabbitMQDictionary.DELETE,sysMenu);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,sysMenu);
     }
 
 }
