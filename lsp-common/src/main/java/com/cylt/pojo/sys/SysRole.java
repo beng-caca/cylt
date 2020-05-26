@@ -1,5 +1,6 @@
 package com.cylt.pojo.sys;
 
+import com.cylt.common.LogTitle;
 import com.cylt.common.Redis;
 import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
@@ -31,6 +32,7 @@ public class SysRole extends BasePojo {
      * 角色名称
      */
     @Redis(vagueQuery = true)
+    @LogTitle
     @Column(name = "ROLE_NAME")
     private String roleName;
 

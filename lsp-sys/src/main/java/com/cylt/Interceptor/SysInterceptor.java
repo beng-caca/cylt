@@ -34,7 +34,7 @@ public class SysInterceptor {
     private SysLogService sysLogService;
 
     @RabbitHandler
-    public void process(MQEntity mq, Message message, Channel channel) throws IOException {
+    public void process(MQEntity mq, Message message, Channel channel) throws Exception {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         try{
             // 通过spring容器注入service
@@ -47,9 +47,11 @@ public class SysInterceptor {
                 service.getClass().getDeclaredMethod(mq.getDeclaredMethodName()).invoke(service);
             }
             sysLogService.success(mq.getSysLog());
+            // 通知rabbitmq处理完成
             channel.basicAck(deliveryTag, true);
         } catch (Exception e){
             sysLogService.error(mq.getSysLog(), e.getMessage());
+            // 通知rabbitmq处理完成
             channel.basicReject(deliveryTag,false);
         }
         // 业务处理成功后调用，消息会被确认消费

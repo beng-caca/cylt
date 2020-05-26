@@ -528,6 +528,16 @@ export default [
         title: '角色'
       },
       component: () => import('@/view/sys/role.vue')
+    }, {
+      path: 'log',
+      name: 'menu.sys.log',
+      meta: {
+        id: '35f8a839-6cb9-4d78-8fba-c445a162e142',
+        icon: 'md-albums',
+        hideInBread: false,
+        title: '日志'
+      },
+      component: () => import('@/view/sys/log.vue')
     }
     ]
   }

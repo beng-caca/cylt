@@ -34,6 +34,7 @@ public class SysUser extends BasePojo implements UserDetails {
      * 登录名
      */
     @Redis
+    @LogTitle
     @Column(name = "USER_NAME")
     private String username;
 

@@ -87,6 +87,14 @@ export default {
         custAdmin: '客户管理员',
         orderAdmin: '订单管理员'
       }
+    },
+    log: {
+      title: '日志标题',
+      state: '日志状态',
+      startDate: '处理时间',
+      endDate: '结束时间',
+      timeUse: '用时（秒）',
+      errorText: '错误信息'
     }
   },
   // menu
@@ -99,7 +107,8 @@ export default {
       name: '系统',
       menu: '菜单',
       role: '角色',
-      user: '用户'
+      user: '用户',
+      log: '日志'
     }
   }
 }

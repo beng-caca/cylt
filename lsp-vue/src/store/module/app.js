@@ -91,9 +91,7 @@ export default {
       state.hasReadErrorPage = status
     },
     setMenuList (state, list) {
-      if (state.menuList.length !== 0) {
-        return
-      }
+      state.menuList = []
       list = addTreeList(list, (data) => {
         return {
           id: data.id,

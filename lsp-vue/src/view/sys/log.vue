@@ -1,0 +1,118 @@
+<template>
+  <div data-menu="menu.sys.user" class="split-pane-page-wrapper">
+    <Form inline  style="padding: 10px;margin-bottom: 20px;border: 2px solid #e8eaec;">
+      <FormItem prop="username">
+        <Input type="text" v-model="$store.state.log.query.title" :placeholder="$t('system.log.title')">
+        </Input>
+      </FormItem>
+      <FormItem prop="name">
+        <Input type="text" v-model="$store.state.log.query.errorText" :placeholder="$t('system.log.errorText')">
+        </Input>
+      </FormItem>
+      <FormItem>
+        <Button type="primary" @click="query()">{{ $t('system.query') }}</Button>
+      </FormItem>
+    </Form>
+    <Table
+      :loading="$store.state.log.loading"
+      context-menu
+      show-context-menu
+      :columns="columns"
+      :data="$store.state.log.list"
+      border
+      stripe
+    >
+      <template slot-scope="{ row, index }" slot="action">
+        <Button type="primary" size="small" style="margin-right: 5px" @click="info(row, index)">{{ $t('system.info') }}</Button>
+      </template>
+    </Table>
+    <Page
+      @on-change="changePage"
+      @on-page-size-change="changeSizePage"
+      :page-size="$store.state.log.query.singlePage"
+      :total="$store.state.log.query.totalNumber"
+      :current="$store.state.log.query.pageNumber"
+      :page-size-opts="[20,40,60,80,100]"
+      style="text-align: right;margin-top: 5px;"
+      show-total show-sizer >
+    </Page>
+    <Drawer
+      :title="$t('menu.sys.user') + $t('system.info')"
+      v-model="isInfo"
+      width="30%"
+    >
+      <Form ref="formValidate">
+        <Row :gutter="32">
+          <Col span="24">
+            <FormItem :label="$t('system.log.title')"  prop="title">
+              <Input v-model="$store.state.log.info.title" />
+            </FormItem>
+          </Col>
+          <Col span="12">
+            <FormItem :label="$t('system.log.state')"  prop="state">
+              <Input v-model="$store.state.log.info.state" />
+            </FormItem>
+          </Col>
+          <Col span="12">
+          <FormItem :label="$t('system.log.timeUse')"  prop="timeUse">
+            <Input v-model="$store.state.log.info.timeUse" />
+          </FormItem>
+          </Col>
+          <Col span="12">
+            <FormItem :label="$t('system.log.startDate')"  prop="startDate">
+              <Input v-model="$store.state.log.info.startDate" />
+            </FormItem>
+          </Col>
+          <Col span="12">
+          <FormItem :label="$t('system.log.endDate')"  prop="endDate">
+            <Input v-model="$store.state.log.info.endDate" />
+          </FormItem>
+          </Col>
+          <Col span="24">
+          <FormItem :label="$t('system.log.errorText')"  prop="errorText">
+            <Input v-model="$store.state.log.info.errorText" type="textarea" :rows="4"/>
+          </FormItem>
+          </Col>
+        </Row>
+      </Form>
+    </Drawer>
+  </div>
+</template>
+<script>
+import store from '@/store'
+export default {
+  data () {
+    store.dispatch('getSysLogList')
+    return {
+      columns: [
+        { type: 'index', width: 60, align: 'center' },
+        { title: this.$t('system.log.title'), width: 450, key: 'title' },
+        { title: this.$t('system.log.state'), key: 'state' },
+        { title: this.$t('system.log.startDate'), width: 150, key: 'startDate' },
+        { title: this.$t('system.log.timeUse'), key: 'timeUse' },
+        { title: this.$t('system.operation'), slot: 'action', width: 80, align: 'center' }
+      ],
+      contextLine: 0,
+      isInfo: false
+    }
+  },
+  methods: {
+    query () {
+      store.dispatch('getSysLogList', this.$store.state.log.query)
+    },
+    info (row) {
+      store.dispatch('getSysLog', row)
+      this.isInfo = true
+    },
+    changePage (pageNumber) {
+      this.$store.state.log.query.pageNumber = pageNumber
+      this.query()
+    },
+    changeSizePage (pageSizeNumber) {
+      this.$store.state.log.query.pageNumber = 1
+      this.$store.state.log.query.singlePage = pageSizeNumber
+      this.query()
+    }
+  }
+}
+</script>

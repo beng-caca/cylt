@@ -49,6 +49,7 @@ public class SysLog extends BasePojo {
     /**
      * 开始时间
      */
+    @Redis
     @Column(name = "START_DATE")
     private Date startDate;
 

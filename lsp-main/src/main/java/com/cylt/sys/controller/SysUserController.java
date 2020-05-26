@@ -34,7 +34,7 @@ public class SysUserController extends BaseController {
         sortList.add(new Sort("name"));
         sortList.add(new Sort("enterpriseId" ));
         user.setSort(sortList);
-         page = sysUserService.list(user, page);
+        page = sysUserService.list(user, page);
         return getJson(page);
     }
 

@@ -465,6 +465,8 @@ public class RedisUtil {
                 SerializerFeature.WriteDateUseDateFormat);
         // 判断新的和旧的是否一样 如果一样则不作操作  如果不一样则做修改
         if (!data.equals(oldData)) {
+            // 先删除原来的
+            del(rootPojo);
             logger.info("update:" + key);
             redisTemplate.delete(key);
             set(rootPojo);
@@ -960,6 +962,8 @@ public class RedisUtil {
             if (field.getAnnotation(Redis.class) != null) {
                 try {
                     field.setAccessible(true);//对私有字段的访问取消权限检查。暴力访问。
+                    // 先初始化成*
+                    columnVal = "*";
                     // 判断如果是date类型的就先格式化下
                     objColumnVal = field.get(basePojo);
                     if ("java.util.Date".equals(field.getGenericType().getTypeName())) {

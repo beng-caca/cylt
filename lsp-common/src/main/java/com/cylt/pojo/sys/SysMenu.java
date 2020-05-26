@@ -1,5 +1,6 @@
 package com.cylt.pojo.sys;
 
+import com.cylt.common.LogTitle;
 import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
 import org.hibernate.annotations.ResultCheckStyle;
@@ -37,6 +38,7 @@ public class SysMenu extends BasePojo {
      * 菜单名称
      */
     @Redis
+    @LogTitle
     @Column(name = "NAME")
     private String name;
 

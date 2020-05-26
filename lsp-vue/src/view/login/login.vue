@@ -29,6 +29,7 @@ export default {
     handleSubmit ({ username, password }) {
       this.handleLogin({ username, password }).then(res => {
         store.state.user.thisUser = res
+        store.dispatch('getMenuData')
         this.$router.push({
           name: this.$config.homeName
         })

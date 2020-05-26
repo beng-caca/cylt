@@ -1,6 +1,7 @@
 package com.cylt.rabbitMQ.util;
 
 import com.alibaba.fastjson.JSON;
+import com.cylt.common.LogTitle;
 import com.cylt.common.MQEntity;
 import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
@@ -13,13 +14,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import java.lang.reflect.Field;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 深度封装rabbitMQ工具类
@@ -77,8 +80,8 @@ public class RabbitMQUtil {
         sysLog.setUserId(user.getId());
         // 模块名
         sysLog.setModule(exchangeName);
-        String title = "用户{0} 对 {1} 的{2}数据进行了 {3}";
-        sysLog.setTitle(MessageFormat.format(title, user.getName(),serviceName, obj.getId(), declaredMethodName));
+        String title = "用户{0} 对 {1} 的 {2} 数据进行 {3} 操作";
+        sysLog.setTitle(MessageFormat.format(title, user.getName(),serviceName, getLogTitle(obj), declaredMethodName));
         // 创建id
         sysLog.setId(UUID.randomUUID().toString());
         //获取当前时间作为开始时间
@@ -87,4 +90,30 @@ public class RabbitMQUtil {
         sysLog.setState("1");
         return sysLog;
     }
+
+    /**
+     * get业务日志标题
+     * @param obj
+     * @return
+     */
+    private String getLogTitle(BasePojo obj) {
+        String logTitle = "";
+        //获取所有属性名 设置key
+        Field[] values = obj.getClass().getDeclaredFields();
+        //遍历其他属性名
+        try {
+            for (Field field : values) {
+                // 判断当前字段是否为一对多
+                if (field.getAnnotation(LogTitle.class) != null) {
+                    //对私有字段的访问取消权限检查。暴力访问。
+                    field.setAccessible(true);
+                    logTitle = (String) field.get(obj);
+                }
+            }
+        } catch (Exception e) {
+            logTitle = obj.getId();
+        }
+        return logTitle;
+    }
+
 }

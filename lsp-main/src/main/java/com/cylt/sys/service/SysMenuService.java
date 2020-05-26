@@ -29,18 +29,18 @@ public class SysMenuService extends BaseService {
 
     /**
      *
-     * @param user
+     * @param menu
      * @return
      */
-    public List<SysMenu> list(SysMenu user) {
-        List<SysMenu> list = (List<SysMenu>) redisUtil.list(user);
+    public List<SysMenu> list(SysMenu menu) {
+        List<SysMenu> list = (List<SysMenu>) redisUtil.list(menu);
         // 如果当前一个菜单都没有 就和同步一下
         if (list.size() == 0) {
             list = sysMenuDao.findAll();
-            for(SysMenu menu : list){
-                redisUtil.set(menu);
+            for(SysMenu menus : list){
+                redisUtil.set(menus);
             }
-            list = (List<SysMenu>) redisUtil.list(user);
+            list = (List<SysMenu>) redisUtil.list(menu);
         }
         return list;
     }

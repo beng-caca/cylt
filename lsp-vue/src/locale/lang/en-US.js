@@ -85,6 +85,14 @@ export default {
         custAdmin: 'cust Admin',
         orderAdmin: 'order Admin'
       }
+    },
+    log: {
+      title: 'Log Title',
+      state: 'Log State',
+      startDate: 'Start Date',
+      endDate: 'End Date',
+      timeUse: 'TimeUse (s)',
+      errorText: 'Error Text'
     }
   },
   // menu
@@ -98,7 +106,8 @@ export default {
       name: 'System',
       menu: 'Menu',
       role: 'Role',
-      user: 'User'
+      user: 'User',
+      log: 'Log'
     }
   }
 }
