@@ -39,7 +39,7 @@ public class UserService implements UserDetailsService {
             user = sysUserDao.findByUsername(username);
             //如果确定有这个用户就放到缓存里
             if(user != null){
-                redisUtil.set(user.getUsername(), user);
+                redisUtil.set(user);
             } else {
                 user = new SysUser();
             }

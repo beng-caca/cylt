@@ -94,8 +94,17 @@ public class RedisUtil {
      * @param pojo 删除数据
      */
     public Boolean del(BasePojo pojo) throws Exception {
+        return del(pojo, true);
+    }
+
+    /**
+     * 通过id删除缓存
+     *
+     * @param pojo 删除数据
+     */
+    public Boolean del(BasePojo pojo, boolean isLog) throws Exception {
         String key = getKeyId(pojo);
-        return del(key);
+        return del(key, isLog);
     }
 
 
@@ -105,13 +114,15 @@ public class RedisUtil {
      * @param key
      * @return
      */
-    private Boolean del(String key) throws Exception {
+    private Boolean del(String key, boolean isLog) throws Exception {
         BasePojo pojo;
         Set<String> set = redisTemplate.keys(key);
         for (String str : set) {
             key = str;
         }
-        logger.info("delete:" + key);
+        if(isLog){
+            logger.info("delete:" + key);
+        }
         pojo = JSON.parseObject((String) redisTemplate.opsForValue().get(key), BasePojo.class);
         if (pojo == null) {
             return false;
@@ -408,39 +419,12 @@ public class RedisUtil {
         return values;
     }
 
-
-    /**
-     * 普通缓存放入
-     *
-     * @param id       键
-     * @param rootPojo 值
-     * @return true成功 false失败
-     */
-    public boolean set(String id, BasePojo rootPojo) {
-        try {
-            //取当前key类型
-            String key = getKey(rootPojo);
-            redisTemplate.delete(key);
-            if (rootPojo.getCreateTime() == null) {
-                rootPojo.setCreateTime(new Date());
-            }
-            rootPojo.setUpdateTime(new Date());
-            key = getKey(rootPojo);
-            redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
-                    SerializerFeature.UseSingleQuotes, SerializerFeature.WriteDateUseDateFormat));
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     /**
      * 保存到redis
      *
      * @param rootPojo 要保存的数据
      */
-    public void save(BasePojo rootPojo) throws Exception {
+    public void save(BasePojo rootPojo,long time) throws Exception {
         if (rootPojo == null) {
             return;
         }
@@ -453,7 +437,7 @@ public class RedisUtil {
         // 判断有没有这个数据 如果没有则直接新建
         if (set.size() == 0) {
             logger.info("insert:" + key);
-            set(rootPojo);
+            set(rootPojo, time);
             return;
         }
         for (String str : set) {
@@ -465,14 +449,41 @@ public class RedisUtil {
                 SerializerFeature.WriteDateUseDateFormat);
         // 判断新的和旧的是否一样 如果一样则不作操作  如果不一样则做修改
         if (!data.equals(oldData)) {
-            // 先删除原来的
-            del(rootPojo);
+            // 如果没有初始化过期时间就按默认的算
+            if(time == 0){
+                time = getExpire(key);
+                if(time >= -1){
+                    time = 0;
+                }
+            }
             logger.info("update:" + key);
+            // 先删除原来的
+            del(key, false);
             redisTemplate.delete(key);
-            set(rootPojo);
+            set(rootPojo, time);
         }
         // 保存关系数据
-        save(getRelationship(rootPojo));
+        save(getRelationship(rootPojo), time);
+    }
+
+    /**
+     * 保存到redis
+     *
+     * @param rootPojo 要保存的数据
+     */
+    public void save(BasePojo rootPojo) throws Exception {
+        save(rootPojo, 0);
+    }
+
+    /**
+     * 批量保存到redis（目前没有想到效率比较高的方式 等想到了再改）
+     *
+     * @param pojoList 要保存的数据
+     */
+    public void save(List<BasePojo> pojoList,long time) throws Exception {
+        for (BasePojo pojo : pojoList) {
+            save(pojo, time);
+        }
     }
 
     /**
@@ -482,7 +493,7 @@ public class RedisUtil {
      */
     public void save(List<BasePojo> pojoList) throws Exception {
         for (BasePojo pojo : pojoList) {
-            save(pojo);
+            save(pojo, 0);
         }
     }
 
@@ -493,31 +504,43 @@ public class RedisUtil {
      * @return true成功 false失败
      */
     public boolean set(BasePojo rootPojo) {
-        return set(rootPojo.getId(), rootPojo);
+        return set(rootPojo, 0);
     }
 
     /**
      * 普通缓存放入并设置时间
      *
-     * @param value 值
+     * @param rootPojo 值
      * @param time  时间(秒) time要大于0 如果time小于等于0 将设置无限期
      * @return true成功 false 失败
      */
-    public boolean set(BasePojo value, long time) {
+    public boolean set(BasePojo rootPojo, long time) {
         try {
-            if (time > 0) {
-                //取当前key类型
-                String key = getKey(value);
-                key.replace("?", value.getId());
-                redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
+            //取当前key类型
+            String key = getKey(rootPojo);
+            redisTemplate.delete(key);
+            if (rootPojo.getCreateTime() == null) {
+                rootPojo.setCreateTime(new Date());
+            }
+            rootPojo.setUpdateTime(new Date());
+            key = getKey(rootPojo);
+
+            if (time >= 0) {
+                redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
+                        SerializerFeature.UseSingleQuotes, SerializerFeature.WriteDateUseDateFormat));
             } else {
-                set(value);
+                redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
+                        SerializerFeature.UseSingleQuotes, SerializerFeature.WriteDateUseDateFormat),
+                        time, TimeUnit.SECONDS);
             }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
+
+
+
     }
     //================================Map=================================
 
@@ -1152,7 +1175,7 @@ public class RedisUtil {
                         many = children.getClass().getDeclaredField(oneToMany.mappedBy());
                         many.setAccessible(true);
                         many.set(children, basePojo.getId());
-                        del(getKey(children));
+                        del(getKey(children), true);
                     }
 
                     List<BasePojo> list = (List<BasePojo>) field.get(basePojo);

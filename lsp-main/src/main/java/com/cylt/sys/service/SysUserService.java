@@ -115,8 +115,7 @@ public class SysUserService extends BaseService {
             // 为新密码加密
             user.setPassword(DESUtil.encrypt(newPassword,DESUtil.KEY));
             //刷新缓存
-            redisUtil.del(user);
-            redisUtil.set(user.getUsername(),user);
+            redisUtil.save(user);
             //发送消息队列持久保存到数据库
             rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,user);
             return true;
