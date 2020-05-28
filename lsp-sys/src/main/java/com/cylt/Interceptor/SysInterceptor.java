@@ -11,6 +11,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import javax.annotation.Resource;
 
@@ -18,7 +19,6 @@ import javax.annotation.Resource;
  * 系统服务总拦截器
  */
 @Component
-@Transactional
 @RabbitListener(queues = "sysService")
 public class SysInterceptor {
 
@@ -30,6 +30,7 @@ public class SysInterceptor {
     private SysLogService sysLogService;
 
     @RabbitHandler
+    @Transactional(rollbackFor = { Exception.class })
     public void process(MQEntity mq, Message message, Channel channel) throws Exception {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         try{
@@ -43,17 +44,20 @@ public class SysInterceptor {
             } else {
                 service.getClass().getDeclaredMethod(mq.getDeclaredMethodName()).invoke(service);
             }
+
             sysLogService.success(mq.getSysLog());
             // 通知rabbitmq处理完成
             channel.basicAck(deliveryTag, true);
         } catch (Exception e){
             logger.error(e.getLocalizedMessage());
             sysLogService.error(mq.getSysLog(), e.toString());
-            // 通知rabbitmq处理失败
+            // 通知rabbitmq处理失败 如果失败时不返回 rabbit会在重启服务后再次重试
             // 失败后忽略
             channel.basicReject(deliveryTag,false);
-            // 失败后重新调用（如果一直失败 会无限循环）
-            // channel.basicReject(deliveryTag,true);
+
+            //手动开启事务回滚
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw new Exception(e);
         }
     }
 

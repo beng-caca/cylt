@@ -450,10 +450,10 @@ public class RedisUtil {
         // 判断新的和旧的是否一样 如果一样则不作操作  如果不一样则做修改
         if (!data.equals(oldData)) {
             // 如果没有初始化过期时间就按默认的算
-            if(time == 0){
+            if(time != -1){
                 time = getExpire(key);
-                if(time >= -1){
-                    time = 0;
+                if(time == -2){
+                    throw new Exception("保存的数据已过期异常:" + key);
                 }
             }
             logger.info("update:" + key);
@@ -472,7 +472,7 @@ public class RedisUtil {
      * @param rootPojo 要保存的数据
      */
     public void save(BasePojo rootPojo) throws Exception {
-        save(rootPojo, 0);
+        save(rootPojo, -1);
     }
 
     /**
@@ -524,14 +524,13 @@ public class RedisUtil {
             }
             rootPojo.setUpdateTime(new Date());
             key = getKey(rootPojo);
-
-            if (time >= 0) {
-                redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
-                        SerializerFeature.UseSingleQuotes, SerializerFeature.WriteDateUseDateFormat));
-            } else {
+            if (time > 0) {
                 redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
                         SerializerFeature.UseSingleQuotes, SerializerFeature.WriteDateUseDateFormat),
                         time, TimeUnit.SECONDS);
+            } else {
+                redisTemplate.opsForValue().set(key, JSON.toJSONString(rootPojo, getJpaFilter(),
+                        SerializerFeature.UseSingleQuotes, SerializerFeature.WriteDateUseDateFormat));
             }
             return true;
         } catch (Exception e) {

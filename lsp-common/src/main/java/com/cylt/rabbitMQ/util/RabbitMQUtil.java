@@ -59,7 +59,8 @@ public class RabbitMQUtil {
         // 开始时间
         mq.setStartTime(new Date());
         SysLog log = getLog(exchangeName, serviceName, declaredMethodName, obj);
-        redisUtil.save(log);
+        // 系统log保存一天
+        redisUtil.save(log, 360 * 12);
         mq.setSysLog(log);
         rabbitTemplate.convertAndSend(exchangeName,null, mq);
     }

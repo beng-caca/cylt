@@ -68,7 +68,8 @@ public class SysLogService {
         // 将log状态改成正在处理
         sysLog.setState("0");
         sysLog.setErrorText(error);
-        redisUtil.save(sysLog);
+        // 如果发生异常则 永久保存
+        redisUtil.save(sysLog, 0);
         sysLogDao.save(sysLog);
     }
 }
