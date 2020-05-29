@@ -2,6 +2,8 @@ package com.cylt.Interceptor;
 
 import com.cylt.common.MQEntity;
 import com.cylt.common.util.SpringUtil;
+import com.cylt.pojo.sys.SysLog;
+import com.cylt.redis.RedisUtil;
 import com.cylt.sys.service.SysLogService;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
@@ -25,6 +27,11 @@ public class SysInterceptor {
     private static Logger logger = LoggerFactory.getLogger(SysInterceptor.class);
 
 
+    /**
+     * 缓存数据库
+     */
+    @Resource
+    public RedisUtil redisUtil;
 
     @Resource
     private SysLogService sysLogService;
@@ -33,31 +40,37 @@ public class SysInterceptor {
     @Transactional(rollbackFor = { Exception.class })
     public void process(MQEntity mq, Message message, Channel channel) throws Exception {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
-        try{
-            sysLogService.processing(mq.getSysLog());
-            // 通过spring容器注入service
-            Object service = SpringUtil.getBean(mq.getServiceName());
-            // 通过注入的service反射到要调用的方法 并执行
-            // 判断是否有参数
-            if(mq.getPojo() != null){
-                service.getClass().getDeclaredMethod(mq.getDeclaredMethodName(), mq.getPojo().getClass()).invoke(service, mq.getPojo());
-            } else {
-                service.getClass().getDeclaredMethod(mq.getDeclaredMethodName()).invoke(service);
+
+        SysLog log = (SysLog) redisUtil.getId(mq.getSysLog());
+        // 只对发送状态下的请求做处理 避免重复消费
+        if("1".equals(log.getState())){
+            try{
+                sysLogService.processing(mq.getSysLog());
+                // 通过spring容器注入service
+                Object service = SpringUtil.getBean(mq.getServiceName());
+                // 通过注入的service反射到要调用的方法 并执行
+                // 判断是否有参数
+                if(mq.getPojo() != null){
+                    service.getClass().getDeclaredMethod(mq.getDeclaredMethodName(), mq.getPojo().getClass()).invoke(service, mq.getPojo());
+                } else {
+                    service.getClass().getDeclaredMethod(mq.getDeclaredMethodName()).invoke(service);
+                }
+                sysLogService.success(mq.getSysLog());
+                // 通知rabbitmq处理完成
+                channel.basicAck(deliveryTag, true);
+            } catch (Exception e){
+                logger.error(e.getLocalizedMessage());
+                sysLogService.error(mq.getSysLog(), e.toString());
+                // 通知rabbitmq处理失败 如果失败时不返回 rabbit会在重启服务后再次重试
+                // 失败后忽略
+                channel.basicReject(deliveryTag,false);
+                //手动开启事务回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                throw new Exception(e);
             }
-
-            sysLogService.success(mq.getSysLog());
-            // 通知rabbitmq处理完成
+        } else {
+            // 通知rabbitmq处理完成 不然rabbit在重启服务后会重新发送
             channel.basicAck(deliveryTag, true);
-        } catch (Exception e){
-            logger.error(e.getLocalizedMessage());
-            sysLogService.error(mq.getSysLog(), e.toString());
-            // 通知rabbitmq处理失败 如果失败时不返回 rabbit会在重启服务后再次重试
-            // 失败后忽略
-            channel.basicReject(deliveryTag,false);
-
-            //手动开启事务回滚
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            throw new Exception(e);
         }
     }
 

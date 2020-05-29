@@ -37,7 +37,7 @@ public abstract class BaseController {
      * 返回成功
      * @return
      */
-    protected String responseSsuccess() {
+    protected String responseSuccess() {
         return responseSuccess("操作成功");
     }
 

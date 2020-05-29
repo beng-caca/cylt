@@ -92,7 +92,12 @@ export default {
       startDate: 'Start Date',
       endDate: 'End Date',
       timeUse: 'TimeUse (s)',
-      errorText: 'Error Text'
+      errorText: 'Error Text',
+      serviceName: 'Service Name',
+      declaredMethodName: 'Function Name',
+      pojo: 'Parameter',
+      retry: 'Retry',
+      delayRefresh: 'Refresh the interface in five seconds'
     }
   },
   // menu

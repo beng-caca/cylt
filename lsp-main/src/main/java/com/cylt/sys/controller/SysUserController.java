@@ -51,21 +51,21 @@ public class SysUserController extends BaseController {
         if(!"保存成功".equals(msg)){
             return responseFail(msg);
         }
-        return responseSsuccess();
+        return responseSuccess();
     }
 
     @ResponseBody
     @RequestMapping(value = "delete")
     public String delete(SysUser sysUser) throws Exception {
         sysUserService.delete(sysUser);
-        return responseSsuccess();
+        return responseSuccess();
     }
 
     @ResponseBody
     @RequestMapping(value = "updatePassword")
     public String updatePassword(String originalPassword, String newPassword) throws Exception {
         if(sysUserService.updatePassword(originalPassword, newPassword)){
-            return responseSsuccess();
+            return responseSuccess();
         }
         return responseFail("原密码错误！");
     }

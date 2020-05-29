@@ -23,7 +23,8 @@
       stripe
     >
       <template slot-scope="{ row, index }" slot="action">
-        <Button type="primary" size="small" style="margin-right: 5px" @click="info(row, index)">{{ $t('system.info') }}</Button>
+        <Button type="primary" size="small" style="margin-right: 3px" @click="info(row, index)">{{ $t('system.info') }}</Button>
+        <Button v-show="row.state == 0" size="small" type="warning" v-jurisdiction="'edit'" @click="retry(row)">{{ $t('system.log.retry') }}</Button>
       </template>
     </Table>
     <Page
@@ -39,10 +40,10 @@
     <Drawer
       :title="$t('menu.sys.user') + $t('system.info')"
       v-model="isInfo"
-      width="30%"
+      width="40%"
     >
       <Form ref="formValidate">
-        <Row :gutter="32">
+        <col :gutter="32">
           <Col span="24">
             <FormItem :label="$t('system.log.title')"  prop="title">
               <Input v-model="$store.state.log.info.title" />
@@ -68,11 +69,29 @@
             <Input v-model="$store.state.log.info.endDate" />
           </FormItem>
           </Col>
+          <Col span="12">
+          <FormItem :label="$t('system.log.serviceName')"  prop="serviceName">
+            <Input v-model="$store.state.log.info.serviceName" />
+          </FormItem>
+          </Col>
+          <Col span="12">
+          <FormItem :label="$t('system.log.declaredMethodName')"  prop="declaredMethodName">
+            <Input v-model="$store.state.log.info.declaredMethodName" />
+          </FormItem>
+          </Col>
+          <Col span="24">
+          <FormItem :label="$t('system.log.pojo')"  prop="pojo">
+            <Input v-model="$store.state.log.info.pojo" type="textarea" :rows="4"/>
+          </FormItem>
+          </Col>
           <Col span="24">
           <FormItem :label="$t('system.log.errorText')"  prop="errorText">
             <Input v-model="$store.state.log.info.errorText" type="textarea" :rows="4"/>
           </FormItem>
           </Col>
+          <Col span="24">
+            <Button v-show="$store.state.log.info.state == 0" long type="warning" v-jurisdiction="'edit'" @click="retry($store.state.log.info)">{{ $t('system.log.retry') }}</Button>
+          </col>
         </Row>
       </Form>
     </Drawer>
@@ -90,7 +109,7 @@ export default {
         { title: this.$t('system.log.state'), key: 'state' },
         { title: this.$t('system.log.startDate'), width: 150, key: 'startDate' },
         { title: this.$t('system.log.timeUse'), key: 'timeUse' },
-        { title: this.$t('system.operation'), slot: 'action', width: 80, align: 'center' }
+        { title: this.$t('system.operation'), slot: 'action', width: 120, align: 'center' }
       ],
       contextLine: 0,
       isInfo: false
@@ -103,6 +122,20 @@ export default {
     info (row) {
       store.dispatch('getSysLog', row)
       this.isInfo = true
+    },
+    retry (row) {
+      store.dispatch('retry', row).then(
+        () => {
+          this.$store.state.log.loading = true
+          const msg = this.$Message.loading({
+            content: this.$t('system.log.delayRefresh'),
+            duration: 0
+          })
+          setTimeout(msg, 5000)
+          setTimeout(() => this.query(), 5000)
+        }
+      )
+      this.isInfo = false
     },
     changePage (pageNumber) {
       this.$store.state.log.query.pageNumber = pageNumber

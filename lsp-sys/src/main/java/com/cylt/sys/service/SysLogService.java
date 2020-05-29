@@ -51,7 +51,7 @@ public class SysLogService {
         sysLog.setTimeUse(DateUtils.minus(sysLog.getEndDate(), sysLog.getStartDate()));
         // 将log状态改成处理完成
         sysLog.setState("3");
-        redisUtil.save(sysLog);
+        redisUtil.save(sysLog, 60 * 60 * 24);
         sysLogDao.save(sysLog);
     }
 

@@ -7,3 +7,13 @@ export const getList = (data) => {
     method: 'post'
   })
 }
+
+export const retry = (data) => {
+  // 标识参数包含json
+  data.isJson = true
+  return axios.request({
+    url: '/sys/log/retry',
+    data: data,
+    method: 'post'
+  })
+}

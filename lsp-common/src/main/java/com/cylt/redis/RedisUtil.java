@@ -450,7 +450,7 @@ public class RedisUtil {
         // 判断新的和旧的是否一样 如果一样则不作操作  如果不一样则做修改
         if (!data.equals(oldData)) {
             // 如果没有初始化过期时间就按默认的算
-            if(time != -1){
+            if(time < 0){
                 time = getExpire(key);
                 if(time == -2){
                     throw new Exception("保存的数据已过期异常:" + key);

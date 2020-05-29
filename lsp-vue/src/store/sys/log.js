@@ -1,4 +1,4 @@
-import { getList as getLogList } from '@/api/sys/log'
+import { getList as getLogList, retry } from '@/api/sys/log'
 
 export default {
   state: {
@@ -8,7 +8,8 @@ export default {
       pageNumber: 1,
       totalNumber: 0,
       singlePage: 20
-    }
+    },
+    loading: false
   },
   mutations: {
     logList (state, page) {
@@ -16,6 +17,7 @@ export default {
         state.list = page.pageList
         state.query.totalNumber = page.totalNumber
       }
+      state.loading = false
     },
     getLog (state, data) {
       state.info = data
@@ -23,6 +25,7 @@ export default {
   },
   actions: {
     getSysLogList ({ commit, rootState }, params) {
+      rootState.log.loading = true
       getLogList(params).then(res => {
         commit('logList', res.data)
       }).catch(e => {
@@ -31,6 +34,9 @@ export default {
     },
     getSysLog ({ commit, rootState }, params) {
       commit('getLog', params)
+    },
+    retry ({ commit, rootState }, params) {
+      retry(params)
     }
   }
 }

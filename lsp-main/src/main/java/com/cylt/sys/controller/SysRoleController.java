@@ -67,7 +67,7 @@ public class SysRoleController extends BaseController {
         if(!"保存成功".equals(msg)){
             return responseFail(msg);
         }
-        return responseSsuccess();
+        return responseSuccess();
     }
 
     /**
@@ -79,7 +79,7 @@ public class SysRoleController extends BaseController {
     @RequestMapping(value = "delete")
     public String delete(SysRole role) throws Exception {
         sysRoleService.delete(role);
-        return responseSsuccess();
+        return responseSuccess();
     }
 
 

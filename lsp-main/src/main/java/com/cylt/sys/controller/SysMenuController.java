@@ -53,7 +53,7 @@ public class SysMenuController extends BaseController {
         if(!"保存成功".equals(msg)){
             return responseFail(msg);
         }
-        return responseSsuccess();
+        return responseSuccess();
     }
 
     /**
@@ -65,7 +65,7 @@ public class SysMenuController extends BaseController {
     @RequestMapping(value = "delete")
     public String delete(SysMenu sysMenu) throws Exception {
         sysMenuService.delete(sysMenu);
-        return responseSsuccess();
+        return responseSuccess();
     }
 
 

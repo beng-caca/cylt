@@ -94,7 +94,12 @@ export default {
       startDate: '处理时间',
       endDate: '结束时间',
       timeUse: '用时（秒）',
-      errorText: '错误信息'
+      errorText: '错误信息',
+      serviceName: '服务名',
+      declaredMethodName: '方法名',
+      pojo: '实体',
+      retry: '重试',
+      delayRefresh: '正在处理，五秒后刷新界面'
     }
   },
   // menu

@@ -38,4 +38,15 @@ public class SysLogController extends BaseController {
         return getJson(page);
     }
 
+    /**
+     * 重试请求
+     * @param log
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "retry")
+    public String retry(SysLog log) throws Exception {
+        sysLogService.retry(log);
+        return responseSuccess();
+    }
 }
