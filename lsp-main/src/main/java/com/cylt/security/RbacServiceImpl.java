@@ -1,0 +1,39 @@
+package com.cylt.security;
+
+import com.cylt.pojo.sys.SysJurisdiction;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+
+/**
+ * 返回权限验证的接口
+ */
+interface RbacService {
+      boolean hasPermission(HttpServletRequest request, Authentication authentication);
+}
+
+@Component("rbacService")
+public class RbacServiceImpl implements RbacService {
+      @Override
+      public boolean hasPermission(HttpServletRequest request, Authentication authentication) {
+            Object principal = authentication.getPrincipal();
+            boolean hasPermission = false;
+            if (principal instanceof UserDetails) { //首先判断先当前用户是否是我们UserDetails对象。
+                  List<SysJurisdiction> jurisdiction = (List<SysJurisdiction>) authentication.getAuthorities();
+                  // 注意这里不能用equal来判断，因为有些URL是有参数的，所以要用AntPathMatcher来比较
+                  for (SysJurisdiction url : jurisdiction) {
+                        if(url.getMenu().getBaseUrl() != null && request.getRequestURI() != null){// 判断url不等于空 然后判断
+                              if (request.getRequestURI().indexOf(url.getMenu().getBaseUrl()) != -1) {
+                                    hasPermission = true;
+                                    break;
+                              }
+                        }
+                  }
+            }
+            return hasPermission;
+      }
+}

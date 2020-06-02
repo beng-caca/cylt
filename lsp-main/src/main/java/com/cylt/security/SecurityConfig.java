@@ -51,7 +51,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authenticationProvider(authenticationProvider())
                 .httpBasic()
-                //未登录时，进行json格式的提示，很喜欢这种写法，不用单独写一个又一个的类
+                //未登录时，进行json格式的提示
                 .authenticationEntryPoint((request, response, authException) -> {
                     response.setContentType("text/html;charset=utf-8");
                     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -66,8 +66,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .authorizeRequests()
-                .anyRequest().authenticated() //必须授权才能范围
-
+                .anyRequest().access("@rbacService.hasPermission(request,authentication)")    //必须经过认证以后才能访问
+                .and().exceptionHandling().accessDeniedHandler((request, response, authentication) -> {
+                    accessDeniedHandler(response, authentication);
+                })
                 .and()
                 .logout()
                 //退出成功，返回json

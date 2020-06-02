@@ -106,6 +106,7 @@ export default {
   menu: {
     name: '菜单名称',
     icon: '菜单图标',
+    baseUrl: '基础路径',
     component: '页面路径',
     showMenu: '是否显示',
     sys: {

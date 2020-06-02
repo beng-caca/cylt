@@ -1,6 +1,7 @@
 package com.cylt.common;
 
 import com.cylt.common.base.pojo.BasePojo;
+import com.cylt.pojo.sys.SysJurisdiction;
 import com.cylt.pojo.sys.SysRole;
 import lombok.Getter;
 import lombok.Setter;
@@ -67,7 +68,7 @@ public class SysUser extends BasePojo implements UserDetails {
     private List<SysRole> roleList;
 
     @Transient
-    private Collection<? extends GrantedAuthority> authorities;
+    private Collection<? extends SysJurisdiction> authorities;
 
     public void setUsername(String username) {
         this.username = username;
@@ -77,7 +78,7 @@ public class SysUser extends BasePojo implements UserDetails {
         this.password = password;
     }
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    public void setAuthorities(Collection<? extends SysJurisdiction> authorities) {
         this.authorities = authorities;
     }
 

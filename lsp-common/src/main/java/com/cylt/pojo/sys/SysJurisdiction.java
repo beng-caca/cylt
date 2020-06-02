@@ -2,6 +2,7 @@ package com.cylt.pojo.sys;
 
 import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Component
 @Entity
 @Table(name = "SYS_JURISDICTION")
-public class SysJurisdiction extends BasePojo {
+public class SysJurisdiction extends BasePojo implements GrantedAuthority {
 
 
     /**
@@ -71,5 +72,10 @@ public class SysJurisdiction extends BasePojo {
 
     public void setMenu(SysMenu menu) {
         this.menu = menu;
+    }
+
+    @Override
+    public String getAuthority() {
+        return null;
     }
 }

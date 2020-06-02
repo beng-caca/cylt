@@ -1,5 +1,7 @@
 package com.cylt.security;
 
+import com.cylt.pojo.sys.SysJurisdiction;
+import com.cylt.pojo.sys.SysRole;
 import com.cylt.redis.RedisUtil;
 import com.cylt.common.SysUser;
 import com.cylt.sys.dao.SysUserDao;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 登录专用类
@@ -43,7 +47,14 @@ public class UserService implements UserDetailsService {
             } else {
                 user = new SysUser();
             }
-
+        }
+        // 初始化权限
+        if(user.getRoleList() != null){
+            Set<SysJurisdiction> authorities = new HashSet<>();
+            for(SysRole role : user.getRoleList()){
+                authorities.addAll(role.getJurisdictionList());
+            }
+            user.setAuthorities(authorities);
         }
         return user;
     }

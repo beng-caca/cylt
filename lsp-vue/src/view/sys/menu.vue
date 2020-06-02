@@ -16,6 +16,10 @@
             <span slot='label'>{{ $t('menu.icon') }}</span>
             <Input v-model="$store.state.menu.info.icon"/>
           </FormItem>
+          <FormItem prop="baseUrl"  :label-width="120">
+            <span slot='label'>{{ $t('menu.baseUrl') }}</span>
+            <Input v-model="$store.state.menu.info.baseUrl"/>
+          </FormItem>
           <FormItem prop="component"  :label-width="120">
             <span slot='label'>{{ $t('menu.component') }}</span>
             <Input v-model="$store.state.menu.info.component"/>

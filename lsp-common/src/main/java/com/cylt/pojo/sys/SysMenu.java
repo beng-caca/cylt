@@ -43,6 +43,12 @@ public class SysMenu extends BasePojo {
     private String name;
 
     /**
+     * 菜单名称
+     */
+    @Column(name = "BASE_URL")
+    private String baseUrl;
+
+    /**
      * 图标
      */
     @Column(name = "ICON")
@@ -113,5 +119,13 @@ public class SysMenu extends BasePojo {
 
     public void setShowMenu(Boolean showMenu) {
         this.showMenu = showMenu;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
     }
 }

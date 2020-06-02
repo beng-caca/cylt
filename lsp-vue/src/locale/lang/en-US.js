@@ -105,6 +105,7 @@ export default {
     name: 'Menu Name',
     icon: 'Menu Icon',
     logout: 'logout',
+    baseUrl: 'Base Url',
     component: 'Page path',
     showMenu: 'Is Display',
     sys: {
