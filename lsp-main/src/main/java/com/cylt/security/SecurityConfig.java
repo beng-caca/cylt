@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.servlet.http.HttpServletRequest;
@@ -91,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
      * @throws Exception
      */
     @Bean
+    @Transactional
     SysAuthenticationFilter customAuthenticationFilter() throws Exception {
         SysAuthenticationFilter filter = new SysAuthenticationFilter();
         filter.setAuthenticationSuccessHandler(new AuthenticationSuccessHandler() {

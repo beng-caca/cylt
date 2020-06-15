@@ -38,7 +38,7 @@
       show-total show-sizer >
     </Page>
     <Drawer
-      :title="$t('menu.sys.user') + $t('system.info')"
+      :title="$t('menu.sys.log') + $t('system.info')"
       v-model="isInfo"
       width="40%"
     >

@@ -5,8 +5,20 @@
 </template>
 
 <script>
+import store from '@/store'
 export default {
-  name: 'App'
+  name: 'App',
+  created () {
+    if (!store.getters.Message) {
+      // 将全局消息赋值给store
+      store.getters.Message = this.$Message
+    }
+
+    if (!store.getters.t) {
+      // 将国际化赋值给store
+      store.getters.t = this.$t
+    }
+  }
 }
 </script>
 

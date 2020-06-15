@@ -2,17 +2,6 @@ import axios from 'axios'
 import store from '@/store'
 import qs from 'qs'
 axios.default.withCredentials = true
-// import { Spin } from 'iview'
-const addErrorLog = errorInfo => {
-  const { statusText, status, request: { responseURL } } = errorInfo
-  let info = {
-    type: 'ajax',
-    code: status,
-    mes: statusText,
-    url: responseURL
-  }
-  if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
-}
 
 class HttpRequest {
   constructor (baseUrl = baseURL) {
@@ -76,14 +65,21 @@ class HttpRequest {
     }, error => {
       this.destroy(url)
       if (error.message === 'Network Error') {
-        this.$router.replace({
-          name: this.$config.homeName
-        })
+        store.getters.Message.error(store.getters.t('system.networkError'))
       } else if (error.response.data.message === '未登录') {
-        store.dispatch('handleLogOut')
+        store.dispatch('handleLogOut').then(
+          () => {
+            store.getters.Message.error(store.getters.t('system.loginOvertime'))
+            setTimeout(() => {
+              location.reload()
+            }, 2000)
+          }
+        )
+      } else if (error.response.data.message === '权限不足') {
+        store.getters.Message.error(store.getters.t('system.insufficientAuthority'))
       }
-      let errorInfo = error.response
-      addErrorLog(errorInfo)
+      // let errorInfo = error.response
+      // addErrorLog(errorInfo)
       return Promise.reject(error.response)
     })
   }

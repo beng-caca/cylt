@@ -85,13 +85,15 @@ function jurisdiction(menu, operation) {
       acces = access[i]
     }
   }
+  let display = false
 
   // 判断是否显示该标签
-  let display
-  if (operation === 'edit') { // 判断是否有编辑权限
-    display = acces.edit
-  } else if (operation === 'del') { // 判断是否有删除权限
-    display = acces.del
+  if (acces) {
+    if (operation === 'edit') { // 判断是否有编辑权限
+      display = acces.edit
+    } else if (operation === 'del') { // 判断是否有删除权限
+      display = acces.del
+    }
   }
   return display
 }

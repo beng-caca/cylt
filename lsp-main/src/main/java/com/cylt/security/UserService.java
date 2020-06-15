@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ public class UserService implements UserDetailsService {
      * 并返回UserDetails放到spring的全局缓存SecurityContextHolder中，以供授权器使用
      */
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         //判断缓存里有没有这个用户
         SysUser user = new SysUser();
@@ -43,7 +45,11 @@ public class UserService implements UserDetailsService {
             user = sysUserDao.findByUsername(username);
             //如果确定有这个用户就放到缓存里
             if(user != null){
-                redisUtil.set(user);
+                try {
+                    redisUtil.save(user);
+                } catch (Exception e){
+                    throw new  UsernameNotFoundException("用户读取失败");
+                }
             } else {
                 user = new SysUser();
             }

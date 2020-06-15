@@ -9,8 +9,6 @@ import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.pojo.Sort;
 import com.cylt.common.util.DateUtils;
 import com.cylt.common.util.StringUtil;
-import com.sun.tools.javac.util.ArrayUtils;
-import net.bytebuddy.description.field.FieldList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,6 @@ import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * redisTemplate封装
@@ -438,6 +435,7 @@ public class RedisUtil {
         if (set.size() == 0) {
             logger.info("insert:" + key);
             set(rootPojo, time);
+            save(getRelationship(rootPojo), time);
             return;
         }
         for (String str : set) {
@@ -480,9 +478,9 @@ public class RedisUtil {
      *
      * @param pojoList 要保存的数据
      */
-    public void save(List<BasePojo> pojoList,long time) throws Exception {
-        for (BasePojo pojo : pojoList) {
-            save(pojo, time);
+    public void save(List pojoList,long time) throws Exception {
+        for (Object pojo : pojoList) {
+            save((BasePojo) pojo, time);
         }
     }
 
@@ -491,9 +489,9 @@ public class RedisUtil {
      *
      * @param pojoList 要保存的数据
      */
-    public void save(List<BasePojo> pojoList) throws Exception {
-        for (BasePojo pojo : pojoList) {
-            save(pojo, 0);
+    public void save(List pojoList) throws Exception {
+        for (Object pojo : pojoList) {
+            save((BasePojo) pojo, 0);
         }
     }
 
