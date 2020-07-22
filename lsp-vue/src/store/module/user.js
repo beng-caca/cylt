@@ -38,7 +38,7 @@ export default {
     login (state, user) {
       state.thisUser = user
       // 初始化权限列表
-      state.thisUser.access = [ { menu: { baseUrl: '/home' } } ]
+      state.thisUser.access = [ { menu: { name: 'home' } } ]
       for (let r in user.roleList) {
         let roleList = user.roleList[r]
         for (let j in roleList.jurisdictionList) {

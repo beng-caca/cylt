@@ -97,13 +97,14 @@ export default {
           id: data.id,
           pid: data.pid,
           name: data.name,
+          path: data.baseUrl,
           data: data,
           meta: {
             hideInMenu: !data.showMenu,
             icon: data.icon,
             title: data.name
           },
-          component: () => import('@' + data.component),
+          component: data.component,
           children: []
         }
       })
@@ -115,16 +116,12 @@ export default {
   },
   actions: {
     getMenuData ({ commit, rootState }) {
-      if (store.state.menuList !== undefined && store.state.menuList.length !== 0) {
-        commit('setMenuList', store.state.menuList)
-      } else {
-        getMenuList().then(res => {
-          store.state.menuList = res.data
-          commit('setMenuList', res.data)
-        }).catch(e => {
-          console.log(e)
-        })
-      }
+      getMenuList().then(res => {
+        store.state.menuList = res.data
+        commit('setMenuList', res.data)
+      }).catch(e => {
+        console.log(e)
+      })
     }
   }
 }

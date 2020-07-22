@@ -25,7 +25,7 @@ export default [
       title: 'Login - 登录',
       hideInMenu: true
     },
-    component: () => import('@/view/login/login.vue')
+    component: resolve => require(['@/view/login/login.vue'], resolve)
   },
   {
     path: '/',
@@ -488,58 +488,58 @@ export default [
     },
     component: () => import('@/view/error-page/404.vue')
   },
-  {
-    path: '/sys',
-    name: 'menu.sys.name',
-    component: Main,
-    meta: {
-      id: '1',
-      icon: 'ios-cog',
-      hideInBread: false,
-      title: 'sys'
-    },
-    children: [{
-      path: 'menu',
-      name: 'menu.sys.menu',
-      meta: {
-        id: '2',
-        icon: 'md-menu',
-        hideInBread: false,
-        title: '菜单'
-      },
-      component: () => import('@/view/sys/menu.vue')
-    }, {
-      path: 'user',
-      name: 'menu.sys.user',
-      meta: {
-        id: '3',
-        icon: 'ios-contact',
-        hideInBread: false,
-        title: '用户'
-      },
-      component: () => import('@/view/sys/user.vue')
-    }, {
-      path: 'role',
-      name: 'menu.sys.role',
-      meta: {
-        id: '44081177-b04d-4d0c-8fa5-6856ba96d255',
-        icon: 'md-contacts',
-        hideInBread: false,
-        title: '角色'
-      },
-      component: () => import('@/view/sys/role.vue')
-    }, {
-      path: 'log',
-      name: 'menu.sys.log',
-      meta: {
-        id: '35f8a839-6cb9-4d78-8fba-c445a162e142',
-        icon: 'md-albums',
-        hideInBread: false,
-        title: '日志'
-      },
-      component: () => import('@/view/sys/log.vue')
-    }
-    ]
-  }
+  // {
+  //   path: '/sys',
+  //   name: 'menu.sys.name',
+  //   component: () => import('@/components/main'),
+  //   meta: {
+  //     id: '1',
+  //     icon: 'ios-cog',
+  //     hideInBread: false,
+  //     title: 'sys'
+  //   },
+  //   children: [{
+  //     path: 'menu',
+  //     name: 'menu.sys.menu',
+  //     meta: {
+  //       id: '2',
+  //       icon: 'md-menu',
+  //       hideInBread: false,
+  //       title: '菜单'
+  //     },
+  //     component: () => import('@/view/sys/menu.vue')
+  //   }, {
+  //     path: 'user',
+  //     name: 'menu.sys.user',
+  //     meta: {
+  //       id: '3',
+  //       icon: 'ios-contact',
+  //       hideInBread: false,
+  //       title: '用户'
+  //     },
+  //     component: () => import('@/view/sys/user.vue')
+  //   }, {
+  //     path: 'role',
+  //     name: 'menu.sys.role',
+  //     meta: {
+  //       id: '44081177-b04d-4d0c-8fa5-6856ba96d255',
+  //       icon: 'md-contacts',
+  //       hideInBread: false,
+  //       title: '角色'
+  //     },
+  //     component: () => import('@/view/sys/role.vue')
+  //   }, {
+  //     path: 'log',
+  //     name: 'menu.sys.log',
+  //     meta: {
+  //       id: '35f8a839-6cb9-4d78-8fba-c445a162e142',
+  //       icon: 'md-albums',
+  //       hideInBread: false,
+  //       title: '日志'
+  //     },
+  //     component: () => import('@/view/sys/log.vue')
+  //   }
+  //   ]
+  // }
 
 ]

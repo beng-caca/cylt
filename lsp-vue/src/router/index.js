@@ -13,7 +13,7 @@ const router = new Router({
   mode: 'history'
 })
 const LOGIN_PAGE_NAME = 'login'
-
+let start = true
 const turnTo = (to, access, next) => {
   if (access === undefined) { // 未登录 重新登录
     next({ replace: true, name: 'login' })
@@ -23,7 +23,7 @@ const turnTo = (to, access, next) => {
     next()
     return
   }
-  if (access.some(_ => _.menu.baseUrl === to.fullPath)) {
+  if (access.some(_ => _.menu.name === to.name)) {
     next() // 有权限，可访问
   } else {
     next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
@@ -31,6 +31,13 @@ const turnTo = (to, access, next) => {
 }
 
 router.beforeEach((to, from, next) => {
+  // 判断是否初始化了路由 如果初始化了 就重新添加业务路由 并且重新请求
+  if (start) {
+    router.addRoutes(store.getters.menuList)
+    start = false
+    router.push(to.fullPath)
+    return
+  }
   iView.LoadingBar.start()
   const thisUser = store.state.user.thisUser
   if (!thisUser.id && to.name !== LOGIN_PAGE_NAME) {
@@ -53,7 +60,7 @@ router.beforeEach((to, from, next) => {
       store.dispatch('getThisUser').then(user => {
         store.state.user.thisUser = user.data
         // 初始化权限列表
-        store.state.user.thisUser.access = [ { menu: { baseUrl: '/home' } } ]
+        store.state.user.thisUser.access = [ { menu: { name: 'home' } } ]
         for (let r in user.data.roleList) {
           let roleList = user.data.roleList[r]
           for (let j in roleList.jurisdictionList) {

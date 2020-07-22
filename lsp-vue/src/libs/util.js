@@ -46,7 +46,13 @@ export const getMenuByRouter = (list, access) => {
       let obj = {
         icon: (item.meta && item.meta.icon) || '',
         name: item.name,
-        meta: item.meta
+        meta: item.meta,
+        path: item.path
+      }
+      if (item.component === '/components/main') {
+        obj.component = () => import('@/components/main')
+      } else {
+        obj.component = resolve => require([`@/view${item.component}`], resolve)
       }
       if ((hasChild(item) || (item.meta && item.meta.showAlways)) && showThisMenuEle(item, access)) {
         obj.children = getMenuByRouter(item.children, access)
