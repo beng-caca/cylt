@@ -101,7 +101,7 @@
 import store from '@/store'
 export default {
   data () {
-    store.dispatch('getSysLogList')
+    store.dispatch('getSysLogList', this.$store.state.log.query)
     return {
       columns: [
         { type: 'index', width: 60, align: 'center' },

@@ -117,7 +117,7 @@ public class RedisUtil {
         for (String str : set) {
             key = str;
         }
-        if(isLog){
+        if (isLog) {
             logger.info("delete:" + key);
         }
         pojo = JSON.parseObject((String) redisTemplate.opsForValue().get(key), BasePojo.class);
@@ -295,7 +295,7 @@ public class RedisUtil {
         List<String> fields = new ArrayList<>();
         List<Boolean> oreders = new ArrayList<>();
         // 遍历转属性名
-        for(Sort sort : sortList){
+        for (Sort sort : sortList) {
             // 判断该对象里是否有此属性 如果没有就去父类里找
             if (isExistFieldName(sort.getField(), pojo)) {
                 field = pojo.getClass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
@@ -304,7 +304,7 @@ public class RedisUtil {
             }
             fields.add(field);
         }
-        for(Sort sort : sortList){
+        for (Sort sort : sortList) {
             oreders.add(sort.getAsc());
         }
         Set<String> sortSet = new TreeSet<>((k1, k2) -> {
@@ -347,8 +347,8 @@ public class RedisUtil {
     /**
      * 比较两个key
      *
-     * @param v1   value1
-     * @param v2   value2
+     * @param v1       value1
+     * @param v2       value2
      * @param sortList 排序规则
      */
     private Boolean compareKey(List<String> v1, List<String> v2, List<Boolean> sortList) {
@@ -356,11 +356,11 @@ public class RedisUtil {
         String v1i;
         String v2i;
         // 遍历所有排序字段一一对比 然后再返回谁大小结果
-        for(int i = 0;i < v1.size();i++){
+        for (int i = 0; i < v1.size(); i++) {
             v1i = v1.get(i);
             v2i = v2.get(i);
             // 如果当前维度排序字段一样 则进入下一个排序维度
-            if(v1i.equals(v2i)){
+            if (v1i.equals(v2i)) {
                 continue;
             }
 
@@ -404,13 +404,13 @@ public class RedisUtil {
     /**
      * 批量取key属性值
      *
-     * @param key    key
+     * @param key     key
      * @param columns 属性名
      * @return
      */
     private List<String> getKeyField(String key, List<String> columns) {
         List<String> values = new ArrayList<>();
-        for(String column : columns){
+        for (String column : columns) {
             values.add(getKeyField(key, column));
         }
         return values;
@@ -421,7 +421,7 @@ public class RedisUtil {
      *
      * @param rootPojo 要保存的数据
      */
-    public void save(BasePojo rootPojo,long time) throws Exception {
+    public void save(BasePojo rootPojo, long time) throws Exception {
         if (rootPojo == null) {
             return;
         }
@@ -448,9 +448,9 @@ public class RedisUtil {
         // 判断新的和旧的是否一样 如果一样则不作操作  如果不一样则做修改
         if (!data.equals(oldData)) {
             // 如果没有初始化过期时间就按默认的算
-            if(time < 0){
+            if (time < 0) {
                 time = getExpire(key);
-                if(time == -2){
+                if (time == -2) {
                     throw new Exception("保存的数据已过期异常:" + key);
                 }
             }
@@ -478,7 +478,7 @@ public class RedisUtil {
      *
      * @param pojoList 要保存的数据
      */
-    public void save(List pojoList,long time) throws Exception {
+    public void save(List pojoList, long time) throws Exception {
         for (Object pojo : pojoList) {
             save((BasePojo) pojo, time);
         }
@@ -509,7 +509,7 @@ public class RedisUtil {
      * 普通缓存放入并设置时间
      *
      * @param rootPojo 值
-     * @param time  时间(秒) time要大于0 如果time小于等于0 将设置无限期
+     * @param time     时间(秒) time要大于0 如果time小于等于0 将设置无限期
      * @return true成功 false 失败
      */
     public boolean set(BasePojo rootPojo, long time) {
@@ -535,7 +535,6 @@ public class RedisUtil {
             e.printStackTrace();
             return false;
         }
-
 
 
     }
@@ -974,8 +973,8 @@ public class RedisUtil {
         //表名|-|id=?|-|属性名=?|-|属性名=?|-|属性名=?................
         buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(DIVISION);
         buffer.append("id=").append(basePojo.getId() == null || "".equals(basePojo.getId()) ? "*" : basePojo.getId()).append(DIVISION);
-        String columnVal = "";
-        Object objColumnVal = "";
+        String columnVal;
+        Object objColumnVal;
         //遍历其他属性名
         for (Field field : fieldList) {
             //如果是索引字段就拼接上"列名=value"
@@ -986,12 +985,20 @@ public class RedisUtil {
                     columnVal = "*";
                     // 判断如果是date类型的就先格式化下
                     objColumnVal = field.get(basePojo);
-                    if ("java.util.Date".equals(field.getGenericType().getTypeName())) {
-                        if (objColumnVal != null) {
-                            columnVal = DateUtils.formatTime((Date) objColumnVal);
-                        }
-                    } else {
-                        columnVal = (String) objColumnVal;
+                    switch (field.getGenericType().getTypeName()) {
+                        case "java.util.Date":
+                            if (objColumnVal != null) {
+                                columnVal = DateUtils.formatTime((Date) objColumnVal);
+                            }
+                            break;
+                        case "int":
+                            // 这里如果int值是-1的话 就是不把他当检索条件 (因为int没有null而且默认是0)
+                            if (-1 != (int) objColumnVal) {
+                                columnVal = objColumnVal.toString();
+                            }
+                            break;
+                        default: //默认string
+                            columnVal = (String) objColumnVal;
                     }
                     if (null == columnVal || "".equals(columnVal)) {
                         columnVal = "*";

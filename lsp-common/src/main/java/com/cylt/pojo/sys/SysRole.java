@@ -4,6 +4,8 @@ import com.cylt.common.LogTitle;
 import com.cylt.common.Redis;
 import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -18,6 +20,8 @@ import java.util.List;
  */
 @Component
 @Entity
+@Getter
+@Setter
 @Table(name = "SYS_ROLE")
 @Where(clause = "DEL_STATE = '0'")
 @SQLDelete(sql = "UPDATE SYS_ROLE SET DEL_STATE = '1' WHERE id=?", check = ResultCheckStyle.COUNT)
@@ -50,27 +54,4 @@ public class SysRole extends BasePojo {
     @OneToMany(mappedBy = "roleId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SysJurisdiction> jurisdictionList = new ArrayList<>();
 
-    public String getRoleName() {
-        return roleName;
-    }
-
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
-    public List<SysUser> getUserList() {
-        return userList;
-    }
-
-    public void setUserList(List<SysUser> userList) {
-        this.userList = userList;
-    }
-
-    public List<SysJurisdiction> getJurisdictionList() {
-        return jurisdictionList;
-    }
-
-    public void setJurisdictionList(List<SysJurisdiction> jurisdictionList) {
-        this.jurisdictionList = jurisdictionList;
-    }
 }

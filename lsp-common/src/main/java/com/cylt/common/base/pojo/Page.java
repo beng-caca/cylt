@@ -1,11 +1,16 @@
 package com.cylt.common.base.pojo;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.List;
 
 /**
  * 分页bean
  */
+@Getter
+@Setter
 public class Page {
     /**
      * 第 * 页
@@ -26,36 +31,4 @@ public class Page {
      * 分页数据
      */
     private List pageList;
-
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    public void setPageNumber(int pageNumber) {
-        this.pageNumber = pageNumber;
-    }
-
-    public int getTotalNumber() {
-        return totalNumber;
-    }
-
-    public void setTotalNumber(int totalNumber) {
-        this.totalNumber = totalNumber;
-    }
-
-    public int getSinglePage() {
-        return singlePage;
-    }
-
-    public void setSinglePage(int singlePage) {
-        this.singlePage = singlePage;
-    }
-
-    public List getPageList() {
-        return pageList;
-    }
-
-    public void setPageList(List pageList) {
-        this.pageList = pageList;
-    }
 }

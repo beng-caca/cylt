@@ -78,7 +78,7 @@ import store from '@/store'
 import { ergodicTree } from '@/libs/util'
 export default {
   data () {
-    store.dispatch('getRoleList')
+    store.dispatch('getRoleList', this.$store.state.role.query)
     return {
       columns1: [
         { type: 'index', width: 60, align: 'center' },

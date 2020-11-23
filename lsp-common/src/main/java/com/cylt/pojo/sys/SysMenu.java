@@ -3,6 +3,8 @@ package com.cylt.pojo.sys;
 import com.cylt.common.LogTitle;
 import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.ResultCheckStyle;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -17,6 +19,8 @@ import java.util.List;
  */
 @Component
 @Entity
+@Getter
+@Setter
 @Table(name = "SYS_MENU")
 @Where(clause = "DEL_STATE = '0'")
 @SQLDelete(sql = "UPDATE SYS_MENU SET DEL_STATE = '1' WHERE id=?", check = ResultCheckStyle.COUNT)
@@ -71,61 +75,4 @@ public class SysMenu extends BasePojo {
      */
     @OneToMany(mappedBy = "pid" ,cascade = { CascadeType.REMOVE})
     private List<SysMenu> childrenList = new ArrayList<>();
-
-
-    public String getPid() {
-        return pid;
-    }
-
-    public void setPid(String pid) {
-        this.pid = pid;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public String getComponent() {
-        return component;
-    }
-
-    public void setComponent(String component) {
-        this.component = component;
-    }
-
-    public Boolean getShowMenu() {
-        return showMenu;
-    }
-
-    public List<SysMenu> getChildrenList() {
-        return childrenList;
-    }
-
-    public void setChildrenList(List<SysMenu> childrenList) {
-        this.childrenList = childrenList;
-    }
-
-    public void setShowMenu(Boolean showMenu) {
-        this.showMenu = showMenu;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
-    }
 }

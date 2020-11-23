@@ -49,6 +49,7 @@ export default {
   system: {
     info: '信息',
     save: '保存',
+    copy: '复制',
     edit: '编辑',
     del: '删除',
     operation: '操作',
@@ -103,6 +104,14 @@ export default {
       pojo: '实体',
       retry: '重试',
       delayRefresh: '正在处理，五秒后刷新界面'
+    },
+    // dict
+    dict: {
+      key: '字典键',
+      value: '字典值',
+      title: '字典标题',
+      order: '字典顺序',
+      remakes: '备注'
     }
   },
   // menu
@@ -117,7 +126,19 @@ export default {
       menu: '菜单',
       role: '角色',
       user: '用户',
-      log: '日志'
+      log: '日志',
+      dict: '字典'
+    }
+  },
+  // dict
+  dict: {
+    sys: {
+      log: {
+        error: '处理失败',
+        pending: '等待处理',
+        processing: '正在处理',
+        successfully: '处理成功'
+      }
     }
   }
 }

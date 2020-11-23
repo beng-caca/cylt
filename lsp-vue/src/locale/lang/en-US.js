@@ -49,6 +49,7 @@ export default {
   system: {
     info: ' Info',
     save: 'Save',
+    copy: 'Copy',
     edit: 'edit',
     del: 'Delete',
     operation: 'operation',
@@ -101,6 +102,14 @@ export default {
       pojo: 'Parameter',
       retry: 'Retry',
       delayRefresh: 'Refresh the interface in five seconds'
+    },
+    // dict
+    dict: {
+      key: 'Dict Key',
+      value: 'Dict Value',
+      title: 'Dict Title',
+      order: 'Dict Order',
+      remakes: 'Remakes'
     }
   },
   // menu
@@ -116,7 +125,19 @@ export default {
       menu: 'Menu',
       role: 'Role',
       user: 'User',
-      log: 'Log'
+      log: 'Log',
+      dict: 'Dict'
+    }
+  },
+  // dict
+  dict: {
+    sys: {
+      log: {
+        error: 'Error',
+        pending: 'Pending',
+        processing: 'Processing',
+        successfully: 'Successfully'
+      }
     }
   }
 }

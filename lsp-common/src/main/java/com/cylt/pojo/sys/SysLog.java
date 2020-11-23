@@ -3,6 +3,8 @@ package com.cylt.pojo.sys;
 import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,8 @@ import java.util.Date;
  */
 @Component
 @Entity
+@Getter
+@Setter
 @DynamicUpdate
 @Table(name = "SYS_LOG")
 public class SysLog extends BasePojo {
@@ -108,99 +112,4 @@ public class SysLog extends BasePojo {
     @Column(name = "ERROR_TEXT")
     private String errorText;
 
-    public String getModule() {
-        return module;
-    }
-
-    public void setModule(String module) {
-        this.module = module;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getHandleDate() {
-        return handleDate;
-    }
-
-    public void setHandleDate(Date handleDate) {
-        this.handleDate = handleDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public float getTimeUse() {
-        return timeUse;
-    }
-
-    public void setTimeUse(float timeUse) {
-        this.timeUse = timeUse;
-    }
-
-    public String getErrorText() {
-        return errorText;
-    }
-
-    public void setErrorText(String errorText) {
-        this.errorText = errorText;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public String getDeclaredMethodName() {
-        return declaredMethodName;
-    }
-
-    public void setDeclaredMethodName(String declaredMethodName) {
-        this.declaredMethodName = declaredMethodName;
-    }
-
-    public String getPojo() {
-        return pojo;
-    }
-
-    public void setPojo(String pojo) {
-        this.pojo = pojo;
-    }
 }

@@ -7,6 +7,7 @@ import app from './module/app'
 import menu from './sys/menu'
 import role from './sys/role'
 import log from './sys/log'
+import dict from './sys/dict'
 
 Vue.use(Vuex)
 
@@ -25,7 +26,8 @@ export default new Vuex.Store({
     app,
     menu,
     role,
-    log
+    log,
+    dict
   },
   plugins: [
     createVuexAlong({

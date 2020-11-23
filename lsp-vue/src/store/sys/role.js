@@ -4,6 +4,7 @@ export default {
   state: {
     roleList: [],
     info: {},
+    loading: false,
     query: {
       pageNumber: 1,
       totalNumber: 0,
@@ -66,8 +67,10 @@ export default {
   },
   actions: {
     getRoleList ({ commit, rootState }, params) {
+      rootState.role.loading = true
       getRoleList(params).then(res => {
         commit('roleList', res.data)
+        rootState.role.loading = false
       }).catch(e => {
         console.log(e)
       })
