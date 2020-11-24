@@ -105,7 +105,7 @@ export default {
         { title: this.$t('system.dict.key'), key: 'dictKey' },
         { title: this.$t('system.dict.title'), key: 'title'},
         { title: this.$t('system.dict.value'), key: 'dictValue' },
-        { title: this.$t('system.dict.remakes'), key: 'remakes' },
+        { title: this.$t('system.dict.remakes'), key: 'remakes', tooltip: true },
         { title: this.$t('system.operation'), slot: 'action', width: 200, align: 'center' }
       ],
       contextLine: 0,

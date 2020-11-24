@@ -13,6 +13,7 @@ import {
   addTreeList
 } from '@/libs/util'
 import { getMenuList } from '@/api/data'
+import { getNoPageList } from '@/api/sys/dict'
 import router from '@/router'
 import store from '@/store'
 // import routers from '@/router/routers'
@@ -112,6 +113,9 @@ export default {
         state.menuList.push(list[i])
       }
       state.hasInfo = true
+    },
+    setDictList (state, list) {
+      state.dictList = list
     }
   },
   actions: {
@@ -119,6 +123,13 @@ export default {
       getMenuList().then(res => {
         store.state.menuList = res.data
         commit('setMenuList', res.data)
+      }).catch(e => {
+        console.log(e)
+      })
+    },
+    getDictData ({ commit, rootState }) {
+      getNoPageList().then(res => {
+        commit('setDictList', res.data)
       }).catch(e => {
         console.log(e)
       })

@@ -30,6 +30,7 @@ export default {
       this.handleLogin({ username, password }).then(res => {
         store.state.user.thisUser = res
         store.dispatch('getMenuData')
+        store.dispatch('getDictData')
         this.$router.push({
           name: this.$config.homeName
         })

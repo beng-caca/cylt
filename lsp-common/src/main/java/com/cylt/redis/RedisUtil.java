@@ -39,7 +39,7 @@ public class RedisUtil {
         this.redisTemplate = redisTemplate;
     }
 
-    public static Logger logger = LoggerFactory.getLogger(RedisUtil.class);
+    private static Logger logger = LoggerFactory.getLogger(RedisUtil.class);
 
     /**
      * 指定缓存失效时间
@@ -992,7 +992,7 @@ public class RedisUtil {
                             }
                             break;
                         case "int":
-                            // 这里如果int值是-1的话 就是不把他当检索条件 (因为int没有null而且默认是0)
+                            // 这里如果int值是-1的话 就是不把他当检索条件 (因为int没有null默认是0)
                             if (-1 != (int) objColumnVal) {
                                 columnVal = objColumnVal.toString();
                             }

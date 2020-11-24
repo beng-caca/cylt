@@ -61,6 +61,8 @@ public class SysDictService extends BaseService {
      * @return
      */
     public List<SysDict> list(SysDict sysDict) {
+        // 这里不用排序字段检索
+        sysDict.setDictOrder(-1);
         return (List<SysDict>) redisUtil.list(sysDict);
     }
 

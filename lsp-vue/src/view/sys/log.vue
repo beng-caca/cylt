@@ -1,5 +1,5 @@
 <template>
-  <div data-menu="menu.sys.user" class="split-pane-page-wrapper">
+  <div data-menu="menu.sys.log" class="split-pane-page-wrapper">
     <Form inline  style="padding: 10px;margin-bottom: 20px;border: 2px solid #e8eaec;">
       <FormItem prop="username">
         <Input type="text" v-model="$store.state.log.query.title" :placeholder="$t('system.log.title')">
@@ -9,6 +9,9 @@
         <Input type="text" v-model="$store.state.log.query.errorText" :placeholder="$t('system.log.errorText')">
         </Input>
       </FormItem>
+      <Select v-model="$store.state.log.query.state" style="width: 120px;margin: 1px 11px 1px 1px;" clearable>
+        <Option v-for="item in $dictList('HANDLE')" :value="item.dictValue" :key="item.id">{{ $t(item.title) }}</Option>
+      </Select>
       <FormItem>
         <Button type="primary" @click="query()">{{ $t('system.query') }}</Button>
       </FormItem>
@@ -105,8 +108,34 @@ export default {
     return {
       columns: [
         { type: 'index', width: 60, align: 'center' },
-        { title: this.$t('system.log.title'), width: 450, key: 'title' },
-        { title: this.$t('system.log.state'), key: 'state' },
+        { title: this.$t('system.log.title'), width: 450, key: 'title', tooltip: true },
+        { title: this.$t('system.log.state'),
+          key: 'state',
+          render: (h, params) => {
+            let color = '#000'
+            switch (params.row.state) {
+              case '0':
+                color = 'red'
+                break
+              case 1:
+                color = 'yellow'
+                break
+              case 2:
+                color = 'blue'
+                break
+              case '3':
+                color = 'green'
+                break
+            }
+            return h('div', [
+              h('strong', {
+                style: {
+                  color: color
+                }
+              }, this.$t(this.$dict('HANDLE', params.row.state)))
+            ])
+          }
+        },
         { title: this.$t('system.log.startDate'), width: 150, key: 'startDate' },
         { title: this.$t('system.log.timeUse'), key: 'timeUse' },
         { title: this.$t('system.operation'), slot: 'action', width: 120, align: 'center' }

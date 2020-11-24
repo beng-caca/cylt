@@ -97,6 +97,40 @@ function jurisdiction(menu, operation) {
   }
   return display
 }
+
+/**
+ * 取数据字典
+ * @param key
+ * @param val
+ */
+Vue.prototype.$dict = dict
+function dict(key, val) {
+  let dict
+  for (let i in store.state.app.dictList) {
+    dict = store.state.app.dictList[i]
+    if (dict.dictKey === key && dict.dictValue === val) {
+      return dict.title
+    }
+  }
+}
+
+
+/**
+ * 取数据字典数组
+ */
+Vue.prototype.$dictList = dictList
+function dictList(key) {
+  let dictList = []
+  let dict
+  for (let i in store.state.app.dictList) {
+    dict = store.state.app.dictList[i]
+    if (dict.dictKey === key) {
+      dictList.push(dict)
+    }
+  }
+  return dictList
+}
+
 /**
  * @description 全局注册应用配置
  */
