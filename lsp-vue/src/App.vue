@@ -6,9 +6,12 @@
 
 <script>
 import store from '@/store'
+import Push from 'push.js'
 export default {
   name: 'App',
   created () {
+    // 注册推送通知
+    Push.Permission.request()
     if (!store.getters.Message) {
       // 将全局消息赋值给store
       store.getters.Message = this.$Message

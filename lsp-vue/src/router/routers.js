@@ -487,7 +487,7 @@ export default [
       hideInMenu: true
     },
     component: () => import('@/view/error-page/404.vue')
-  },
+  }
   // {
   //   path: '/sys',
   //   name: 'menu.sys.name',

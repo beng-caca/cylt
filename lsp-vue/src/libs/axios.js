@@ -1,7 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
 import qs from 'qs'
-axios.default.withCredentials = true
 
 class HttpRequest {
   constructor (baseUrl = baseURL) {
@@ -13,6 +12,9 @@ class HttpRequest {
       baseURL: this.baseUrl,
       headers: {
         //
+      },
+      default: {
+        withCredentials: true
       }
     }
     return config
@@ -85,6 +87,7 @@ class HttpRequest {
   }
   request (options) {
     const instance = axios.create({
+      changeOrigin: true,
       withCredentials: true // cros with cookie
     })
     options = Object.assign(this.getInsideConfig(), options)

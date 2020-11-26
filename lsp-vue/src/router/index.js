@@ -32,10 +32,14 @@ const turnTo = (to, access, next) => {
 
 router.beforeEach((to, from, next) => {
   // 判断是否初始化了路由 如果初始化了 就重新添加业务路由 并且重新请求
-  if (start) {
+  if (start && store.getters.menuList.length !== 0) {
     router.addRoutes(store.getters.menuList)
     start = false
-    router.push(to.fullPath)
+    if (to.fullPath === '/') {
+      router.push({ name: to.name })
+    } else {
+      router.push(to.fullPath)
+    }
     return
   }
   iView.LoadingBar.start()

@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  datahttpd:
+    image: httpd
+    container_name: datahttpd
+    ports:
+    - "80:80"
+    volumes:
+    - ../lsp-vue/dist:/usr/local/apache2/htdocs/
