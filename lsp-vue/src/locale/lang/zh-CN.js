@@ -64,6 +64,7 @@ export default {
     fail: '操作失败',
     tree: '树',
     pleaseEnter: '请输入',
+    remakes: '备注',
     warning: '警告',
     validate: {
       notNull: '不能为空！',
@@ -112,6 +113,16 @@ export default {
       title: '字典标题',
       order: '字典顺序',
       remakes: '备注'
+    },
+    // notice
+    notice: {
+      code: '推送主键',
+      title: '标题',
+      content: '内容',
+      callbackUrl: '回调地址',
+      pushType: '推送类型',
+      expiration: '过期时间(天)',
+      push: '推送'
     }
   },
   // menu
@@ -127,7 +138,8 @@ export default {
       role: '角色',
       user: '用户',
       log: '日志',
-      dict: '字典'
+      dict: '字典',
+      notice: '通知'
     }
   },
   // dict
@@ -138,6 +150,10 @@ export default {
         pending: '等待处理',
         processing: '正在处理',
         successfully: '处理成功'
+      },
+      noticeType: {
+        push: '送达即可',
+        response: '响应即可'
       }
     }
   }

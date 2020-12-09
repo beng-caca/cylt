@@ -1,0 +1,118 @@
+package com.cylt.sys.controller;
+
+import com.cylt.common.SysUser;
+import com.cylt.common.base.controller.BaseController;
+import com.cylt.common.base.pojo.Page;
+import com.cylt.pojo.sys.SysNotice;
+import com.cylt.pojo.sys.SysPush;
+import com.cylt.pojo.sys.SysRole;
+import com.cylt.sys.service.SysNoticeService;
+import com.cylt.sys.service.SysRoleService;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+/**
+ * 通知Controller
+ */
+@Controller
+@RequestMapping(value = "sys/notice", produces = "text/html;charset=utf-8")
+public class SysNoticeController extends BaseController {
+
+    /**
+     * 通知Service
+     */
+    @Resource
+    private SysNoticeService sysNoticeService;
+
+    /**
+     * 分页查询列表
+     * @param notice 通知对象
+     * @param page 分页参数
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "list")
+    public String list(SysNotice notice, Page page) throws Exception {
+        page = sysNoticeService.list(notice, page);
+        return getJson(page);
+    }
+
+    /**
+     * 根据ID取得通知
+     * @param id ID
+     * @return 角色
+     */
+    @ResponseBody
+    @RequestMapping(value = "get")
+    public String get(String id) {
+        return getJson(sysNoticeService.get(id));
+    }
+
+    /**
+     * 保存通知
+     * @param notice 通知对象
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "save")
+    public String save(SysNotice notice) throws Exception {
+        sysNoticeService.save(notice);
+        return responseSuccess();
+    }
+
+    /**
+     * 删除通知
+     * @param notice 通知对象
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "delete")
+    public String delete(SysNotice notice) throws Exception {
+        sysNoticeService.delete(notice);
+        return responseSuccess();
+    }
+
+
+
+    /**
+     * 推送通知
+     * @param notice 通知对象
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "push")
+    public String push(SysNotice notice) throws Exception {
+        sysNoticeService.push(notice);
+        return responseSuccess();
+    }
+
+    /**
+     * 推送通知
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "news")
+    public String news() {
+        // 获取当前登录用户
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+        return getJson(sysNoticeService.pop(user));
+    }
+
+    /**
+     * 推送已读
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "read")
+    public String read(SysPush push) {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+        sysNoticeService.read(user, push);
+        return responseSuccess();
+    }
+
+}

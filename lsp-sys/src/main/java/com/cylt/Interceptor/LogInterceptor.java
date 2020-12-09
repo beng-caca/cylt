@@ -24,7 +24,7 @@ public class LogInterceptor {
     @RabbitHandler
     public void process(MQEntity mq, Message message, Channel channel) throws Exception {
         logger.info( MessageFormat.format("正在消费:{0}.{1}：{2}",
-                mq.getServiceName(), mq.getDeclaredMethodName(), mq.getPojo().getId()));
+                mq.getServiceName(), mq.getDeclaredMethodName(), mq.getPojo()));
         // 通知rabbitmq处理完成
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         channel.basicAck(deliveryTag, true);

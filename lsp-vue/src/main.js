@@ -15,7 +15,6 @@ import '@/assets/icons/iconfont.css'
 import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
-import Push from 'push.js'
 // 实际打包时应该不引入mock
 /* eslint-disable */
 //if (process.env.NODE_ENV !== 'production') require('@/mock')
@@ -109,7 +108,7 @@ function dict(key, val) {
   let dict
   for (let i in store.state.app.dictList) {
     dict = store.state.app.dictList[i]
-    if (dict.dictKey === key && dict.dictValue === val) {
+    if (dict.dictKey === key && dict.dictValue == val) {
       return dict.title
     }
   }
@@ -125,35 +124,11 @@ function dictList(key) {
   let dict
   for (let i in store.state.app.dictList) {
     dict = store.state.app.dictList[i]
-    if (dict.dictKey === key) {
+    if (dict.dictKey == key) {
       dictList.push(dict)
     }
   }
   return dictList
-}
-
-
-/**
- * 取数据字典数组
- */
-Vue.prototype.$pushMessage = pushMessage
-//推送弹框消息
-function pushMessage(message){
-  Push.create("jis通1222知", {
-    link: 'sys/log',
-    body: message,
-    icon: 'http://localhost:8080/img/logo.d8f654ae.png',
-    requireInteraction: true,
-    data: '3213123',
-    onClick: function (a) {
-      window.focus();
-      console.log(a)
-      this.close();
-    },
-    onClose: function (a) {
-      console.log(a)
-    }
-  });
 }
 
 /**

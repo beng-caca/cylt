@@ -1,8 +1,8 @@
 package com.cylt.dataInit;
 
-import com.cylt.pojo.sys.SysMenu;
 import com.cylt.redis.RedisUtil;
 import com.cylt.sys.dao.SysMenuDao;
+import com.cylt.sys.dao.SysNoticeDao;
 import com.cylt.sys.dao.SysRoleDao;
 import com.cylt.sys.dao.SysUserDao;
 import org.slf4j.Logger;
@@ -31,9 +31,11 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
     @Resource
     private SysRoleDao sysRoleDao;
 
-
     @Resource
     private SysMenuDao sysMenuDao;
+
+    @Resource
+    private SysNoticeDao sysNoticeDao;
 
 
     /**
@@ -60,6 +62,8 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
                 redisUtil.save(sysRoleDao.findAll());
                 // 保存用户
                 redisUtil.save(sysUserDao.findAll());
+                // 保存消息
+                redisUtil.save(sysNoticeDao.findAll());
                 // 解除实体与session的链接防止修改数据库
                 entityManager.clear();
                 logger.info("redis init success");

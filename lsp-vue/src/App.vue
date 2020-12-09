@@ -21,6 +21,30 @@ export default {
       // 将国际化赋值给store
       store.getters.t = this.$t
     }
+  },
+  mounted () {
+    store.dispatch('news').then(res => {
+      for (let i in res.data) {
+        if (res.data[i].read === false) {
+          Push.create(res.data[i].title, {
+            link: 'sys/log',
+            body: res.data[i].content,
+            icon: '/favicon.ico',
+            requireInteraction: true,
+            data: '3213123',
+            onClick: function () {
+              // 使网站获取焦点
+              window.focus();
+              store.dispatch('readNotice', res.data[i])
+              //关闭通知
+              this.close();
+            },
+            onClose: function () {
+            }
+          });
+        }
+      }
+    })
   }
 }
 </script>

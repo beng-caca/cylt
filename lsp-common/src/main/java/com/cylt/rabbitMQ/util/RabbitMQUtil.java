@@ -52,7 +52,38 @@ public class RabbitMQUtil {
      * @param declaredMethodName 操作名
      * @param obj 参数
      */
-    public void send(String exchangeName, String serviceName,String declaredMethodName, BasePojo obj) throws Exception {
+    public void send(String exchangeName, String serviceName,String declaredMethodName, BasePojo... obj) throws Exception {
+        MQEntity mq = new MQEntity();
+        // 服务名
+        mq.setServiceName(serviceName);
+        // 方法名
+        mq.setDeclaredMethodName(declaredMethodName);
+        // 参数名
+        if (obj.length == 1) {
+            mq.setPojo(obj[0]);
+        } else {
+            mq.setPojo(obj);
+        }
+        // 开始时间
+        mq.setStartTime(new Date());
+        SysLog log;
+        if (obj.length == 1) {
+            log = getLog(exchangeName, serviceName, declaredMethodName, obj[0]);
+        } else {
+            log = getLog(exchangeName, serviceName, declaredMethodName, obj);
+        }
+        mq.setSysLog(log);
+        send(mq);
+    }
+
+    /**
+     * 发送消息队列方法
+     * @param exchangeName 交换机名称
+     * @param serviceName service名称
+     * @param declaredMethodName 操作名
+     * @param obj 参数
+     */
+    public void send(String exchangeName, String serviceName,String declaredMethodName, Object obj) {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(serviceName);
@@ -62,9 +93,7 @@ public class RabbitMQUtil {
         mq.setPojo(obj);
         // 开始时间
         mq.setStartTime(new Date());
-        SysLog log = getLog(exchangeName, serviceName, declaredMethodName, obj);
-        mq.setSysLog(log);
-        send(mq);
+        rabbitTemplate.convertAndSend(exchangeName,null, mq);
     }
 
 
@@ -96,7 +125,7 @@ public class RabbitMQUtil {
      * @param declaredMethodName 操作名
      * @param obj 参数
      */
-    private SysLog getLog(String exchangeName, String serviceName,String declaredMethodName, BasePojo obj) {
+    private SysLog getLog(String exchangeName, String serviceName,String declaredMethodName, BasePojo... obj) {
 
         SysLog sysLog = new SysLog();
         //获取当前登录用户
@@ -108,7 +137,7 @@ public class RabbitMQUtil {
         sysLog.setTitle(MessageFormat.format(title, user.getName(),serviceName, getLogTitle(obj), declaredMethodName));
         sysLog.setServiceName(serviceName);
         sysLog.setDeclaredMethodName(declaredMethodName);
-        sysLog.setPojo(JSON.toJSONString(user, SerializerFeature.WriteClassName));
+        sysLog.setPojo(JSON.toJSONString(obj, SerializerFeature.WriteClassName));
 
         // 创建id
         sysLog.setId(UUID.randomUUID().toString());
@@ -121,27 +150,33 @@ public class RabbitMQUtil {
 
     /**
      * get业务日志标题
-     * @param obj
+     * @param objs
      * @return
      */
-    private String getLogTitle(BasePojo obj) {
-        String logTitle = "";
+    private String getLogTitle(BasePojo[] objs) {
+        StringBuffer logTitle = new StringBuffer();
         //获取所有属性名 设置key
-        Field[] values = obj.getClass().getDeclaredFields();
-        //遍历其他属性名
         try {
+        Field[] values = objs[0].getClass().getDeclaredFields();
+        //遍历其他属性名
             for (Field field : values) {
-                // 判断当前字段是否为一对多
+                // 判断当前字段是否为log标题
                 if (field.getAnnotation(LogTitle.class) != null) {
                     //对私有字段的访问取消权限检查。暴力访问。
                     field.setAccessible(true);
-                    logTitle = (String) field.get(obj);
+                    for (BasePojo obj : objs) {
+                        logTitle.append(field.get(obj));
+                    }
                 }
             }
         } catch (Exception e) {
-            logTitle = obj.getId();
+            try {
+                logTitle.append(objs[0].getId());
+            } catch (Exception s) {
+                logTitle.append("null");
+            }
         }
-        return logTitle;
+        return logTitle.toString();
     }
 
 }

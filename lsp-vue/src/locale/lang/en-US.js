@@ -63,6 +63,7 @@ export default {
     tree: ' Tree',
     warning: 'Warning',
     pleaseEnter: 'Please Enter ',
+    remakes: 'remakes',
     validate: {
       notNull: ' Cannot be empty！',
       noRepeat: ' Non repeatable！',
@@ -110,6 +111,16 @@ export default {
       title: 'Dict Title',
       order: 'Dict Order',
       remakes: 'Remakes'
+    },
+    // notice
+    notice: {
+      code: 'Code',
+      title: 'Title',
+      content: 'Content',
+      callbackUrl: 'Callback Url',
+      pushType: 'Push Type',
+      expiration: 'Expiration(Day)',
+      push: 'Push'
     }
   },
   // menu
@@ -126,7 +137,8 @@ export default {
       role: 'Role',
       user: 'User',
       log: 'Log',
-      dict: 'Dict'
+      dict: 'Dict',
+      notice: 'Notice'
     }
   },
   // dict
@@ -137,6 +149,10 @@ export default {
         pending: 'Pending',
         processing: 'Processing',
         successfully: 'Successfully'
+      },
+      noticeType: {
+        push: 'Push',
+        response: 'Just respond'
       }
     }
   }

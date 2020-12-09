@@ -40,12 +40,17 @@ public class SysInterceptor {
     @Transactional(rollbackFor = { Exception.class })
     public void process(MQEntity mq, Message message, Channel channel) throws Exception {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
-
-        SysLog log = (SysLog) redisUtil.getId(mq.getSysLog());
-        // 只对发送状态下的请求做处理 避免重复消费
-        if("1".equals(log.getState())){
+        // 判断该消息是否有日志
+        SysLog log = null;
+        if (mq.getSysLog() != null) {
+            log = (SysLog) redisUtil.getId(mq.getSysLog());
+        }
+        // 没有日志或者只对发送状态下的请求做处理
+        if(log == null || "1".equals(log.getState())){
             try{
-                sysLogService.processing(mq.getSysLog());
+                if (log != null) {
+                    sysLogService.processing(mq.getSysLog());
+                }
                 // 通过spring容器注入service
                 Object service = SpringUtil.getBean(mq.getServiceName());
                 // 通过注入的service反射到要调用的方法 并执行
@@ -55,12 +60,16 @@ public class SysInterceptor {
                 } else {
                     service.getClass().getDeclaredMethod(mq.getDeclaredMethodName()).invoke(service);
                 }
-                sysLogService.success(mq.getSysLog());
+                if (log != null) {
+                    sysLogService.success(mq.getSysLog());
+                }
                 // 通知rabbitmq处理完成
                 channel.basicAck(deliveryTag, true);
             } catch (Exception e){
                 logger.error(e.getLocalizedMessage());
-                sysLogService.error(mq.getSysLog(), e.toString());
+                if (log != null) {
+                    sysLogService.error(mq.getSysLog(), e.toString());
+                }
                 // 通知rabbitmq处理失败 如果失败时不返回 rabbit会在重启服务后再次重试
                 // 失败后忽略
                 channel.basicReject(deliveryTag,false);

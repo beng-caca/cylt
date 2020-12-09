@@ -8,6 +8,7 @@ import menu from './sys/menu'
 import role from './sys/role'
 import log from './sys/log'
 import dict from './sys/dict'
+import notice from './sys/notice'
 
 Vue.use(Vuex)
 
@@ -27,7 +28,8 @@ export default new Vuex.Store({
     menu,
     role,
     log,
-    dict
+    dict,
+    notice
   },
   plugins: [
     createVuexAlong({

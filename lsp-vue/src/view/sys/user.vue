@@ -82,9 +82,11 @@
             </FormItem>
           </Col>
           <Col span="24">
-            <Select v-model="$store.state.user.info.roleList" multiple>
-              <Option v-for="item in $store.state.role.roleNoPageList" :value="item.id" :key="item.id">{{ $t(item.roleName) }}</Option>
-            </Select>
+            <FormItem :label="$t('menu.sys.role')"  prop="roleList">
+              <Select v-model="$store.state.user.info.roleList" multiple>
+                <Option v-for="item in $store.state.role.roleNoPageList" :value="item.id" :key="item.id">{{ $t(item.roleName) }}</Option>
+              </Select>
+            </FormItem>
           </Col>
         </Row>
       </Form>

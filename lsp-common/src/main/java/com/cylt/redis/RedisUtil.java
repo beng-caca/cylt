@@ -1,6 +1,7 @@
 package com.cylt.redis;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cylt.common.Redis;
@@ -683,6 +684,38 @@ public class RedisUtil {
     public double hdecr(String key, String item, double by) {
         return redisTemplate.opsForHash().increment(key, item, -by);
     }
+
+    /**
+     * 封装mapset
+     *
+     * @param key   键
+     * @param item  项
+     * @param pojo 值
+     * @return true 成功 false失败
+     */
+    public boolean mapSet(String key, String item, Object pojo) {
+        // 把当前数据转换到jsonstring
+        String data = JSON.toJSONString(pojo, getJpaFilter(), SerializerFeature.UseSingleQuotes,
+                SerializerFeature.WriteDateUseDateFormat);
+        return hset(key, item, data);
+    }
+
+    /**
+     * 封装mapget
+     *
+     * @param key   键
+     * @param item  项
+     * @return true 成功 false失败
+     */
+    public <T> List<T> mapGet(String key, String item, Class<T> classz) {
+        // 判断是否有该key
+        if (!hHasKey(key, item)) {
+            return null;
+        }
+        List<T> list = JSON.parseArray((String) hget(key, item), classz);
+        return list;
+    }
+
 
     //============================set=============================
 

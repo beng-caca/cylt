@@ -1,11 +1,14 @@
 package com.cylt.common;
 
-import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.pojo.sys.SysLog;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@Getter
+@Setter
 public class MQEntity implements Serializable {
 
     /**
@@ -16,7 +19,7 @@ public class MQEntity implements Serializable {
     /**
      * 实体参数
      */
-    private BasePojo pojo;
+    private Object pojo;
 
     /**
      * 方法名
@@ -37,53 +40,4 @@ public class MQEntity implements Serializable {
      * log
      */
     private SysLog sysLog;
-
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public BasePojo getPojo() {
-        return pojo;
-    }
-
-    public void setPojo(BasePojo pojo) {
-        this.pojo = pojo;
-    }
-
-    public String getDeclaredMethodName() {
-        return declaredMethodName;
-    }
-
-    public void setDeclaredMethodName(String declaredMethodName) {
-        this.declaredMethodName = declaredMethodName;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public SysLog getSysLog() {
-        return sysLog;
-    }
-
-    public void setSysLog(SysLog sysLog) {
-        this.sysLog = sysLog;
-    }
 }
