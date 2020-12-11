@@ -69,16 +69,20 @@ public class SysNotice extends BasePojo {
     private int pushType;
 
     /**
-     * 通知到期时间
+     * 通知图标路径
      */
-    @Redis
-    @Column(name = "EXPIRATION")
-    private String expiration;
+    @Column(name = "ICON")
+    private String icon;
+
+    /**
+     * 跳转参数数据
+     */
+    @Column(name = "JSON_DATA")
+    private String jsonData;
 
     /**
      * 备注
      */
-    @Redis
     @Column(name = "REMAKES")
     private String remakes;
 

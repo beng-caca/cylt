@@ -72,7 +72,7 @@
               <Input v-model="$store.state.notice.info.content" :placeholder="$t('system.pleaseEnter') + $t('system.notice.content')" />
             </FormItem>
           </Col>
-          <Col span="24">
+          <Col span="12">
           <FormItem :label="$t('system.notice.callbackUrl')"  prop="callbackUrl">
             <Input v-model="$store.state.notice.info.callbackUrl" :placeholder="$t('system.pleaseEnter') + $t('system.notice.callbackUrl')" />
           </FormItem>
@@ -84,9 +84,14 @@
               </Select>
             </FormItem>
           </Col>
-          <Col span="12">
-          <FormItem :label="$t('system.notice.expiration')"  prop="expiration">
-            <Input v-model="$store.state.notice.info.expiration" :placeholder="$t('system.pleaseEnter') + $t('system.notice.expiration')" />
+          <Col span="24">
+          <FormItem :label="$t('system.notice.icon')"  prop="icon">
+            <Input v-model="$store.state.notice.info.icon" :placeholder="$t('system.pleaseEnter') + $t('system.notice.icon')" />
+          </FormItem>
+          </Col>
+          <Col span="24">
+          <FormItem :label="$t('system.notice.data')"  prop="expiration">
+            <Input type="textarea" v-model="$store.state.notice.info.jsonData" :placeholder="$t('system.pleaseEnter') + $t('system.notice.data')" />
           </FormItem>
           </Col>
           <Col span="24">
@@ -130,7 +135,8 @@ export default {
             ])
           }
         },
-        { title: this.$t('system.notice.expiration'), key: 'expiration' },
+        { title: this.$t('system.notice.icon'), key: 'icon' },
+        { title: this.$t('system.notice.data'), key: 'jsonData' },
         { title: this.$t('system.remakes'), key: 'remakes', tooltip: true },
         { title: this.$t('system.operation'), slot: 'action', width: 200, align: 'center' }
       ],

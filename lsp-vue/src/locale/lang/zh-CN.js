@@ -122,7 +122,9 @@ export default {
       callbackUrl: '回调地址',
       pushType: '推送类型',
       expiration: '过期时间(天)',
-      push: '推送'
+      push: '推送',
+      data: '回调参数',
+      icon: '推送图标'
     }
   },
   // menu

@@ -44,6 +44,7 @@ public class SysPush extends BasePojo {
      */
     private String callbackUrl;
 
+
     /**
      * 推送类型：0=推送即可;1=响应即可
      */

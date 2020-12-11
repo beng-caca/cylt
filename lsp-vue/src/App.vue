@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <router-view/>
+  <div  ref="app" id="app">
+    <router-view />
   </div>
 </template>
 
@@ -23,28 +23,41 @@ export default {
     }
   },
   mounted () {
-    store.dispatch('news').then(res => {
-      for (let i in res.data) {
-        if (res.data[i].read === false) {
-          Push.create(res.data[i].title, {
-            link: 'sys/log',
-            body: res.data[i].content,
-            icon: '/favicon.ico',
-            requireInteraction: true,
-            data: '3213123',
-            onClick: function () {
-              // 使网站获取焦点
-              window.focus();
-              store.dispatch('readNotice', res.data[i])
-              //关闭通知
-              this.close();
-            },
-            onClose: function () {
+    this.checkPush()
+  },
+  methods: {
+    checkPush () {
+      let $this = this
+      if (store.state.user.thisUser.id !== undefined) {
+        store.dispatch('news').then(res => {
+          // setTimeout(() => {
+          //   this.checkPush()
+          // }, 10000)
+          for (let i in res.data) {
+            if (res.data[i].read === false) {
+              Push.create(res.data[i].title, {
+                link: res.data[i].callbackUrl,
+                body: res.data[i].content,
+                icon: res.data[i].icon,
+                requireInteraction: true,
+                onClick: function () {
+                  // 使网站获取焦点
+                  window.focus()
+                  store.dispatch('readNotice', res.data[i])
+                  // 关闭通知
+                  $this.$router.push({
+                    path: res.data[i].callbackUrl
+                  })
+                  this.close()
+                },
+                onClose: function () {
+                }
+              })
             }
-          });
-        }
+          }
+        })
       }
-    })
+    }
   }
 }
 </script>

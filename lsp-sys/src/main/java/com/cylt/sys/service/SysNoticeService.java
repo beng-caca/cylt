@@ -90,11 +90,11 @@ public class SysNoticeService {
     public void read (HashMap<String, Object> map) {
         SysUser user = (SysUser) map.get("user");
         List<SysPush> pushList;
-        if(map.get("info") == null){
+        if(map.get("push") == null){
             pushList = (List<SysPush>) map.get("pushList");
         } else {
             pushList = new ArrayList<>();
-            pushList.add((SysPush) map.get("info"));
+            pushList.add((SysPush) map.get("push"));
         }
         List<SysPush> list = redisUtil.mapGet("USER_PUSH", user.getId(), SysPush.class);
         // 在缓存中找到消息

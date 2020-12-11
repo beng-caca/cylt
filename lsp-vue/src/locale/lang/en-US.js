@@ -120,7 +120,9 @@ export default {
       callbackUrl: 'Callback Url',
       pushType: 'Push Type',
       expiration: 'Expiration(Day)',
-      push: 'Push'
+      push: 'Push',
+      data: 'data',
+      icon: 'icon'
     }
   },
   // menu

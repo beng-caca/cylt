@@ -105,13 +105,23 @@ public class SysNoticeController extends BaseController {
 
     /**
      * 推送已读
-     * @return
      */
     @ResponseBody
     @RequestMapping(value = "read")
     public String read(SysPush push) {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
         sysNoticeService.read(user, push);
+        return responseSuccess();
+    }
+
+    /**
+     * 推送删除
+     */
+    @ResponseBody
+    @RequestMapping(value = "delPush")
+    public String delPush(SysPush push) {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+        sysNoticeService.delPush(user, push);
         return responseSuccess();
     }
 

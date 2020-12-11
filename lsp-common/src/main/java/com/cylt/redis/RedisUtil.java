@@ -710,7 +710,7 @@ public class RedisUtil {
     public <T> List<T> mapGet(String key, String item, Class<T> classz) {
         // 判断是否有该key
         if (!hHasKey(key, item)) {
-            return null;
+            return new ArrayList<>();
         }
         List<T> list = JSON.parseArray((String) hget(key, item), classz);
         return list;

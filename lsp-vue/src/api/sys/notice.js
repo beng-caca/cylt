@@ -46,3 +46,11 @@ export const read = (data) => {
     method: 'post'
   })
 }
+
+export const delPush = (data) => {
+  return axios.request({
+    url: '/sys/notice/delPush',
+    data: data,
+    method: 'post'
+  })
+}
