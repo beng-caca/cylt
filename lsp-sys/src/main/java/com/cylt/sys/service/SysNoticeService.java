@@ -63,7 +63,7 @@ public class SysNoticeService {
         push.setTitle(notice.getTitle());
         push.setPushDate(new Date());
         push.setRead(false);
-        push.setPushType(notice.getPushType());
+        push.setPushState(0);
         List<SysPush> pushList;
         // 遍历所有要推送的角色
         for (SysRole role : sysNotice.getRoleList()) {
@@ -104,6 +104,21 @@ public class SysNoticeService {
                     push.setRead(true);
                 }
             }
+        }
+        redisUtil.mapSet("USER_PUSH", user.getId(), list);
+    }
+
+
+
+    /**
+     * 消息全部已读
+     * @param user 操作用户
+     */
+    public void readAll (SysUser user) {
+        List<SysPush> list = redisUtil.mapGet("USER_PUSH", user.getId(), SysPush.class);
+        // 在缓存中找到消息
+        for (SysPush push : list) {
+            push.setRead(true);
         }
         redisUtil.mapSet("USER_PUSH", user.getId(), list);
     }

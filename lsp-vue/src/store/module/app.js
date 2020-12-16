@@ -36,7 +36,9 @@ export default {
     local: localRead('local'),
     errorList: [],
     hasReadErrorPage: false,
-    menuList: []
+    menuList: [],
+    pushList: [],
+    pushedList: []
   },
   getters: {
     // menuList: (state, getters, rootState) => getMenuByRouter(routers, rootState.user.access),

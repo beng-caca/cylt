@@ -1,10 +1,10 @@
 package com.cylt.pojo.sys;
-import com.cylt.common.base.pojo.BasePojo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +12,7 @@ import java.util.Date;
  */
 @Getter
 @Setter
-public class SysPush extends BasePojo {
+public class SysPush implements Cloneable, Serializable {
 
     /**
      *
@@ -46,9 +46,9 @@ public class SysPush extends BasePojo {
 
 
     /**
-     * 推送类型：0=推送即可;1=响应即可
+     * 推送状态：0=已推送;1=未推送
      */
-    private int pushType;
+    private int pushState;
 
     /**
      * 推送图标
@@ -66,4 +66,16 @@ public class SysPush extends BasePojo {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date pushDate;
+
+
+    @Override
+    public SysPush clone() {
+        SysPush stu = null;
+        try{
+            stu = (SysPush) super.clone();
+        }catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return stu;
+    }
 }

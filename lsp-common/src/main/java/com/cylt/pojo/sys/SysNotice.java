@@ -62,13 +62,6 @@ public class SysNotice extends BasePojo {
     private String callbackUrl;
 
     /**
-     * 推送类型：0=推送即可;1=响应即可
-     */
-    @Redis
-    @Column(name = "PUSH_TYPE")
-    private int pushType;
-
-    /**
      * 通知图标路径
      */
     @Column(name = "ICON")

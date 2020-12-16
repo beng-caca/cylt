@@ -25,16 +25,23 @@ export default {
   mounted () {
     this.checkPush()
   },
+  data () {
+    return {
+      pushList: [],
+      pushedList: []
+    }
+  },
   methods: {
     checkPush () {
       let $this = this
       if (store.state.user.thisUser.id !== undefined) {
         store.dispatch('news').then(res => {
-          // setTimeout(() => {
-          //   this.checkPush()
-          // }, 10000)
+          setTimeout(() => {
+            this.checkPush()
+          }, 5000)
           for (let i in res.data) {
-            if (res.data[i].read === false) {
+            if (res.data[i].read === false && res.data[i].pushState === 0) {
+              store.state.app.pushedList.push(res.data[i].id)
               Push.create(res.data[i].title, {
                 link: res.data[i].callbackUrl,
                 body: res.data[i].content,

@@ -35,7 +35,6 @@ public class SysNoticeService extends BaseService {
      * @return
      */
     public Page list(SysNotice notice, Page page) throws Exception {
-        notice.setPushType(-1);
         page = redisUtil.list(notice, page);
         return page;
     }
@@ -93,14 +92,17 @@ public class SysNoticeService extends BaseService {
      */
     public List<SysPush> pop(SysUser user) {
         List<SysPush> list = redisUtil.mapGet("USER_PUSH", user.getId(), SysPush.class);
-        // 将推送即可的消息直接改成已读
+
+        // 将已取出的消息状态改成已推送
         List<SysPush> readList = new ArrayList<>();
+        SysPush clone;
         for  (SysPush push : list) {
-            if (push.getPushType() == 0) {
-                readList.add(push);
-            }
+            // 这里浅拷贝对象使修改内容不干扰查询结果
+            clone = push.clone();
+            clone.setPushState(1);
+            readList.add(clone);
         }
-        read(user, readList);
+        redisUtil.mapSet("USER_PUSH", user.getId(), readList);
         return list;
     }
 
@@ -124,11 +126,20 @@ public class SysNoticeService extends BaseService {
      * @param user     消息所属的用户
      * @param infoList 要标记删除的数据
      */
-    public void read(SysUser user, List<SysPush> infoList) {
+    public void readAll(SysUser user, List<SysPush> infoList) {
         Map<String, Object> map = new HashMap<>();
         map.put("user", user);
         map.put("pushList", infoList);
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "read", map);
+    }
+
+    /**
+     * 消息全部已读
+     *
+     * @param user     消息所属的用户
+     */
+    public void readAll(SysUser user) {
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "readAll", user);
     }
 
     /**
