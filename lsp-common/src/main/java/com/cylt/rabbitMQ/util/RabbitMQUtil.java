@@ -82,8 +82,9 @@ public class RabbitMQUtil {
      * @param serviceName service名称
      * @param declaredMethodName 操作名
      * @param obj 参数
+     * @param log 布尔类型 只要加上这个参数就不生成log记录 坏处就是异步失败了无法追踪
      */
-    public void send(String exchangeName, String serviceName,String declaredMethodName, Object obj) {
+    public void send(String exchangeName, String serviceName,String declaredMethodName, Object obj, Boolean log) {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(serviceName);

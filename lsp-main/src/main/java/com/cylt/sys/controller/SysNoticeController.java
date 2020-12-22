@@ -115,6 +115,17 @@ public class SysNoticeController extends BaseController {
     }
 
     /**
+     * 推送已读
+     */
+    @ResponseBody
+    @RequestMapping(value = "readAll")
+    public String readAll() {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+        sysNoticeService.readAll(user);
+        return responseSuccess();
+    }
+
+    /**
      * 推送删除
      */
     @ResponseBody

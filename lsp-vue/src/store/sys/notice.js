@@ -1,4 +1,4 @@
-import { getList, save, del, push, news, read } from '@/api/sys/notice'
+import { getList, save, del, push, news, read, readAll, delPush } from '@/api/sys/notice'
 
 export default {
   state: {
@@ -36,7 +36,7 @@ export default {
   },
   actions: {
     getNoticeList ({ commit, rootState }, params) {
-      rootState.log.loading = true
+      rootState.notice.loading = true
       getList(params).then(res => {
         commit('noticeList', res.data)
       }).catch(e => {
@@ -63,6 +63,12 @@ export default {
     },
     readNotice ({ commit, rootState }, data) {
       return read(data)
+    },
+    readAll ({ commit, rootState }, data) {
+      return readAll(data)
+    },
+    delPush ({ commit, rootState }, data) {
+      return delPush(data)
     }
   }
 }

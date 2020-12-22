@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * 通知
@@ -46,6 +47,11 @@ public class SysPush implements Cloneable, Serializable {
 
 
     /**
+     * 回调data
+     */
+    private String callbackData;
+
+    /**
      * 推送状态：0=已推送;1=未推送
      */
     private int pushState;
@@ -77,5 +83,21 @@ public class SysPush implements Cloneable, Serializable {
             e.printStackTrace();
         }
         return stu;
+    }
+
+    public SysPush() {
+    }
+
+    public SysPush(SysNotice notice) {
+        setId(UUID.randomUUID().toString());
+        setCallbackUrl(notice.getCallbackUrl());
+        setCode(notice.getCode());
+        setContent(notice.getContent());
+        setTitle(notice.getTitle());
+        setPushDate(new Date());
+        setIcon(notice.getIcon());
+        setCallbackData(notice.getJsonData());
+        setRead(false);
+        setPushState(0);
     }
 }

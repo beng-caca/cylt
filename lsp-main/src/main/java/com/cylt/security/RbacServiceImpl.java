@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,6 +24,12 @@ public class RbacServiceImpl implements RbacService {
             Object principal = authentication.getPrincipal();
             boolean hasPermission = false;
             if (principal instanceof UserDetails) { //首先判断先当前用户是否是我们UserDetails对象。
+                  // 以下路径将跳过权限检测
+                  String[] filterUrl = new String[] {"/sys/notice/news", "/sys/notice/delPush", "/sys/notice/readAll",
+                          "/sys/notice/read", "/sys/dict/noPageList", "/sys/menu/list"};
+                  if (Arrays.asList(filterUrl).contains(request.getRequestURI())) {
+                        return true;
+                  }
                   List<SysJurisdiction> jurisdiction = (List<SysJurisdiction>) authentication.getAuthorities();
                   // 注意这里不能用equal来判断，因为有些URL是有参数的，所以要用AntPathMatcher来比较
                   for (SysJurisdiction url : jurisdiction) {

@@ -98,6 +98,7 @@
 import store from '@/store'
 export default {
   data () {
+    // TEST CODE console.log(this.$route.params.data)
     store.dispatch('getSysDictList', this.$store.state.dict.query)
     return {
       columns1: [

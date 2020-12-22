@@ -55,15 +55,7 @@ public class SysNoticeService {
     public void push(SysNotice notice) {
         SysNotice sysNotice = sysNoticeDao.getOne(notice.getId());
         // 创建推送对象
-        SysPush push = new SysPush();
-        push.setId(UUID.randomUUID().toString());
-        push.setCallbackUrl(notice.getCallbackUrl());
-        push.setCode(notice.getCode());
-        push.setContent(notice.getContent());
-        push.setTitle(notice.getTitle());
-        push.setPushDate(new Date());
-        push.setRead(false);
-        push.setPushState(0);
+        SysPush push = new SysPush(notice);
         List<SysPush> pushList;
         // 遍历所有要推送的角色
         for (SysRole role : sysNotice.getRoleList()) {
@@ -75,7 +67,7 @@ public class SysNoticeService {
                     pushList = new ArrayList<>();
                 }
                 // 追加推送消息
-                pushList.add(push);
+                pushList.add(0, push);
                 redisUtil.mapSet("USER_PUSH", user.getId(), pushList);
             }
         }
@@ -129,7 +121,7 @@ public class SysNoticeService {
      */
     public void del (HashMap<String, Object> map) {
         SysUser user = (SysUser) map.get("user");
-        SysPush info = (SysPush) map.get("info");
+        SysPush info = (SysPush) map.get("push");
         List<SysPush> list = redisUtil.mapGet("USER_PUSH", user.getId(), SysPush.class);
         SysPush delPush = null;
         // 在缓存中找到消息

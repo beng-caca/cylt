@@ -1,8 +1,8 @@
 <template>
   <div data-menu="menu.sys.notice" class="split-pane-page-wrapper">
     <Form inline  style="padding: 10px;margin-bottom: 20px;border: 2px solid #e8eaec;">
-      <FormItem prop="roleName">
-        <Input type="text" v-model="$store.state.notice.query.dictKey" :placeholder="$t('system.dict.key')">
+      <FormItem prop="code">
+        <Input type="text" v-model="$store.state.notice.query.code" :placeholder="$t('system.notice.code')">
         </Input>
       </FormItem>
       <FormItem>
@@ -78,13 +78,6 @@
           </FormItem>
           </Col>
           <Col span="12">
-            <FormItem :label="$t('system.notice.pushType')">
-              <Select v-model="$store.state.notice.info.pushType">
-                <Option v-for="item in $dictList('NOTICE_TYPE')" :value="item.dictValue" :key="item.id">{{ $t(item.title) }}</Option>
-              </Select>
-            </FormItem>
-          </Col>
-          <Col span="24">
           <FormItem :label="$t('system.notice.icon')"  prop="icon">
             <Input v-model="$store.state.notice.info.icon" :placeholder="$t('system.pleaseEnter') + $t('system.notice.icon')" />
           </FormItem>
@@ -126,7 +119,7 @@ export default {
         { title: this.$t('system.notice.title'), key: 'title' },
         { title: this.$t('system.notice.content'), key: 'content' },
         { title: this.$t('system.notice.callbackUrl'), key: 'callbackUrl' },
-        { title: this.$t('system.notice.pushType'),
+        /* { title: this.$t('system.notice.pushType'),
           key: 'pushType',
           render: (h, params) => {
             return h('div', [
@@ -134,7 +127,7 @@ export default {
                 this.$t(this.$dict('NOTICE_TYPE', params.row.pushType)))
             ])
           }
-        },
+        }, */
         { title: this.$t('system.notice.icon'), key: 'icon' },
         { title: this.$t('system.notice.data'), key: 'jsonData' },
         { title: this.$t('system.remakes'), key: 'remakes', tooltip: true },
@@ -144,11 +137,17 @@ export default {
       delConfirm: false,
       isInfo: false,
       validate: {
-        key: [
-          { required: true, message: this.$t('system.dict.key') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        code: [
+          { required: true, message: this.$t('system.notice.code') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ],
-        value: [
-          { required: true, message: this.$t('system.dict.value') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        title: [
+          { required: true, message: this.$t('system.notice.title') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: this.$t('system.notice.content') + this.$t('system.validate.notNull'), trigger: 'blur' }
+        ],
+        callbackUrl: [
+          { required: true, message: this.$t('system.notice.callbackUrl') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ]
       }
     }

@@ -47,6 +47,14 @@ export const read = (data) => {
   })
 }
 
+export const readAll = (data) => {
+  return axios.request({
+    url: '/sys/notice/readAll',
+    data: data,
+    method: 'post'
+  })
+}
+
 export const delPush = (data) => {
   return axios.request({
     url: '/sys/notice/delPush',

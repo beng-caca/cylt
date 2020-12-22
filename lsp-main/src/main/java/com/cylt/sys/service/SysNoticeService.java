@@ -82,7 +82,7 @@ public class SysNoticeService extends BaseService {
      * @param notice 通知
      */
     public void push(SysNotice notice) {
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "push", notice);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "push", notice,false);
     }
 
     /**
@@ -117,7 +117,7 @@ public class SysNoticeService extends BaseService {
         Map<String, Object> map = new HashMap<>();
         map.put("user", user);
         map.put("push", info);
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "read", map);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "read", map, false);
     }
 
     /**
@@ -130,7 +130,7 @@ public class SysNoticeService extends BaseService {
         Map<String, Object> map = new HashMap<>();
         map.put("user", user);
         map.put("pushList", infoList);
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "read", map);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "read", map, false);
     }
 
     /**
@@ -139,7 +139,7 @@ public class SysNoticeService extends BaseService {
      * @param user     消息所属的用户
      */
     public void readAll(SysUser user) {
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "readAll", user);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "readAll", user,false);
     }
 
     /**
@@ -151,6 +151,6 @@ public class SysNoticeService extends BaseService {
         Map<String, Object> map = new HashMap<>();
         map.put("user", user);
         map.put("push", info);
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "del", map);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "del", map,false);
     }
 }
