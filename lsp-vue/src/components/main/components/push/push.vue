@@ -5,8 +5,8 @@
     </Button>
     <div class="api" slot="content">
       <div style="font-size: 20px;text-align: center;border-bottom: 2px solid #dcdee2;">
-        消息列表
-        <a @click="readAll()" style="position: absolute;right: 15px;font-size: 13px;top: 29px;">全部已读</a>
+        {{ $t('menu.sys.notice') }}
+        <a @click="readAll()" style="position: absolute;right: 15px;font-size: 13px;top: 29px;">{{ $t('system.notice.allRead') }}</a>
       </div>
       <List style="height: 400px;">
         <table style="width: 100%;">

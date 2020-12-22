@@ -85,10 +85,10 @@ export default {
     role: {
       roleName: 'role Name',
       roles: {
-        sysAdmin: 'sys Admin',
-        financeAdmin: 'finance Admin',
-        custAdmin: 'cust Admin',
-        orderAdmin: 'order Admin'
+        sysAdmin: 'Sys Admin',
+        financeAdmin: 'Finance Admin',
+        custAdmin: 'Cust Admin',
+        orderAdmin: 'Order Admin'
       }
     },
     log: {
@@ -121,8 +121,9 @@ export default {
       pushType: 'Push Type',
       expiration: 'Expiration(Day)',
       push: 'Push',
-      data: 'data',
-      icon: 'icon'
+      data: 'Data',
+      icon: 'Icon',
+      allRead: 'All Read'
     }
   },
   // menu

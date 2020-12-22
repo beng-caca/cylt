@@ -124,7 +124,8 @@ export default {
       expiration: '过期时间(天)',
       push: '推送',
       data: '回调参数',
-      icon: '推送图标'
+      icon: '推送图标',
+      allRead: '全部已读'
     }
   },
   // menu

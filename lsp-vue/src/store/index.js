@@ -2,13 +2,13 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import createVuexAlong from 'vuex-along'
 
-import user from './module/user'
+import user from './module/sys/user'
 import app from './module/app'
-import menu from './sys/menu'
-import role from './sys/role'
-import log from './sys/log'
-import dict from './sys/dict'
-import notice from './sys/notice'
+import menu from './module/sys/menu'
+import role from './module/sys/role'
+import log from './module/sys/log'
+import dict from './module/sys/dict'
+import notice from './module/sys/notice'
 
 Vue.use(Vuex)
 

@@ -23,7 +23,7 @@
       stripe
     >
       <template slot-scope="{ row, index }" slot="action">
-        <Button type="primary" size="small" style="margin-right: 5px" @click="push(row, index)">{{ $t('system.notice.push') }}</Button>
+        <Button type="primary" v-jurisdiction="'edit'" size="small" style="margin-right: 5px" @click="push(row, index)">{{ $t('system.notice.push') }}</Button>
         <Button type="primary" size="small" style="margin-right: 5px" @click="info(row, index)">{{ $t('system.info') }}</Button>
         <Button type="error" v-jurisdiction="'del'" size="small" @click="delInit(row)">{{ $t('system.del') }}</Button>
       </template>
