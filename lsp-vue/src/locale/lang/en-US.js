@@ -50,11 +50,11 @@ export default {
     info: ' Info',
     save: 'Save',
     copy: 'Copy',
-    edit: 'edit',
+    edit: 'Edit',
     del: 'Delete',
-    operation: 'operation',
-    add: 'add',
-    query: 'query',
+    operation: 'Operation',
+    add: 'Add',
+    query: 'Query',
     success: 'Success',
     insufficientAuthority: 'Insufficient Authority',
     networkError: 'Network Error',
@@ -67,23 +67,23 @@ export default {
     validate: {
       notNull: ' Cannot be empty！',
       noRepeat: ' Non repeatable！',
-      error: ' error'
+      error: ' Error'
     },
     confirm: {
       del: 'Are you sure you want to delete this record ? '
     },
     user: {
-      username: 'login name',
-      name: 'name',
-      role: 'role',
-      enterpriseId: 'enterprise',
-      updatePassword: 'update Password',
+      username: 'Login Name',
+      name: 'Name',
+      role: 'Role',
+      enterpriseId: 'Enterprise',
+      updatePassword: 'Update Password',
       originalPassword: 'Original password',
-      newPassword: 'new password',
-      password: 'password'
+      newPassword: 'New password',
+      password: 'Password'
     },
     role: {
-      roleName: 'role Name',
+      roleName: 'Role Name',
       roles: {
         sysAdmin: 'Sys Admin',
         financeAdmin: 'Finance Admin',
@@ -130,7 +130,7 @@ export default {
   menu: {
     name: 'Menu Name',
     icon: 'Menu Icon',
-    logout: 'logout',
+    logout: 'Logout',
     baseUrl: 'Base Url',
     component: 'Page path',
     showMenu: 'Is Display',

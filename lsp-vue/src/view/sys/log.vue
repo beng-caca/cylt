@@ -138,7 +138,7 @@ export default {
         },
         { title: this.$t('system.log.startDate'), width: 150, key: 'startDate' },
         { title: this.$t('system.log.timeUse'), key: 'timeUse' },
-        { title: this.$t('system.operation'), slot: 'action', width: 120, align: 'center' }
+        { title: this.$t('system.operation'), slot: 'action', width: 130, align: 'center' }
       ],
       contextLine: 0,
       isInfo: false
