@@ -1,4 +1,4 @@
-package com.cylt.Interceptor;
+package com.cylt.job;
 
 import com.cylt.common.MQEntity;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
@@ -14,14 +14,14 @@ import java.text.MessageFormat;
 
 
 /**
- * log总拦截器
+ * job总拦截器
  */
 @Component
-@RabbitListener(queues = RabbitMQDictionary.LOG)
-public class LogInterceptor {
+@RabbitListener(queues = RabbitMQDictionary.TASK)
+public class JobInterceptor {
 
-    private static Logger logger = LoggerFactory.getLogger(LogInterceptor.class);
-
+    private static Logger logger = LoggerFactory.getLogger(JobInterceptor.class);
+    // TODO
     @RabbitHandler
     public void process(MQEntity mq, Message message, Channel channel) throws Exception {
         logger.info( MessageFormat.format("正在消费:{0}.{1}：{2}",

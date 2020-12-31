@@ -3,6 +3,7 @@ package com.cylt.Interceptor;
 import com.cylt.common.MQEntity;
 import com.cylt.common.util.SpringUtil;
 import com.cylt.pojo.sys.SysLog;
+import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.redis.RedisUtil;
 import com.cylt.sys.service.SysLogService;
 import com.rabbitmq.client.Channel;
@@ -21,7 +22,7 @@ import javax.annotation.Resource;
  * 系统服务总拦截器
  */
 @Component
-@RabbitListener(queues = "sysService")
+@RabbitListener(queues = RabbitMQDictionary.SYS)
 public class SysInterceptor {
 
     private static Logger logger = LoggerFactory.getLogger(SysInterceptor.class);

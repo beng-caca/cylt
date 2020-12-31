@@ -40,26 +40,28 @@ public class BasePojo implements java.io.Serializable {
     private String id;
 
 
-    //删除标识
+    /**
+     * 删除标识
+     */
     @Column(name = "DEL_STATE")
     private String delState = "0";
 
     /**
-     * <p>Field createBy:新增人 </p>
+     * 新增人
      */
     @CreatedBy
     @Column(name = "CREATE_BY")
     private String createBy;
 
     /**
-     * <p>Field updateBy:修改人 </p>
+     * 修改人
      */
     @LastModifiedBy
     @Column(name = "UPDATE_BY")
     private String updateBy;
 
     /**
-     * <p>Field createTime:新增时间 </p>
+     * 新增时间
      */
     @Redis
     @CreatedDate
@@ -69,7 +71,7 @@ public class BasePojo implements java.io.Serializable {
     private Date createTime;
 
     /**
-     * <p>Field updateTime:修改时间 </p>
+     * 修改时间
      */
     @Redis
     @LastModifiedDate

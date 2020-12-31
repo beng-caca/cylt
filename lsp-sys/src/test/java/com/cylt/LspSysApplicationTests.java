@@ -1,13 +1,11 @@
-package com.cylt.lspmain;
+package com.cylt;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class LspMainApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+class LspSysApplicationTests {
+    @Test
+    void contextLoads() {
+    }
 }

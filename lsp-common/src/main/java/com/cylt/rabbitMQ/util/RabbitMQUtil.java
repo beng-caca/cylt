@@ -7,6 +7,7 @@ import com.cylt.common.MQEntity;
 import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.pojo.sys.SysLog;
+import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.redis.RedisUtil;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +43,18 @@ public class RabbitMQUtil {
     public void send(MQEntity mq) throws Exception {
         // 系统log保存一天
         redisUtil.save(mq.getSysLog(), 60 * 60 * 24);
-        rabbitTemplate.convertAndSend(mq.getSysLog().getModule(),null, mq);
+        // rabbitTemplate.convertAndSend(RabbitMQDictionary.SYS,"logService", mq);
+        rabbitTemplate.convertAndSend(RabbitMQDictionary.ROOT,mq.getSysLog().getModule(), mq);
     }
 
     /**
      * 发送消息队列方法
-     * @param exchangeName 交换机名称
+     * @param routingKey 路由名
      * @param serviceName service名称
      * @param declaredMethodName 操作名
      * @param obj 参数
      */
-    public void send(String exchangeName, String serviceName,String declaredMethodName, BasePojo... obj) throws Exception {
+    public void send(String routingKey, String serviceName,String declaredMethodName, BasePojo... obj) throws Exception {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(serviceName);
@@ -68,9 +70,9 @@ public class RabbitMQUtil {
         mq.setStartTime(new Date());
         SysLog log;
         if (obj.length == 1) {
-            log = getLog(exchangeName, serviceName, declaredMethodName, obj[0]);
+            log = getLog(routingKey, serviceName, declaredMethodName, obj[0]);
         } else {
-            log = getLog(exchangeName, serviceName, declaredMethodName, obj);
+            log = getLog(routingKey, serviceName, declaredMethodName, obj);
         }
         mq.setSysLog(log);
         send(mq);
@@ -78,13 +80,13 @@ public class RabbitMQUtil {
 
     /**
      * 发送消息队列方法
-     * @param exchangeName 交换机名称
+     * @param routingKey 路由名
      * @param serviceName service名称
      * @param declaredMethodName 操作名
      * @param obj 参数
      * @param log 布尔类型 只要加上这个参数就不生成log记录 坏处就是异步失败了无法追踪
      */
-    public void send(String exchangeName, String serviceName,String declaredMethodName, Object obj, Boolean log) {
+    public void send(String routingKey, String serviceName,String declaredMethodName, Object obj, Boolean log) {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(serviceName);
@@ -94,7 +96,7 @@ public class RabbitMQUtil {
         mq.setPojo(obj);
         // 开始时间
         mq.setStartTime(new Date());
-        rabbitTemplate.convertAndSend(exchangeName,null, mq);
+        rabbitTemplate.convertAndSend(routingKey,null, mq);
     }
 
 
@@ -104,6 +106,8 @@ public class RabbitMQUtil {
      */
     public void send(SysLog log) throws Exception {
         MQEntity mq = new MQEntity();
+        // 服务名
+        mq.setServiceName(log.getServiceName());
         // 服务名
         mq.setServiceName(log.getServiceName());
         // 方法名
@@ -122,18 +126,19 @@ public class RabbitMQUtil {
 
     /**
      * 核心发送消息队列方法
+     * @param routingKey 路由名
      * @param serviceName service名称
      * @param declaredMethodName 操作名
      * @param obj 参数
      */
-    private SysLog getLog(String exchangeName, String serviceName,String declaredMethodName, BasePojo... obj) {
+    private SysLog getLog(String routingKey, String serviceName,String declaredMethodName, BasePojo... obj) {
 
         SysLog sysLog = new SysLog();
         //获取当前登录用户
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
         sysLog.setUserId(user.getId());
         // 模块名
-        sysLog.setModule(exchangeName);
+        sysLog.setModule(routingKey);
         String title = "用户{0} 对 {1} 的 {2} 数据进行 {3} 操作";
         sysLog.setTitle(MessageFormat.format(title, user.getName(),serviceName, getLogTitle(obj), declaredMethodName));
         sysLog.setServiceName(serviceName);
