@@ -23,15 +23,17 @@ public class SysUserService extends BaseService {
 
 
     //模块名
-    public final static String SERVICE_NAME = "sysUserService";
+    private final static String SERVICE_NAME = "sysUserService";
+
     @Resource
     private SysUserDao sysUserDao;
 
 
     /**
      * 查询用户列表
-     * @param user
-     * @return
+     * @param user 查询条件
+     * @param page 分页条件
+     * @return 分页列表
      */
     public Page list(SysUser user, Page page) throws NoSuchFieldException {
         page = redisUtil.list(user, page);
@@ -47,8 +49,8 @@ public class SysUserService extends BaseService {
     }
     /**
      * 查询用户
-     * @param id
-     * @return
+     * @param id 用户ID
+     * @return 用户对象
      */
     public SysUser get(String id) {
         SysUser user = new SysUser();
@@ -58,8 +60,8 @@ public class SysUserService extends BaseService {
 
     /**
      * 保存
-     * @param sysUser
-     * @return
+     * @param sysUser 保存对象
+     * @return 保存结果
      */
     public String save(SysUser sysUser) throws Exception {
         if(null == sysUser.getId() || "".equals(sysUser.getId())){
@@ -85,17 +87,15 @@ public class SysUserService extends BaseService {
 
     /**
      * 获取用户
-     * @param userName
-     * @return
+     * @param userName 用户名称
+     * @return 用户对象
      */
     public SysUser getUser(String userName) {
-        SysUser user = sysUserDao.findByUsername(userName);
-        return user;
+        return sysUserDao.findByUsername(userName);
     }
     /**
      * 删除用户
      * @param sysUser 删除用户
-     * @return
      */
     public void delete(SysUser sysUser) throws Exception {
         redisUtil.del(sysUser);
@@ -104,9 +104,9 @@ public class SysUserService extends BaseService {
 
     /**
      * 修改用户密码
-     * @param originalPassword
-     * @param newPassword
-     * @return
+     * @param originalPassword 旧密码
+     * @param newPassword 新密码
+     * @return 是否保存成功
      */
     public boolean updatePassword(String originalPassword, String newPassword) throws Exception {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();

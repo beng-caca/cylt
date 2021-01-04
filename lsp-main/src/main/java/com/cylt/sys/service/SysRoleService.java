@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 角色Service
@@ -30,8 +29,9 @@ public class SysRoleService extends BaseService {
 
     /**
      * 查询列表
-     * @param sysRole
-     * @return
+     * @param sysRole 查询条件
+     * @param page 分页条件
+     * @return 分页列表
      */
     public Page list(SysRole sysRole, Page page) throws Exception {
         page = redisUtil.list(sysRole, page);
@@ -48,40 +48,39 @@ public class SysRoleService extends BaseService {
 
     /**
      * 查询列表
-     * @param sysRole
-     * @return
+     * @param sysRole 查询条件
+     * @return 角色列表
      */
     public List<SysRole> list(SysRole sysRole) {
-        return (List<SysRole>) redisUtil.list(sysRole);
+        return redisUtil.list(sysRole);
     }
 
     /**
-     * 查询菜单
-     * @param id
-     * @return
+     * 查询角色
+     * @param id 角色ID
+     * @return 角色信息
      */
     public SysRole get(String id) {
         return sysRoleDao.getOne(id);
     }
 
     /**
-     * 保存
-     * @param sysRole
-     * @return
+     * 保存角色
+     * @param sysRole 角色
+     * @return 保存后的角色
      */
-    public String save(SysRole sysRole) throws Exception {
+    public SysRole save(SysRole sysRole) throws Exception {
         //刷新缓存
         redisUtil.save(sysRole);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,sysRole);
-        return "保存成功";
+        return sysRole;
     }
 
 
     /**
      * 删除
      * @param sysRole 角色
-     * @return
      */
     public void delete(SysRole sysRole) throws Exception {
         redisUtil.del(sysRole);

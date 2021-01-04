@@ -208,7 +208,7 @@ public class RedisUtil {
      * @param rootPojo
      * @return 值
      */
-    public Object list(BasePojo rootPojo) {
+    public <T> List<T> list(BasePojo rootPojo) {
         //获取所有属性名 设置key
         String key = getKey(rootPojo, true);
         // 判断是不是级联调用 ，如果是就多打个缩进
@@ -220,13 +220,13 @@ public class RedisUtil {
         }
         Set<String> ids = redisTemplate.keys(key);
 
-        List<BasePojo> list = new ArrayList<>();
+        List<T> list = new ArrayList<>();
         BasePojo obj;
         for (String id : ids) {
             //转移的问题 去找set方法
             obj = JSON.parseObject((String) redisTemplate.opsForValue().get(id), rootPojo.getClass());
             setRelationship(obj);
-            list.add(obj);
+            list.add((T) obj);
         }
         return list;
     }

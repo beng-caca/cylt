@@ -4,10 +4,8 @@ import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.pojo.Sort;
 import com.cylt.common.base.service.BaseService;
 import com.cylt.pojo.sys.SysDict;
-import com.cylt.pojo.sys.SysRole;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.sys.dao.SysDictDao;
-import com.cylt.sys.dao.SysRoleDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,8 +31,9 @@ public class SysDictService extends BaseService {
 
     /**
      * 查询列表
-     * @param sysDict
-     * @return
+     * @param sysDict 查询条件
+     * @param page 分页条件
+     * @return 分页对象
      */
     public Page list(SysDict sysDict, Page page) throws Exception {
         // 这里不用排序字段检索
@@ -57,42 +56,39 @@ public class SysDictService extends BaseService {
 
     /**
      * 查询列表
-     * @param sysDict
-     * @return
+     * @param sysDict 查询条件
+     * @return 全部字典列表
      */
     public List<SysDict> list(SysDict sysDict) {
-        // 这里不用排序字段检索
-        sysDict.setDictOrder(-1);
-        return (List<SysDict>) redisUtil.list(sysDict);
+        return redisUtil.list(sysDict);
     }
 
     /**
      * 查询字典
-     * @param id
-     * @return
+     * @param id 查询id
+     * @return 字典对象
      */
     public SysDict get(String id) {
         return sysDictDao.getOne(id);
     }
 
     /**
-     * 保存
-     * @param sysDict
-     * @return
+     * 保存字典
+     * @param sysDict 保存对象
+     * @return 保存后的字典
      */
-    public String save(SysDict sysDict) throws Exception {
+    public SysDict save(SysDict sysDict) throws Exception {
         //刷新缓存
         redisUtil.save(sysDict);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,sysDict);
-        return "保存成功";
+        return sysDict;
     }
 
 
     /**
-     * 删除
-     * @param sysDict 字典
-     * @return
+     * 删除 字典
+     * @param sysDict 删除条件
      */
     public void delete(SysDict sysDict) throws Exception {
         redisUtil.del(sysDict);

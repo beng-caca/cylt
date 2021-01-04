@@ -1,21 +1,14 @@
 package com.cylt.sys.service;
 
-import com.alibaba.fastjson.JSON;
-import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.pojo.Sort;
 import com.cylt.common.base.service.BaseService;
 import com.cylt.pojo.sys.SysLog;
-import com.cylt.rabbitMQ.config.RabbitMQDictionary;
-import com.cylt.rabbitMQ.util.RabbitMQUtil;
-import com.cylt.sys.dao.SysLogDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * 日志Service
@@ -24,13 +17,12 @@ import java.util.UUID;
 @Service("sysLogService")
 public class SysLogService extends BaseService {
 
-    @Resource
-    private SysLogDao sysLogDao;
 
     /**
      * 查询列表
-     * @param log
-     * @return
+     * @param log log查询条件
+     * @param page 分页条件
+     * @return 分页对象
      */
     public Page list(SysLog log, Page page) throws Exception {
         List<Sort> sortList = new ArrayList<>();
@@ -43,8 +35,7 @@ public class SysLogService extends BaseService {
 
     /**
      * 重试
-     * @param log
-     * @return
+     * @param log 重试记录
      */
     public void retry(SysLog log) throws Exception {
         // 按log参数发送队列

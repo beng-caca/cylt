@@ -24,6 +24,12 @@ public class SysRoleController extends BaseController {
     @Resource
     private SysRoleService sysRoleService;
 
+    /**
+     * 查询列表
+     * @param role 查询条件
+     * @param page 分页条件
+     * @return 查询结果
+     */
     @ResponseBody
     @RequestMapping(value = "list")
     public String list(SysRole role, Page page) throws Exception {
@@ -34,8 +40,8 @@ public class SysRoleController extends BaseController {
 
     /**
      * 不分页查询列表
-     * @param role
-     * @return
+     * @param role 查询条件
+     * @return 查询列表
      */
     @ResponseBody
     @RequestMapping(value = "noPageList")
@@ -58,22 +64,19 @@ public class SysRoleController extends BaseController {
     /**
      * 保存角色
      * @param role 角色
-     * @return
+     * @return 保存结果
      */
     @ResponseBody
     @RequestMapping(value = "save")
     public String save(SysRole role) throws Exception {
-        String msg = sysRoleService.save(role);
-        if(!"保存成功".equals(msg)){
-            return responseFail(msg);
-        }
+        sysRoleService.save(role);
         return responseSuccess();
     }
 
     /**
      * 删除角色
      * @param role 角色
-     * @return
+     * @return 删除结果
      */
     @ResponseBody
     @RequestMapping(value = "delete")

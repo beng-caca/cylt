@@ -28,26 +28,26 @@ public class SysMenuService extends BaseService {
 
 
     /**
-     *
-     * @param menu
-     * @return
+     * 查询列表
+     * @param menu 查询条件
+     * @return 查询结果
      */
     public List<SysMenu> list(SysMenu menu) {
-        List<SysMenu> list = (List<SysMenu>) redisUtil.list(menu);
+        List<SysMenu> list = redisUtil.list(menu);
         // 如果当前一个菜单都没有 就和同步一下
         if (list.size() == 0) {
             list = sysMenuDao.findAll();
             for(SysMenu menus : list){
                 redisUtil.set(menus);
             }
-            list = (List<SysMenu>) redisUtil.list(menu);
+            list = redisUtil.list(menu);
         }
         return list;
     }
     /**
      * 查询菜单
-     * @param id
-     * @return
+     * @param id 菜单id
+     * @return 菜单对象
      */
     public SysMenu get(String id) {
         return sysMenuDao.getOne(id);
@@ -55,10 +55,10 @@ public class SysMenuService extends BaseService {
 
     /**
      * 保存
-     * @param sysMenu
-     * @return
+     * @param sysMenu 菜单信息
+     * @return 保存结果
      */
-    public String save(SysMenu sysMenu) throws Exception {
+    public SysMenu save(SysMenu sysMenu) throws Exception {
         if(null == sysMenu.getId() || "".equals(sysMenu.getId())){
             sysMenu.setId(UUID.randomUUID().toString());
         }
@@ -66,14 +66,13 @@ public class SysMenuService extends BaseService {
         redisUtil.save(sysMenu);
         //发送消息队列持久保存到数据库
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,sysMenu);
-        return "保存成功";
+        return sysMenu;
     }
 
 
     /**
      * 删除菜单
      * @param sysMenu 删除菜单
-     * @return
      */
     public void delete(SysMenu sysMenu) throws Exception {
         redisUtil.del(sysMenu);

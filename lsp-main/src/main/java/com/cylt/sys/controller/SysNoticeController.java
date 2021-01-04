@@ -5,16 +5,13 @@ import com.cylt.common.base.controller.BaseController;
 import com.cylt.common.base.pojo.Page;
 import com.cylt.pojo.sys.SysNotice;
 import com.cylt.pojo.sys.SysPush;
-import com.cylt.pojo.sys.SysRole;
 import com.cylt.sys.service.SysNoticeService;
-import com.cylt.sys.service.SysRoleService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * 通知Controller
@@ -33,7 +30,7 @@ public class SysNoticeController extends BaseController {
      * 分页查询列表
      * @param notice 通知对象
      * @param page 分页参数
-     * @return
+     * @return 通知列表
      */
     @ResponseBody
     @RequestMapping(value = "list")
@@ -56,7 +53,7 @@ public class SysNoticeController extends BaseController {
     /**
      * 保存通知
      * @param notice 通知对象
-     * @return
+     * @return 保存结果
      */
     @ResponseBody
     @RequestMapping(value = "save")
@@ -68,7 +65,7 @@ public class SysNoticeController extends BaseController {
     /**
      * 删除通知
      * @param notice 通知对象
-     * @return
+     * @return 删除结果
      */
     @ResponseBody
     @RequestMapping(value = "delete")
@@ -82,18 +79,18 @@ public class SysNoticeController extends BaseController {
     /**
      * 推送通知
      * @param notice 通知对象
-     * @return
+     * @return 推送结果
      */
     @ResponseBody
     @RequestMapping(value = "push")
-    public String push(SysNotice notice) throws Exception {
+    public String push(SysNotice notice) {
         sysNoticeService.push(notice);
         return responseSuccess();
     }
 
     /**
      * 推送通知
-     * @return
+     * @return 推送列表
      */
     @ResponseBody
     @RequestMapping(value = "news")
@@ -105,6 +102,7 @@ public class SysNoticeController extends BaseController {
 
     /**
      * 推送已读
+     * @param push 推送对象
      */
     @ResponseBody
     @RequestMapping(value = "read")

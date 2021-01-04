@@ -23,6 +23,11 @@ public class SysMenuController extends BaseController {
     @Resource
     private SysMenuService sysMenuService;
 
+    /**
+     * 查询菜单
+     * @param menu 查询条件
+     * @return 菜单列表
+     */
     @ResponseBody
     @RequestMapping(value = "list")
     public String list(SysMenu menu) {
@@ -31,7 +36,7 @@ public class SysMenuController extends BaseController {
     }
 
     /**
-     * <p>Description: 根据ID取得菜单</p>
+     * 根据ID取得菜单
      * @param id ID
      * @return 订单
      */
@@ -44,22 +49,19 @@ public class SysMenuController extends BaseController {
     /**
      * 保存菜单
      * @param sysMenu 菜单
-     * @return
+     * @return 保存结果
      */
     @ResponseBody
     @RequestMapping(value = "save")
     public String save(SysMenu sysMenu) throws Exception {
-        String msg = sysMenuService.save(sysMenu);
-        if(!"保存成功".equals(msg)){
-            return responseFail(msg);
-        }
+        sysMenuService.save(sysMenu);
         return responseSuccess();
     }
 
     /**
      * 删除菜单
      * @param sysMenu 菜单
-     * @return
+     * @return 删除结果
      */
     @ResponseBody
     @RequestMapping(value = "delete")

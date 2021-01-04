@@ -44,6 +44,11 @@ public class SysUserController extends BaseController {
         return getJson(sysUserService.getUser(id));
     }
 
+    /**
+     * 保存用户
+     * @param sysUser 用户信息
+     * @return 保存结果
+     */
     @ResponseBody
     @RequestMapping(value = "save")
     public String save(SysUser sysUser) throws Exception {
@@ -54,6 +59,11 @@ public class SysUserController extends BaseController {
         return responseSuccess();
     }
 
+    /**
+     * 删除用户
+     * @param sysUser 删除条件
+     * @return 删除结果
+     */
     @ResponseBody
     @RequestMapping(value = "delete")
     public String delete(SysUser sysUser) throws Exception {
@@ -61,6 +71,12 @@ public class SysUserController extends BaseController {
         return responseSuccess();
     }
 
+    /**
+     * 修改密码
+     * @param originalPassword 旧密码
+     * @param newPassword 新密码
+     * @return 保存结果
+     */
     @ResponseBody
     @RequestMapping(value = "updatePassword")
     public String updatePassword(String originalPassword, String newPassword) throws Exception {
@@ -73,7 +89,7 @@ public class SysUserController extends BaseController {
 
     /**
      * 获取当前登录用户
-     * @return
+     * @return 用户
      */
     @ResponseBody
     @RequestMapping(value = "getThisUser")

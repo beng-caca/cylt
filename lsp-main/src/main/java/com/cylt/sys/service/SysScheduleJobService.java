@@ -2,10 +2,8 @@ package com.cylt.sys.service;
 
 import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.service.BaseService;
-import com.cylt.pojo.sys.SysRole;
 import com.cylt.pojo.sys.SysScheduleJob;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
-import com.cylt.sys.dao.SysRoleDao;
 import com.cylt.sys.dao.SysScheduleJobDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,7 @@ public class SysScheduleJobService extends BaseService {
     /**
      * 查询列表
      * @param job 筛选条件
-     * @return
+     * @return 分页任务列表
      */
     public Page list(SysScheduleJob job, Page page) throws Exception {
         page = redisUtil.list(job, page);
@@ -47,18 +45,18 @@ public class SysScheduleJobService extends BaseService {
     }
 
     /**
-     * 查询列表
+     * 查询任务列表
      * @param job 筛选条件
-     * @return
+     * @return 任务
      */
     public List<SysScheduleJob> list(SysScheduleJob job) {
-        return (List<SysScheduleJob>) redisUtil.list(job);
+        return redisUtil.list(job);
     }
 
     /**
-     * 查询菜单
+     * 查询任务
      * @param id 任务id
-     * @return
+     * @return 任务信息
      */
     public SysScheduleJob get(String id) {
         return sysScheduleJobDao.getOne(id);
@@ -67,7 +65,7 @@ public class SysScheduleJobService extends BaseService {
     /**
      * 保存
      * @param job 任务
-     * @return
+     * @return 保存结果
      */
     public String save(SysScheduleJob job) throws Exception {
         //刷新缓存
@@ -81,7 +79,6 @@ public class SysScheduleJobService extends BaseService {
     /**
      * 删除
      * @param job 任务
-     * @return
      */
     public void delete(SysScheduleJob job) throws Exception {
         redisUtil.del(job);

@@ -1,7 +1,6 @@
 package com.cylt.sys.service;
 
 import com.cylt.common.SysUser;
-import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.service.BaseService;
 import com.cylt.pojo.sys.SysNotice;
@@ -32,7 +31,7 @@ public class SysNoticeService extends BaseService {
      *
      * @param notice 通知
      * @param page   分页
-     * @return
+     * @return 分页列表
      */
     public Page list(SysNotice notice, Page page) throws Exception {
         page = redisUtil.list(notice, page);
@@ -41,9 +40,8 @@ public class SysNoticeService extends BaseService {
 
     /**
      * 查询通知
-     *
-     * @param id
-     * @return
+     * @param id 通知ID
+     * @return 通知信息
      */
     public SysNotice get(String id) {
         SysNotice notice = new SysNotice();
@@ -53,9 +51,8 @@ public class SysNoticeService extends BaseService {
 
     /**
      * 保存
-     *
      * @param notice 通知
-     * @return
+     * @return 保存信息
      */
     public SysNotice save(SysNotice notice) throws Exception {
         //刷新缓存
@@ -68,7 +65,6 @@ public class SysNoticeService extends BaseService {
 
     /**
      * 删除
-     *
      * @param notice 通知
      */
     public void delete(SysNotice notice) throws Exception {
@@ -82,7 +78,7 @@ public class SysNoticeService extends BaseService {
      * @param notice 通知
      */
     public void push(SysNotice notice) {
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "push", notice,false);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "push", notice, false);
     }
 
     /**
@@ -96,7 +92,7 @@ public class SysNoticeService extends BaseService {
         // 将已取出的消息状态改成已推送
         List<SysPush> readList = new ArrayList<>();
         SysPush clone;
-        for  (SysPush push : list) {
+        for (SysPush push : list) {
             // 这里浅拷贝对象使修改内容不干扰查询结果
             clone = push.clone();
             clone.setPushState(1);
@@ -136,10 +132,10 @@ public class SysNoticeService extends BaseService {
     /**
      * 消息全部已读
      *
-     * @param user     消息所属的用户
+     * @param user 消息所属的用户
      */
     public void readAll(SysUser user) {
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "readAll", user,false);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "readAll", user, false);
     }
 
     /**
@@ -151,6 +147,6 @@ public class SysNoticeService extends BaseService {
         Map<String, Object> map = new HashMap<>();
         map.put("user", user);
         map.put("push", info);
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "del", map,false);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, "del", map, false);
     }
 }

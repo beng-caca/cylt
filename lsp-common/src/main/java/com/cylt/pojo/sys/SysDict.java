@@ -52,7 +52,6 @@ public class SysDict extends BasePojo {
     /**
      * 字典顺序
      */
-    @Redis
     @Column(name = "DICT_ORDER")
     private int dictOrder;
 

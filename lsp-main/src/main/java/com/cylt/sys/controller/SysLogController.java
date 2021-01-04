@@ -3,15 +3,12 @@ package com.cylt.sys.controller;
 import com.cylt.common.base.controller.BaseController;
 import com.cylt.common.base.pojo.Page;
 import com.cylt.pojo.sys.SysLog;
-import com.cylt.pojo.sys.SysMenu;
 import com.cylt.sys.service.SysLogService;
-import com.cylt.sys.service.SysMenuService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * log Controller
@@ -28,8 +25,9 @@ public class SysLogController extends BaseController {
 
     /**
      * 查询log
-     * @param log
-     * @return
+     * @param log 检索条件
+     * @param page 分页条件
+     * @return 分页列表
      */
     @ResponseBody
     @RequestMapping(value = "list")
@@ -40,8 +38,8 @@ public class SysLogController extends BaseController {
 
     /**
      * 重试请求
-     * @param log
-     * @return
+     * @param log 日志信息
+     * @return 重试请求结果
      */
     @ResponseBody
     @RequestMapping(value = "retry")
