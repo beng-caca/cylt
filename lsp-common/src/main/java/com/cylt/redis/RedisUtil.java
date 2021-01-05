@@ -1,10 +1,10 @@
 package com.cylt.redis;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.PropertyFilter;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cylt.common.Redis;
+import com.cylt.common.SysUser;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.pojo.Sort;
@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -47,17 +48,14 @@ public class RedisUtil {
      *
      * @param key  键
      * @param time 时间(秒)
-     * @return
      */
-    boolean expire(String key, long time) {
+    private void expire(String key, long time) {
         try {
             if (time > 0) {
                 redisTemplate.expire(key, time, TimeUnit.SECONDS);
             }
-            return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -67,7 +65,7 @@ public class RedisUtil {
      * @param key 键 不能为null
      * @return 时间(秒) 返回0代表为永久有效
      */
-    public long getExpire(String key) {
+    private long getExpire(String key) {
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
     }
 
@@ -115,6 +113,9 @@ public class RedisUtil {
     private Boolean del(String key, boolean isLog) throws Exception {
         BasePojo pojo;
         Set<String> set = redisTemplate.keys(key);
+        if (set == null) {
+            return false;
+        }
         for (String str : set) {
             key = str;
         }
@@ -159,8 +160,8 @@ public class RedisUtil {
     /**
      * 通过检索条件数据
      *
-     * @param rootPojo
-     * @return 值
+     * @param rootPojo 查询条件
+     * @return 查询结果
      */
     public BasePojo get(BasePojo rootPojo) {
         return get(getKey(rootPojo), rootPojo.getClass());
@@ -169,8 +170,8 @@ public class RedisUtil {
     /**
      * 通过id检索数据
      *
-     * @param rootPojo
-     * @return 值
+     * @param rootPojo 查询条件
+     * @return 查询结果
      */
     public BasePojo getId(BasePojo rootPojo) {
         return get(getKeyId(rootPojo), rootPojo.getClass());
@@ -179,9 +180,9 @@ public class RedisUtil {
     /**
      * 通过key检索数据
      *
-     * @param key
+     * @param key   redis key
      * @param clazz 泛型
-     * @return 值
+     * @return 查询结果
      */
     public BasePojo get(String key, Class clazz) {
         // 判断是不是级联调用 ，如果是就加个缩进
@@ -193,6 +194,9 @@ public class RedisUtil {
 //            logger.info("\tselect:{}", key);
 //        }
         Set<String> set = redisTemplate.keys(key);
+        if (set == null) {
+            return null;
+        }
         for (String str : set) {
             key = str;
         }
@@ -205,8 +209,8 @@ public class RedisUtil {
     /**
      * 查询数据列表
      *
-     * @param rootPojo
-     * @return 值
+     * @param rootPojo 查询条件
+     * @return 查询结果
      */
     public <T> List<T> list(BasePojo rootPojo) {
         //获取所有属性名 设置key
@@ -219,7 +223,9 @@ public class RedisUtil {
             logger.info("   select:{}", key);
         }
         Set<String> ids = redisTemplate.keys(key);
-
+        if (ids == null) {
+            return new ArrayList<>();
+        }
         List<T> list = new ArrayList<>();
         BasePojo obj;
         for (String id : ids) {
@@ -235,8 +241,9 @@ public class RedisUtil {
     /**
      * 查询数据列表
      *
-     * @param rootPojo
-     * @return 值
+     * @param rootPojo 查询条件
+     * @param page     分页条件
+     * @return 结果分页对象
      */
     public Page list(BasePojo rootPojo, Page page) throws NoSuchFieldException {
         //获取所有属性名 设置key
@@ -284,8 +291,9 @@ public class RedisUtil {
     /**
      * 排序sortKeys
      *
-     * @param ids
-     * @param pojo
+     * @param ids 要排序的ID
+     * @param pojo 排序规则
+     * @return 排序结果
      */
     private Set<String> sortKeys(Set<String> ids, BasePojo pojo) throws NoSuchFieldException {
         List<Sort> sortList = pojo.getSort();
@@ -326,7 +334,7 @@ public class RedisUtil {
      * @param obj       类对象
      * @return true:存在，false:不存在, null:参数不合法
      */
-    public static Boolean isExistFieldName(String fieldName, Object obj) {
+    private static Boolean isExistFieldName(String fieldName, Object obj) {
         if (obj == null || StringUtils.isEmpty(fieldName)) {
             return null;
         }
@@ -392,7 +400,7 @@ public class RedisUtil {
      *
      * @param key    key
      * @param column 属性名
-     * @return
+     * @return value
      */
     private String getKeyField(String key, String column) {
         // 属性值开始位置
@@ -407,7 +415,7 @@ public class RedisUtil {
      *
      * @param key     key
      * @param columns 属性名
-     * @return
+     * @return value
      */
     private List<String> getKeyField(String key, List<String> columns) {
         List<String> values = new ArrayList<>();
@@ -422,7 +430,7 @@ public class RedisUtil {
      *
      * @param rootPojo 要保存的数据
      */
-    public void save(BasePojo rootPojo, long time) throws Exception {
+    public void save(BasePojo rootPojo, long time, String userId) throws Exception {
         if (rootPojo == null) {
             return;
         }
@@ -433,9 +441,9 @@ public class RedisUtil {
         String key = getKeyId(rootPojo);
         Set<String> set = redisTemplate.keys(key);
         // 判断有没有这个数据 如果没有则直接新建
-        if (set.size() == 0) {
+        if (set == null || set.size() == 0) {
             logger.info("insert:" + key);
-            set(rootPojo, time);
+            set(rootPojo, userId, time);
             save(getRelationship(rootPojo), time);
             return;
         }
@@ -459,7 +467,7 @@ public class RedisUtil {
             // 先删除原来的
             del(key, false);
             redisTemplate.delete(key);
-            set(rootPojo, time);
+            set(rootPojo, userId, time);
         }
         // 保存关系数据
         save(getRelationship(rootPojo), time);
@@ -471,7 +479,15 @@ public class RedisUtil {
      * @param rootPojo 要保存的数据
      */
     public void save(BasePojo rootPojo) throws Exception {
-        save(rootPojo, -1);
+        // 如果有用户直接取 没有 则取当前登录用户
+        String userId;
+        if(rootPojo.getUpdateBy() == null) {
+            SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+            userId = user.getId();
+        } else {
+            userId = rootPojo.getUpdateBy();
+        }
+        save(rootPojo, -1, userId);
     }
 
     /**
@@ -481,7 +497,7 @@ public class RedisUtil {
      */
     public void save(List pojoList, long time) throws Exception {
         for (Object pojo : pojoList) {
-            save((BasePojo) pojo, time);
+            save((BasePojo) pojo, time, ((BasePojo) pojo).getUpdateBy());
         }
     }
 
@@ -491,21 +507,34 @@ public class RedisUtil {
      * @param pojoList 要保存的数据
      */
     public void save(List pojoList) throws Exception {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         for (Object pojo : pojoList) {
-            save((BasePojo) pojo, 0);
+            save((BasePojo) pojo, 0, user.getId());
         }
     }
 
     /**
-     * 自定义key缓存放入
+     * 批量保存到redis（目前没有想到效率比较高的方式 等想到了再改）
      *
-     * @param rootPojo 储存对象
-     * @return true成功 false失败
+     * @param pojoList 要保存的数据
+     * @param userId 自定义用户id
      */
-    public boolean set(BasePojo rootPojo) {
-        return set(rootPojo, 0);
+    public void save(List pojoList, String userId) throws Exception {
+        for (Object pojo : pojoList) {
+            save((BasePojo) pojo, 0, userId);
+        }
     }
 
+    /**
+     * 普通缓存放入并设置时间
+     *
+     * @param rootPojo 值
+     * @return true成功 false 失败
+     */
+    public boolean set(BasePojo rootPojo) {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       return set(rootPojo, user.getId(), 0);
+    }
     /**
      * 普通缓存放入并设置时间
      *
@@ -513,11 +542,17 @@ public class RedisUtil {
      * @param time     时间(秒) time要大于0 如果time小于等于0 将设置无限期
      * @return true成功 false 失败
      */
-    public boolean set(BasePojo rootPojo, long time) {
+    public boolean set(BasePojo rootPojo, String userId, long time) {
         try {
             //取当前key类型
             String key = getKey(rootPojo);
             redisTemplate.delete(key);
+            if (userId != null) {
+                if (rootPojo.getCreateBy() == null) {
+                    rootPojo.setCreateBy(userId);
+                }
+                rootPojo.setUpdateBy(userId);
+            }
             if (rootPojo.getCreateTime() == null) {
                 rootPojo.setCreateTime(new Date());
             }
@@ -548,7 +583,7 @@ public class RedisUtil {
      * @param item 项 不能为null
      * @return 值
      */
-    public Object hget(String key, String item) {
+    private Object hget(String key, String item) {
         return redisTemplate.opsForHash().get(key, item);
     }
 
@@ -688,8 +723,8 @@ public class RedisUtil {
     /**
      * 封装mapset
      *
-     * @param key   键
-     * @param item  项
+     * @param key  键
+     * @param item 项
      * @param pojo 值
      * @return true 成功 false失败
      */
@@ -703,8 +738,8 @@ public class RedisUtil {
     /**
      * 封装mapget
      *
-     * @param key   键
-     * @param item  项
+     * @param key  键
+     * @param item 项
      * @return true 成功 false失败
      */
     public <T> List<T> mapGet(String key, String item, Class<T> classz) {
@@ -873,7 +908,7 @@ public class RedisUtil {
      *
      * @param key   键
      * @param value 值
-     * @return
+     * @return 是否成功
      */
     public boolean lSet(String key, Object value) {
         try {
@@ -891,7 +926,7 @@ public class RedisUtil {
      * @param key   键
      * @param value 值
      * @param time  时间(秒)
-     * @return
+     * @return 是否成功
      */
     public boolean lSet(String key, Object value, long time) {
         try {
@@ -911,7 +946,7 @@ public class RedisUtil {
      *
      * @param key   键
      * @param value 值
-     * @return
+     * @return 是否成功
      */
     public boolean lSet(String key, List<Object> value) {
         try {
@@ -929,7 +964,7 @@ public class RedisUtil {
      * @param key   键
      * @param value 值
      * @param time  时间(秒)
-     * @return
+     * @return 是否成功
      */
     public boolean lSet(String key, List<Object> value, long time) {
         try {
@@ -950,7 +985,7 @@ public class RedisUtil {
      * @param key   键
      * @param index 索引
      * @param value 值
-     * @return
+     * @return 是否成功
      */
     public boolean lUpdateIndex(String key, long index, Object value) {
         try {
@@ -972,8 +1007,7 @@ public class RedisUtil {
      */
     public long lRemove(String key, long count, Object value) {
         try {
-            Long remove = redisTemplate.opsForList().remove(key, count, value);
-            return remove;
+            return redisTemplate.opsForList().remove(key, count, value);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -984,7 +1018,7 @@ public class RedisUtil {
      * 取实体类的key
      *
      * @param basePojo 实体pojo
-     * @return
+     * @return key值
      */
     private String getKey(BasePojo basePojo) {
         return getKey(basePojo, false);
@@ -995,14 +1029,14 @@ public class RedisUtil {
      *
      * @param basePojo     实体pojo
      * @param isVagueQuery 是否取模糊key
-     * @return
+     * @return key值
      */
     private String getKey(BasePojo basePojo, Boolean isVagueQuery) {
         //获取所有属性名 设置key
         List<Field> fieldList = new ArrayList<>();
         fieldList.addAll(Arrays.asList(basePojo.getClass().getDeclaredFields()));
         fieldList.addAll(Arrays.asList(basePojo.getClass().getSuperclass().getDeclaredFields()));
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         //表名|-|id=?|-|属性名=?|-|属性名=?|-|属性名=?................
         buffer.append(basePojo.getClass().getAnnotation(Table.class).name()).append(DIVISION);
         buffer.append("id=").append(basePojo.getId() == null || "".equals(basePojo.getId()) ? "*" : basePojo.getId()).append(DIVISION);
@@ -1056,11 +1090,11 @@ public class RedisUtil {
      * 取实体类的key
      *
      * @param field 实体pojo
-     * @return
+     * @return key值
      */
     private String getJoinTableKey(Field field) {
         // 初始化多对多key模板
-        StringBuffer key = new StringBuffer();
+        StringBuilder key = new StringBuilder();
         // 表名
         key.append(field.getAnnotation(JoinTable.class).name()).append(DIVISION);
         // 主键
@@ -1075,7 +1109,7 @@ public class RedisUtil {
      * 取实体类的key id
      *
      * @param basePojo 实体pojo
-     * @return
+     * @return key值
      */
     private String getKeyId(BasePojo basePojo) {
         StringBuffer buffer = new StringBuffer();
@@ -1097,7 +1131,12 @@ public class RedisUtil {
         //获取所有属性名 设置key
         Field[] values = basePojo.getClass().getDeclaredFields();
         BasePojo children;
-        Field pid = null;
+        Field pid;
+        //key
+        String keyTemplate;
+        String key;
+        Set<String> relationshipIds;
+        List<BasePojo> list;
         //遍历其他属性名
         try {
             for (Field field : values) {
@@ -1115,23 +1154,23 @@ public class RedisUtil {
                     field.set(basePojo, obj);
                     // 判断当前字段是否为多对多
                 } else if (field.getAnnotation(ManyToMany.class) != null) {
-                    //key
-                    String keyTemplate;
-                    List<BasePojo> list = new ArrayList<>();
+                    list = new ArrayList<>();
                     if (field.getAnnotation(JoinTable.class) != null) {
                         // 初始化多对多key模板
                         keyTemplate = getJoinTableKey(field);
-                        String key = MessageFormat.format(keyTemplate, basePojo.getId(), "*");
-                        Set<String> relationshipIds = redisTemplate.keys(key);
-                        //因为*是正则表达式里的关键字 所以没法调用 只能把它换成~
-                        key = key.replace("*", "~");
-                        //创建遍历临时存放id的变量
-                        BasePojo pojoId;
-                        for (String id : relationshipIds) {
-                            pojoId = newInstance(field);
-                            pojoId.setId(id.replace(key.split("~")[0], "")
-                                    .replace(key.split("~")[1], ""));
-                            list.add(get(pojoId));
+                        key = MessageFormat.format(keyTemplate, basePojo.getId(), "*");
+                        relationshipIds = redisTemplate.keys(key);
+                        if (relationshipIds != null) {
+                            //因为*是正则表达式里的关键字 所以没法调用 只能把它换成~
+                            key = key.replace("*", "~");
+                            //创建遍历临时存放id的变量
+                            BasePojo pojoId;
+                            for (String id : relationshipIds) {
+                                pojoId = newInstance(field);
+                                pojoId.setId(id.replace(key.split("~")[0], "")
+                                        .replace(key.split("~")[1], ""));
+                                list.add(get(pojoId));
+                            }
                         }
                         field.setAccessible(true);
                         field.set(basePojo, list);
@@ -1156,16 +1195,14 @@ public class RedisUtil {
             logger.error(noSuchFieldException.getMessage());
         } catch (IllegalAccessException accessException) {
             logger.error(accessException.getMessage());
-        } catch (IllegalArgumentException argumentException) {
-            logger.error(argumentException.getMessage());
         }
     }
 
     /**
      * new一个未知数组的泛型
      *
-     * @param field
-     * @return
+     * @param field 反射类
+     * @return 新创建的类
      */
     private BasePojo newInstance(Field field) {
         BasePojo pojo = null;

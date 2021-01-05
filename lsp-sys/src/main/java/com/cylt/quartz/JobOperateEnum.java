@@ -15,7 +15,7 @@ public enum JobOperateEnum {
         this.desc = desc;
     }
 
-    public Serializable getValue() {
+    public int getValue() {
         return this.value;
     }
 

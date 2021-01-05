@@ -10,7 +10,6 @@ import com.cylt.pojo.sys.SysLog;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
 import com.cylt.redis.RedisUtil;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +24,7 @@ import java.util.*;
 @Component
 public class RabbitMQUtil {
 
-    @Autowired
+    @Resource
     RabbitTemplate rabbitTemplate;
 
 
@@ -38,23 +37,34 @@ public class RabbitMQUtil {
 
     /**
      * 核心发送消息队列方法
+     *
      * @param mq 消息对象
      */
-    public void send(MQEntity mq) throws Exception {
-        // 系统log保存一天
-        redisUtil.save(mq.getSysLog(), 60 * 60 * 24);
-        // rabbitTemplate.convertAndSend(RabbitMQDictionary.SYS,"logService", mq);
-        rabbitTemplate.convertAndSend(RabbitMQDictionary.ROOT,mq.getSysLog().getModule(), mq);
+    private void send(MQEntity mq) throws Exception {
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        redisUtil.save(mq.getSysLog(),60 * 60 * 24, user.getId());
+        rabbitTemplate.convertAndSend(RabbitMQDictionary.ROOT, mq.getSysLog().getModule(), mq);
+    }
+
+
+    /**
+     * 发送log到mq
+     *
+     * @param mq 消息对象
+     */
+    public void sendLog(MQEntity mq) {
+        rabbitTemplate.convertAndSend(RabbitMQDictionary.ROOT, RabbitMQDictionary.LOG, mq);
     }
 
     /**
      * 发送消息队列方法
-     * @param routingKey 路由名
-     * @param serviceName service名称
+     *
+     * @param routingKey         路由名
+     * @param serviceName        service名称
      * @param declaredMethodName 操作名
-     * @param obj 参数
+     * @param obj                参数
      */
-    public void send(String routingKey, String serviceName,String declaredMethodName, BasePojo... obj) throws Exception {
+    public void send(String routingKey, String serviceName, String declaredMethodName, BasePojo... obj) throws Exception {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(serviceName);
@@ -80,13 +90,14 @@ public class RabbitMQUtil {
 
     /**
      * 发送消息队列方法
-     * @param routingKey 路由名
-     * @param serviceName service名称
+     *
+     * @param routingKey         路由名
+     * @param serviceName        service名称
      * @param declaredMethodName 操作名
-     * @param obj 参数
-     * @param log 布尔类型 只要加上这个参数就不生成log记录 坏处就是异步失败了无法追踪
+     * @param obj                参数
+     * @param log                布尔类型 只要加上这个参数就不生成log记录 坏处就是异步失败了无法追踪
      */
-    public void send(String routingKey, String serviceName,String declaredMethodName, Object obj, Boolean log) {
+    public void send(String routingKey, String serviceName, String declaredMethodName, Object obj, Boolean log) {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(serviceName);
@@ -96,12 +107,13 @@ public class RabbitMQUtil {
         mq.setPojo(obj);
         // 开始时间
         mq.setStartTime(new Date());
-        rabbitTemplate.convertAndSend(routingKey,null, mq);
+        rabbitTemplate.convertAndSend(RabbitMQDictionary.ROOT, routingKey, mq);
     }
 
 
     /**
      * 发送消息队列方法
+     *
      * @param log 系统log
      */
     public void send(SysLog log) throws Exception {
@@ -123,24 +135,24 @@ public class RabbitMQUtil {
     }
 
 
-
     /**
      * 核心发送消息队列方法
-     * @param routingKey 路由名
-     * @param serviceName service名称
+     *
+     * @param routingKey         路由名
+     * @param serviceName        service名称
      * @param declaredMethodName 操作名
-     * @param obj 参数
+     * @param obj                参数
      */
-    private SysLog getLog(String routingKey, String serviceName,String declaredMethodName, BasePojo... obj) {
+    private SysLog getLog(String routingKey, String serviceName, String declaredMethodName, BasePojo... obj) {
 
         SysLog sysLog = new SysLog();
         //获取当前登录用户
-        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
+        SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         sysLog.setUserId(user.getId());
         // 模块名
         sysLog.setModule(routingKey);
         String title = "用户{0} 对 {1} 的 {2} 数据进行 {3} 操作";
-        sysLog.setTitle(MessageFormat.format(title, user.getName(),serviceName, getLogTitle(obj), declaredMethodName));
+        sysLog.setTitle(MessageFormat.format(title, user.getName(), serviceName, getLogTitle(obj), declaredMethodName));
         sysLog.setServiceName(serviceName);
         sysLog.setDeclaredMethodName(declaredMethodName);
         sysLog.setPojo(JSON.toJSONString(obj, SerializerFeature.WriteClassName));
@@ -156,15 +168,16 @@ public class RabbitMQUtil {
 
     /**
      * get业务日志标题
-     * @param objs
-     * @return
+     *
+     * @param objs 业务对象
+     * @return 通过反射机制取到日志标题值
      */
     private String getLogTitle(BasePojo[] objs) {
-        StringBuffer logTitle = new StringBuffer();
+        StringBuilder logTitle = new StringBuilder();
         //获取所有属性名 设置key
         try {
-        Field[] values = objs[0].getClass().getDeclaredFields();
-        //遍历其他属性名
+            Field[] values = objs[0].getClass().getDeclaredFields();
+            //遍历其他属性名
             for (Field field : values) {
                 // 判断当前字段是否为log标题
                 if (field.getAnnotation(LogTitle.class) != null) {

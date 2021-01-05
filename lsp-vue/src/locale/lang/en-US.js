@@ -124,6 +124,13 @@ export default {
       data: 'Data',
       icon: 'Icon',
       allRead: 'All Read'
+    },
+    job: {
+      jobName: 'Job Name',
+      state: 'Job State',
+      cron: 'Cron Expression',
+      beanName: 'Bean Name',
+      methodName: 'Method Name'
     }
   },
   // menu
@@ -141,7 +148,8 @@ export default {
       user: 'User',
       log: 'Log',
       dict: 'Dict',
-      notice: 'Notice'
+      notice: 'Notice',
+      job: 'Job'
     }
   },
   // dict
@@ -153,9 +161,9 @@ export default {
         processing: 'Processing',
         successfully: 'Successfully'
       },
-      noticeType: {
-        push: 'Push',
-        response: 'Just respond'
+      job: {
+        start: 'Start',
+        suspend: 'Suspend'
       }
     }
   }

@@ -1,10 +1,8 @@
 package com.cylt.dataInit;
 
+import com.cylt.pojo.sys.SysScheduleJob;
 import com.cylt.redis.RedisUtil;
-import com.cylt.sys.dao.SysMenuDao;
-import com.cylt.sys.dao.SysNoticeDao;
-import com.cylt.sys.dao.SysRoleDao;
-import com.cylt.sys.dao.SysUserDao;
+import com.cylt.sys.dao.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -37,6 +35,9 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
     @Resource
     private SysNoticeDao sysNoticeDao;
 
+    @Resource
+    private SysScheduleJobDao sysScheduleJobDao;
+
 
     /**
      * 缓存数据库
@@ -57,13 +58,15 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
         if(ev.getApplicationContext().getParent() == null){
             try{
                 // 保存菜单
-                redisUtil.save(sysMenuDao.findAll());
+                redisUtil.save(sysMenuDao.findAll(),null);
                 // 保存角色
-                redisUtil.save(sysRoleDao.findAll());
+                redisUtil.save(sysRoleDao.findAll(),null);
                 // 保存用户
-                redisUtil.save(sysUserDao.findAll());
+                redisUtil.save(sysUserDao.findAll(),null);
                 // 保存消息
-                redisUtil.save(sysNoticeDao.findAll());
+                redisUtil.save(sysNoticeDao.findAll(),null);
+                // 保存消息
+                redisUtil.save(sysScheduleJobDao.findAll(),null);
                 // 解除实体与session的链接防止修改数据库
                 entityManager.clear();
                 logger.info("redis init success");

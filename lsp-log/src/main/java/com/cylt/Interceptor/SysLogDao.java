@@ -1,4 +1,4 @@
-package com.cylt.sys.dao;
+package com.cylt.Interceptor;
 
 import com.cylt.pojo.sys.SysLog;
 import org.springframework.data.jpa.repository.JpaRepository;

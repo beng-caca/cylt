@@ -26,11 +26,6 @@ public class RabbitConfig {
         return new Queue(RabbitMQDictionary.SYS);
     }
 
-    @Bean
-    public Queue queueTaskService() {
-        return new Queue(RabbitMQDictionary.TASK);
-    }
-
     // --------------------------  SYS  --------------------------
 
     /**
@@ -57,14 +52,6 @@ public class RabbitConfig {
         return BindingBuilder.bind(queueSysService()).to(rootTopicExchange()).with(RabbitMQDictionary.SYS);
     }
 
-    /**
-     * task service
-     */
-    @Bean
-    Binding bindingTask() {
-        return BindingBuilder.bind(queueTaskService()).to(rootTopicExchange()).with(RabbitMQDictionary.TASK);
-    }
-
 
     // ------------------------------------------------------------
 
@@ -87,7 +74,6 @@ public class RabbitConfig {
         rabbitAdmin.declareExchange(rootTopicExchange());
         rabbitAdmin.declareQueue(queueLog());
         rabbitAdmin.declareQueue(queueSysService());
-        rabbitAdmin.declareQueue(queueTaskService());
     }
 
 }

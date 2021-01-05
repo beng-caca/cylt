@@ -67,12 +67,12 @@ public class SysScheduleJobService extends BaseService {
      * @param job 任务
      * @return 保存结果
      */
-    public String save(SysScheduleJob job) throws Exception {
+    public SysScheduleJob save(SysScheduleJob job) throws Exception {
         //刷新缓存
         redisUtil.save(job);
         //发送消息队列持久保存到数据库
-        rabbitMQUtil.send(RabbitMQDictionary.TASK, SERVICE_NAME,RabbitMQDictionary.SAVE,job);
-        return "保存成功";
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,job);
+        return job;
     }
 
 
@@ -82,7 +82,7 @@ public class SysScheduleJobService extends BaseService {
      */
     public void delete(SysScheduleJob job) throws Exception {
         redisUtil.del(job);
-        rabbitMQUtil.send(RabbitMQDictionary.TASK, SERVICE_NAME,RabbitMQDictionary.DELETE,job);
+        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,job);
     }
 
 }

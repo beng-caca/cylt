@@ -1,7 +1,7 @@
 package com.cylt.quartz;
 
-import com.cylt.job.SysScheduleJobDao;
 import com.cylt.pojo.sys.SysScheduleJob;
+import com.cylt.sys.dao.SysScheduleJobDao;
 import org.quartz.*;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class QuartzServiceImpl implements IQuartzService {
     @Override
     public void timingTask() {
         //查询数据库是否存在需要定时的任务
-        List<SysScheduleJob> scheduleJobs = sysScheduleJobDao.findAll();
+        List<SysScheduleJob> scheduleJobs = sysScheduleJobDao.findByStatus(0);
         if (scheduleJobs != null) {
             scheduleJobs.forEach(this::addJob);
         }
@@ -63,7 +63,9 @@ public class QuartzServiceImpl implements IQuartzService {
         }
         switch (jobOperateEnum) {
             case START:
-                scheduler.resumeJob(jobKey);
+                //scheduler.resumeJob(jobKey);
+                scheduler.deleteJob(jobKey);
+                addJob(job);
                 break;
             case PAUSE:
                 scheduler.pauseJob(jobKey);

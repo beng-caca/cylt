@@ -1,0 +1,56 @@
+import { getList, save, del } from '@/api/sys/job'
+
+export default {
+  state: {
+    list: [],
+    info: {},
+    query: {
+      pageNumber: 1,
+      totalNumber: 0,
+      singlePage: 20
+    },
+    loading: false
+  },
+  mutations: {
+    setList (state, page) {
+      if (page !== undefined) {
+        state.list = page.pageList
+        state.query.totalNumber = page.totalNumber
+        for (let i in state.list) {
+          // 这里把int类型的数据强转成字符串类型    因为字典value就是字符串类型 必须全部匹配才能被select组件识别（===）
+          state.list[i].status += ''
+        }
+      }
+      state.loading = false
+    },
+    getJob (state, data) {
+      state.info = data
+    },
+    insertJob (state) {
+      state.info = {}
+      state.info.state = '1'
+    }
+  },
+  actions: {
+    getJobList ({ commit, rootState }, params) {
+      rootState.job.loading = true
+      getList(params).then(res => {
+        commit('setList', res.data)
+      }).catch(e => {
+        console.log(e)
+      })
+    },
+    insertJob ({ commit, rootState }, params) {
+      commit('insertJob', params)
+    },
+    getJob ({ commit, rootState }, params) {
+      commit('getJob', params)
+    },
+    saveJob ({ commit, rootState }) {
+      return save(rootState.job.info)
+    },
+    delJob ({ commit, rootState }, id) {
+      return del(id)
+    }
+  }
+}

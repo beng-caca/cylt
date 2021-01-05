@@ -126,6 +126,13 @@ export default {
       data: '回调参数',
       icon: '推送图标',
       allRead: '全部已读'
+    },
+    job: {
+      jobName: '任务名称',
+      state: '任务状态',
+      cron: 'cron表达式',
+      beanName: '服务名称',
+      methodName: '方法名称'
     }
   },
   // menu
@@ -142,7 +149,8 @@ export default {
       user: '用户',
       log: '日志',
       dict: '字典',
-      notice: '通知'
+      notice: '通知',
+      job: '任务'
     }
   },
   // dict
@@ -154,9 +162,9 @@ export default {
         processing: '正在处理',
         successfully: '处理成功'
       },
-      noticeType: {
-        push: '送达即可',
-        response: '响应即可'
+      job: {
+        start: '启动',
+        suspend: '暂停'
       }
     }
   }

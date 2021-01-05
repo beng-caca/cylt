@@ -1,11 +1,12 @@
 package com.cylt.Interceptor;
 
 import com.cylt.common.MQEntity;
+import com.cylt.common.util.LogUtil;
 import com.cylt.common.util.SpringUtil;
 import com.cylt.pojo.sys.SysLog;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
+import com.cylt.rabbitMQ.util.RabbitMQUtil;
 import com.cylt.redis.RedisUtil;
-import com.cylt.sys.service.SysLogService;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,11 @@ public class SysInterceptor {
     @Resource
     public RedisUtil redisUtil;
 
+    /**
+     * 消息队列
+     */
     @Resource
-    private SysLogService sysLogService;
+    public RabbitMQUtil rabbitMQUtil;
 
     @RabbitHandler
     @Transactional(rollbackFor = { Exception.class })
@@ -50,7 +54,11 @@ public class SysInterceptor {
         if(log == null || "1".equals(log.getState())){
             try{
                 if (log != null) {
-                    sysLogService.processing(mq.getSysLog());
+                    // 修改log到正在处理状态
+                    LogUtil.processing(mq.getSysLog());
+                    // 发送消息队列持久保存到数据库
+                    rabbitMQUtil.sendLog(mq);
+
                 }
                 // 通过spring容器注入service
                 Object service = SpringUtil.getBean(mq.getServiceName());
@@ -62,14 +70,19 @@ public class SysInterceptor {
                     service.getClass().getDeclaredMethod(mq.getDeclaredMethodName()).invoke(service);
                 }
                 if (log != null) {
-                    sysLogService.success(mq.getSysLog());
+                    // 修改log到处理成功状态
+                    LogUtil.success(mq.getSysLog());
+                    // 发送消息队列持久保存到数据库
+                    rabbitMQUtil.sendLog(mq);
                 }
                 // 通知rabbitmq处理完成
                 channel.basicAck(deliveryTag, true);
             } catch (Exception e){
                 logger.error(e.getLocalizedMessage());
                 if (log != null) {
-                    sysLogService.error(mq.getSysLog(), e.toString());
+                    LogUtil.error(mq.getSysLog(), e.toString());
+                    // 发送消息队列持久保存到数据库
+                    rabbitMQUtil.sendLog(mq);
                 }
                 // 通知rabbitmq处理失败 如果失败时不返回 rabbit会在重启服务后再次重试
                 // 失败后忽略

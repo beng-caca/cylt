@@ -1,0 +1,48 @@
+package com.cylt.sys.service;
+
+import com.cylt.pojo.sys.SysScheduleJob;
+import com.cylt.quartz.IQuartzService;
+import com.cylt.quartz.JobOperateEnum;
+import com.cylt.sys.dao.SysScheduleJobDao;
+import org.quartz.SchedulerException;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+
+/**
+ * 字典service
+ */
+@Service("sysScheduleJobService")
+public class SysScheduleJobService {
+
+    @Resource
+    private SysScheduleJobDao sysScheduleJobDao;
+
+    @Resource
+    private IQuartzService quartzService;
+    /**
+     * 保存
+     * @param scheduleJob 保存参数
+     */
+    public void save(SysScheduleJob scheduleJob) throws SchedulerException {
+        sysScheduleJobDao.save(scheduleJob);
+        // 遍历并找到当前状态的枚举类型
+        for (JobOperateEnum enumm : JobOperateEnum.values()) {
+            if (scheduleJob.getStatus()  == enumm.getValue()) {
+                quartzService.operateJob(enumm, scheduleJob);
+            }
+        }
+    }
+
+
+
+    /**
+     * 删除
+     * @param scheduleJob 删除参数
+     */
+    public void delete(SysScheduleJob scheduleJob) throws SchedulerException {
+        // 删除该任务
+        quartzService.operateJob(JobOperateEnum.DELETE, scheduleJob);
+        sysScheduleJobDao.delete(scheduleJob);
+    }
+}

@@ -7,16 +7,12 @@ public class RabbitMQDictionary {
     /**
      * 总交换机
      */
-    public final static String ROOT = "ROOTS";
+    public final static String ROOT = "ROOT";
 
     /**
      * 路由器：系统
      */
     public final static String SYS = "SYS";
-    /**
-     * 交换机：任务
-     */
-    public final static String TASK = "TASK";
     /**
      * 交换机：日志
      */

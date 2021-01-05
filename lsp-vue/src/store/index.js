@@ -9,6 +9,7 @@ import role from './module/sys/role'
 import log from './module/sys/log'
 import dict from './module/sys/dict'
 import notice from './module/sys/notice'
+import job from './module/sys/job'
 
 Vue.use(Vuex)
 
@@ -29,7 +30,8 @@ export default new Vuex.Store({
     role,
     log,
     dict,
-    notice
+    notice,
+    job
   },
   plugins: [
     createVuexAlong({

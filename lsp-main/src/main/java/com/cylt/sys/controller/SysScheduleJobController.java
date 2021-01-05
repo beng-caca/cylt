@@ -68,10 +68,7 @@ public class SysScheduleJobController extends BaseController {
     @ResponseBody
     @RequestMapping(value = "save")
     public String save(SysScheduleJob job) throws Exception {
-        String msg = sysScheduleJobService.save(job);
-        if(!"保存成功".equals(msg)){
-            return responseFail(msg);
-        }
+        sysScheduleJobService.save(job);
         return responseSuccess();
     }
 
