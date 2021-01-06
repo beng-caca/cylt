@@ -1,7 +1,5 @@
 package com.cylt.quartz;
 
-import java.io.Serializable;
-
 public enum JobOperateEnum {
     START(0, "启动"),
     PAUSE(1, "暂停"),

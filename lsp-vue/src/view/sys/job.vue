@@ -12,6 +12,7 @@
       <div class="operation">
         <Button type="primary" v-jurisdiction="'edit'" @click="add()">{{ $t('system.add') }}</Button>
       </div>
+
     </Form>
     <Table
       :loading="$store.state.job.loading"
@@ -22,6 +23,9 @@
       border
       stripe
     >
+      <template slot-scope="{ row, index }" slot="status">
+        <i-switch  v-jurisdiction="'edit'" @on-change="save(row)" v-model="row.status" true-color="#13ce66" false-color="#ff4949" true-value="0" false-value="1"/>
+      </template>
       <template slot-scope="{ row, index }" slot="action">
         <Button type="primary" size="small" style="margin-right: 5px" @click="info(row, index)">{{ $t('system.info') }}</Button>
         <Button type="error" v-jurisdiction="'del'" size="small" @click="delInit(row)">{{ $t('system.del') }}</Button>
@@ -93,6 +97,7 @@
 </template>
 <script>
 import store from '@/store'
+
 export default {
   data () {
     store.dispatch('getJobList', this.$store.state.job.query)
@@ -103,43 +108,23 @@ export default {
         { title: this.$t('system.job.beanName'), key: 'beanName' },
         { title: this.$t('system.job.methodName'), key: 'methodName' },
         { title: this.$t('system.job.cron'), key: 'cronExpression' },
-        { title: this.$t('system.job.state'),
-          key: 'status',
-          render: (h, params) => {
-            let color = '#000'
-            switch (params.row.status) {
-              case '0':
-                color = 'green'
-                break
-              case '1':
-                color = 'grey'
-                break
-            }
-            return h('div', [
-              h('strong', {
-                style: {
-                  color: color
-                }
-              }, this.$t(this.$dict('JOB_STATE', params.row.status)))
-            ])
-          }
-        },
+        { title: this.$t('system.job.state'), slot: 'status', width: 100, align: 'center' },
         { title: this.$t('system.operation'), slot: 'action', width: 150, align: 'center' }
       ],
       contextLine: 0,
       delConfirm: false,
       isInfo: false,
       validate: {
-        code: [
+        jobName: [
           { required: true, message: this.$t('system.job.jobName') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ],
-        title: [
+        beanName: [
           { required: true, message: this.$t('system.job.beanName') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ],
-        content: [
+        methodName: [
           { required: true, message: this.$t('system.job.methodName') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ],
-        callbackUrl: [
+        cronExpression: [
           { required: true, message: this.$t('system.job.cron') + this.$t('system.validate.notNull'), trigger: 'blur' }
         ]
       }
@@ -162,10 +147,10 @@ export default {
       this.deldata = data
       this.delConfirm = true
     },
-    save () {
+    save (info) {
       this.$refs['formValidate'].validate((valid) => {
         if (valid) {
-          store.dispatch('saveJob').then(res => {
+          store.dispatch('saveJob', info).then(res => {
             if (res.data.code === 200) {
               this.query()
               this.$Message.success(this.$t('system.success'))

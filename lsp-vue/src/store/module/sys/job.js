@@ -28,7 +28,7 @@ export default {
     },
     insertJob (state) {
       state.info = {}
-      state.info.state = '1'
+      state.info.status = '0'
     }
   },
   actions: {
@@ -46,8 +46,12 @@ export default {
     getJob ({ commit, rootState }, params) {
       commit('getJob', params)
     },
-    saveJob ({ commit, rootState }) {
-      return save(rootState.job.info)
+    saveJob ({ commit, rootState }, info) {
+      if (info) {
+        return save(info)
+      } else {
+        return save(rootState.job.info)
+      }
     },
     delJob ({ commit, rootState }, id) {
       return del(id)

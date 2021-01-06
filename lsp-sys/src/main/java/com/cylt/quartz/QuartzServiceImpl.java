@@ -40,7 +40,7 @@ public class QuartzServiceImpl implements IQuartzService {
 
             //创建任务
             JobDetail jobDetail = JobBuilder.newJob(QuartzFactory.class)
-                    .withIdentity(job.getJobName())
+                    .withIdentity(job.getId())
                     .build();
 
             //传入调度的数据，在QuartzFactory中需要使用
@@ -56,13 +56,20 @@ public class QuartzServiceImpl implements IQuartzService {
 
     @Override
     public void operateJob(JobOperateEnum jobOperateEnum, SysScheduleJob job) throws SchedulerException {
-        JobKey jobKey = new JobKey(job.getJobName());
+        JobKey jobKey = new JobKey(job.getId());
+        // 找到任务实例
         JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+        // 如果当前实例是否存在
         if (jobDetail == null) {
+            // 如果实例状态是启动状态就新建一个实例
+            if (jobOperateEnum == JobOperateEnum.START) {
+                addJob(job);
+            }
             return;
         }
         switch (jobOperateEnum) {
             case START:
+                // 这里实现原理并不是quartz的启动 ，而是换成了删除+添加
                 //scheduler.resumeJob(jobKey);
                 scheduler.deleteJob(jobKey);
                 addJob(job);

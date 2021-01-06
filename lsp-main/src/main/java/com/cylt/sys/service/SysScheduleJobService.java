@@ -1,6 +1,7 @@
 package com.cylt.sys.service;
 
 import com.cylt.common.base.pojo.Page;
+import com.cylt.common.base.pojo.Sort;
 import com.cylt.common.base.service.BaseService;
 import com.cylt.pojo.sys.SysScheduleJob;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,6 +34,9 @@ public class SysScheduleJobService extends BaseService {
      * @return 分页任务列表
      */
     public Page list(SysScheduleJob job, Page page) throws Exception {
+        List<Sort> sortList = new ArrayList<>();
+        sortList.add(new Sort("createTime"));
+        job.setSort(sortList);
         page = redisUtil.list(job, page);
         // 如果当前一个菜单都没有 就和同步一下
         if (page.getPageList().size() == 0) {
