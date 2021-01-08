@@ -1,4 +1,4 @@
-import { getList, save, del } from '@/api/sys/job'
+import { getList, save, del, logList } from '@/api/sys/job'
 
 export default {
   state: {
@@ -55,6 +55,9 @@ export default {
     },
     delJob ({ commit, rootState }, id) {
       return del(id)
+    },
+    getJobLogList ({ commit, rootState }, data) {
+      return logList(data)
     }
   }
 }

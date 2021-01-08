@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -62,6 +64,7 @@ public class BasePojo implements java.io.Serializable {
      * 新增时间
      */
     @Redis
+    @CreatedDate
     @Column(name = "CREATE_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -71,6 +74,7 @@ public class BasePojo implements java.io.Serializable {
      * 修改时间
      */
     @Redis
+    @LastModifiedDate
     @Column(name = "UPDATE_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

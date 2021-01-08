@@ -2,6 +2,7 @@ package com.cylt.sys.controller;
 
 import com.cylt.common.base.controller.BaseController;
 import com.cylt.common.base.pojo.Page;
+import com.cylt.pojo.sys.SysJobLog;
 import com.cylt.pojo.sys.SysScheduleJob;
 import com.cylt.sys.service.SysScheduleJobService;
 import org.springframework.stereotype.Controller;
@@ -84,5 +85,17 @@ public class SysScheduleJobController extends BaseController {
         return responseSuccess();
     }
 
+
+    /**
+     * 查询log列表
+     * @param jobLog 任务
+     * @param page 分页条件
+     * @return 查询结果
+     */
+    @ResponseBody
+    @RequestMapping(value = "logList")
+    public String logList(SysJobLog jobLog, Page page) throws NoSuchFieldException {
+        return getJson(sysScheduleJobService.jobLogList(jobLog, page));
+    }
 
 }

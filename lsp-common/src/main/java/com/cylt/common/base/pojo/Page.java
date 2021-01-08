@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Page {
+public class Page<T> {
     /**
      * 第 * 页
      */
@@ -30,5 +30,5 @@ public class Page {
     /**
      * 分页数据
      */
-    private List pageList;
+    private List<T> pageList;
 }

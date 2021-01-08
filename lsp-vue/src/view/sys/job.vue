@@ -27,6 +27,8 @@
         <i-switch  v-jurisdiction="'edit'" @on-change="save(row)" v-model="row.status" true-color="#13ce66" false-color="#ff4949" true-value="0" false-value="1"/>
       </template>
       <template slot-scope="{ row, index }" slot="action">
+
+        <Button type="warning" size="small" style="margin-right: 5px" @click="getJobLogList(row)">{{ $t('menu.sys.log') }}</Button>
         <Button type="primary" size="small" style="margin-right: 5px" @click="info(row, index)">{{ $t('system.info') }}</Button>
         <Button type="error" v-jurisdiction="'del'" size="small" @click="delInit(row)">{{ $t('system.del') }}</Button>
       </template>
@@ -93,6 +95,33 @@
         <Button size="large" long v-jurisdiction="'edit'" type="primary" @click="save()">{{ $t('system.save') }}</Button>
       </div>
     </Drawer>
+
+    <Drawer
+      :title="$t('menu.sys.job') + $t('menu.sys.log') + '(' + logPage.totalNumber + ') - ' + log.jobName"
+      v-model="isLogInfo"
+      width="40%"
+    >
+      <Scroll :on-reach-bottom="handleReachBottom" :height="logInfoHeight">
+        <Collapse>
+              <Panel :name="item.id" dis-hover v-for="(item, index) in logPage.pageList" :key="index" :class="item.state === '3' ? 'success': 'error'">
+                <span style="color:#fff;">
+                  {{ $t($dict('HANDLE', item.state)) }}
+                </span>
+                <span style="color:#fff;float: right;padding-right: 5px">
+                  {{ item.startDate }}
+                </span>
+                <p slot="content">
+                  {{ item.text }}
+                  <br/>
+                  <span style="float: right;">
+                    用时：{{ item.timeUse }}s
+                 </span>
+                  <br/>
+                </p>
+              </Panel>
+        </Collapse>
+      </Scroll>
+    </Drawer>
   </div>
 </template>
 <script>
@@ -109,11 +138,15 @@ export default {
         { title: this.$t('system.job.methodName'), key: 'methodName' },
         { title: this.$t('system.job.cron'), key: 'cronExpression' },
         { title: this.$t('system.job.state'), slot: 'status', width: 100, align: 'center' },
-        { title: this.$t('system.operation'), slot: 'action', width: 150, align: 'center' }
+        { title: this.$t('system.operation'), slot: 'action', width: 200, align: 'center' }
       ],
       contextLine: 0,
       delConfirm: false,
       isInfo: false,
+      isLogInfo: false,
+      logPage: {},
+      log: {},
+      logInfoHeight: window.innerHeight - 100,
       validate: {
         jobName: [
           { required: true, message: this.$t('system.job.jobName') + this.$t('system.validate.notNull'), trigger: 'blur' }
@@ -160,6 +193,30 @@ export default {
         }
       })
     },
+    getJobLogList (data) {
+      this.log = data
+      store.state.job.loading = true
+      store.dispatch('getJobLogList', { jobId: data.id, pageNumber: 1, singlePage: 100 }).then(res => {
+        this.logPage = res.data
+        this.isLogInfo = true
+        store.state.job.loading = false
+      })
+    },
+    handleReachBottom () {
+      return new Promise(resolve => {
+        // 本地响应的太快了 以后把他设置成0
+        setTimeout(() => {
+          // 下一页
+          this.logPage.pageNumber++
+          store.dispatch('getJobLogList', { jobId: this.log.id, pageNumber: this.logPage.pageNumber, singlePage: 100 }).then(res => {
+            for (let i in res.data.pageList) {
+              this.logPage.pageList.push(res.data.pageList[i])
+            }
+            resolve()
+          })
+        }, 100)
+      })
+    },
     add () {
       store.dispatch('insertJob', {})
       this.isInfo = true
@@ -195,5 +252,11 @@ export default {
   }
   .operation{
     text-align: right;
+  }
+  .error{
+    background:#FF6666;
+  }
+  .success{
+    background:#339933;
   }
 </style>

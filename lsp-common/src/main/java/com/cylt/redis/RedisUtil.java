@@ -99,7 +99,7 @@ public class RedisUtil {
      * @param pojo 删除数据
      */
     public Boolean del(BasePojo pojo, boolean isLog) throws Exception {
-        String key = getKeyId(pojo);
+        String key = getKey(pojo);
         return del(key, isLog);
     }
 

@@ -23,3 +23,11 @@ export const del = (id) => {
     method: 'post'
   })
 }
+
+export const logList = (data) => {
+  return axios.request({
+    url: '/sys/job/logList',
+    data: data,
+    method: 'post'
+  })
+}
