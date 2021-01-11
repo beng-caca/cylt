@@ -58,7 +58,7 @@ public class SysMenuService extends BaseService {
      * @param sysMenu 菜单信息
      * @return 保存结果
      */
-    public SysMenu save(SysMenu sysMenu) throws Exception {
+    public SysMenu save(SysMenu sysMenu) {
         if(null == sysMenu.getId() || "".equals(sysMenu.getId())){
             sysMenu.setId(UUID.randomUUID().toString());
         }
@@ -74,7 +74,7 @@ public class SysMenuService extends BaseService {
      * 删除菜单
      * @param sysMenu 删除菜单
      */
-    public void delete(SysMenu sysMenu) throws Exception {
+    public void delete(SysMenu sysMenu) {
         redisUtil.del(sysMenu);
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,sysMenu);
     }

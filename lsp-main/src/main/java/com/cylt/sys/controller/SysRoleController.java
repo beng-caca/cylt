@@ -32,7 +32,7 @@ public class SysRoleController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysRole role, Page page) throws Exception {
+    public String list(SysRole role, Page page) {
         page = sysRoleService.list(role, page);
         return getJson(page);
     }
@@ -68,7 +68,7 @@ public class SysRoleController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysRole role) throws Exception {
+    public String save(SysRole role) {
         sysRoleService.save(role);
         return responseSuccess();
     }
@@ -80,7 +80,7 @@ public class SysRoleController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysRole role) throws Exception {
+    public String delete(SysRole role) {
         sysRoleService.delete(role);
         return responseSuccess();
     }

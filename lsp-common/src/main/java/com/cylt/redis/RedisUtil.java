@@ -12,12 +12,12 @@ import com.cylt.common.util.DateUtils;
 import com.cylt.common.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class RedisUtil {
 
-    @Autowired
+    @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
     private static final String DIVISION = ":";
@@ -89,7 +89,7 @@ public class RedisUtil {
      *
      * @param pojo 删除数据
      */
-    public Boolean del(BasePojo pojo) throws Exception {
+    public Boolean del(BasePojo pojo) {
         return del(pojo, true);
     }
 
@@ -98,7 +98,7 @@ public class RedisUtil {
      *
      * @param pojo 删除数据
      */
-    public Boolean del(BasePojo pojo, boolean isLog) throws Exception {
+    public Boolean del(BasePojo pojo, boolean isLog) {
         String key = getKey(pojo);
         return del(key, isLog);
     }
@@ -110,7 +110,7 @@ public class RedisUtil {
      * @param key
      * @return
      */
-    private Boolean del(String key, boolean isLog) throws Exception {
+    private Boolean del(String key, boolean isLog) {
         BasePojo pojo;
         Set<String> set = redisTemplate.keys(key);
         if (set == null) {
@@ -139,7 +139,7 @@ public class RedisUtil {
      * @param pojoList 要删除的数据
      */
     @SuppressWarnings("unchecked")
-    public Boolean del(List<BasePojo> pojoList) throws Exception {
+    public Boolean del(List<BasePojo> pojoList) {
         Set<String> ids = new HashSet<>();
         String id;
         if (pojoList != null && pojoList.size() > 0) {
@@ -245,7 +245,7 @@ public class RedisUtil {
      * @param page     分页条件
      * @return 结果分页对象
      */
-    public Page list(BasePojo rootPojo, Page page) throws NoSuchFieldException {
+    public Page list(BasePojo rootPojo, Page page) {
         //获取所有属性名 设置key
         String key = getKey(rootPojo, true);
         // 判断是不是级联调用 ，如果是就不循环打log了
@@ -295,7 +295,7 @@ public class RedisUtil {
      * @param pojo 排序规则
      * @return 排序结果
      */
-    private Set<String> sortKeys(Set<String> ids, BasePojo pojo) throws NoSuchFieldException {
+    private Set<String> sortKeys(Set<String> ids, BasePojo pojo) {
         List<Sort> sortList = pojo.getSort();
         if (sortList == null || sortList.size() == 0) {
             return ids;
@@ -304,14 +304,19 @@ public class RedisUtil {
         List<String> fields = new ArrayList<>();
         List<Boolean> oreders = new ArrayList<>();
         // 遍历转属性名
-        for (Sort sort : sortList) {
-            // 判断该对象里是否有此属性 如果没有就去父类里找
-            if (isExistFieldName(sort.getField(), pojo)) {
-                field = pojo.getClass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
-            } else {
-                field = pojo.getClass().getSuperclass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+        try {
+            for (Sort sort : sortList) {
+                // 判断该对象里是否有此属性 如果没有就去父类里找
+                if (isExistFieldName(sort.getField(), pojo)) {
+                    field = pojo.getClass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+                } else {
+                    field = pojo.getClass().getSuperclass().getDeclaredField(sort.getField()).getAnnotation(Column.class).name();
+                }
+                fields.add(field);
             }
-            fields.add(field);
+        } catch (NoSuchFieldException e) {
+            // 无此字段应该算是编译错误 当程序开发完成之后将不会抛出
+            throw new RuntimeException("排序失败错误： " + e.getLocalizedMessage());
         }
         for (Sort sort : sortList) {
             oreders.add(sort.getAsc());
@@ -342,8 +347,8 @@ public class RedisUtil {
         Field[] fields = obj.getClass().getDeclaredFields();
         boolean flag = false;
         //循环遍历所有的fields
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].getName().equals(fieldName)) {
+        for (Field field : fields) {
+            if (field.getName().equals(fieldName)) {
                 flag = true;
                 break;
             }
@@ -430,7 +435,7 @@ public class RedisUtil {
      *
      * @param rootPojo 要保存的数据
      */
-    public void save(BasePojo rootPojo, long time, String userId) throws Exception {
+    public void save(BasePojo rootPojo, long time, String userId) {
         if (rootPojo == null) {
             return;
         }
@@ -460,7 +465,7 @@ public class RedisUtil {
             if (time < 0) {
                 time = getExpire(key);
                 if (time == -2) {
-                    throw new Exception("保存的数据已过期异常:" + key);
+                    throw new RuntimeException("保存的数据已过期异常:" + key);
                 }
             }
             logger.info("update:" + key);
@@ -478,7 +483,7 @@ public class RedisUtil {
      *
      * @param rootPojo 要保存的数据
      */
-    public void save(BasePojo rootPojo) throws Exception {
+    public void save(BasePojo rootPojo) {
         // 如果有用户直接取 没有 则取当前登录用户
         String userId;
         if(rootPojo.getUpdateBy() == null) {
@@ -495,7 +500,7 @@ public class RedisUtil {
      *
      * @param pojoList 要保存的数据
      */
-    public void save(List pojoList, long time) throws Exception {
+    public void save(List pojoList, long time) {
         for (Object pojo : pojoList) {
             save((BasePojo) pojo, time, ((BasePojo) pojo).getUpdateBy());
         }
@@ -506,7 +511,7 @@ public class RedisUtil {
      *
      * @param pojoList 要保存的数据
      */
-    public void save(List pojoList) throws Exception {
+    public void save(List pojoList) {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         for (Object pojo : pojoList) {
             save((BasePojo) pojo, 0, user.getId());
@@ -519,7 +524,7 @@ public class RedisUtil {
      * @param pojoList 要保存的数据
      * @param userId 自定义用户id
      */
-    public void save(List pojoList, String userId) throws Exception {
+    public void save(List pojoList, String userId) {
         for (Object pojo : pojoList) {
             save((BasePojo) pojo, 0, userId);
         }
@@ -1224,7 +1229,7 @@ public class RedisUtil {
      *
      * @param basePojo 业务对象
      */
-    private List<BasePojo> getRelationship(BasePojo basePojo) throws Exception {
+    private List<BasePojo> getRelationship(BasePojo basePojo) {
         //获取所有属性名 设置key
         Field[] values = basePojo.getClass().getDeclaredFields();
         List<BasePojo> relationshipList = new ArrayList<>();
@@ -1279,8 +1284,8 @@ public class RedisUtil {
                 }
             }
         } catch (Exception e) {
-            logger.error("保存关系时发生了问题" + e.getMessage());
-            throw new Exception("保存关系时发生了问题");
+            logger.error("保存关系时发生了问题:" + e.getLocalizedMessage());
+            throw new RuntimeException("保存关系时发生了问题");
         }
         return relationshipList;
     }

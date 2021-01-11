@@ -33,7 +33,7 @@ public class SysNoticeService extends BaseService {
      * @param page   分页
      * @return 分页列表
      */
-    public Page list(SysNotice notice, Page page) throws Exception {
+    public Page list(SysNotice notice, Page page) {
         page = redisUtil.list(notice, page);
         return page;
     }
@@ -54,7 +54,7 @@ public class SysNoticeService extends BaseService {
      * @param notice 通知
      * @return 保存信息
      */
-    public SysNotice save(SysNotice notice) throws Exception {
+    public SysNotice save(SysNotice notice) {
         //刷新缓存
         redisUtil.save(notice);
         //发送消息队列持久保存到数据库
@@ -67,7 +67,7 @@ public class SysNoticeService extends BaseService {
      * 删除
      * @param notice 通知
      */
-    public void delete(SysNotice notice) throws Exception {
+    public void delete(SysNotice notice) {
         redisUtil.del(notice);
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, RabbitMQDictionary.DELETE, notice);
     }

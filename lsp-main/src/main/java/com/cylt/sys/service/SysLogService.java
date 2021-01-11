@@ -24,7 +24,7 @@ public class SysLogService extends BaseService {
      * @param page 分页条件
      * @return 分页对象
      */
-    public Page list(SysLog log, Page page) throws Exception {
+    public Page list(SysLog log, Page page) {
         List<Sort> sortList = new ArrayList<>();
         // 通过时间倒序排序
         sortList.add(new Sort("startDate", false));
@@ -37,7 +37,7 @@ public class SysLogService extends BaseService {
      * 重试
      * @param log 重试记录
      */
-    public void retry(SysLog log) throws Exception {
+    public void retry(SysLog log) {
         // 按log参数发送队列
         rabbitMQUtil.send(log);
     }

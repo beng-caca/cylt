@@ -32,7 +32,7 @@ public class SysScheduleJobController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysScheduleJob job, Page page) throws Exception {
+    public String list(SysScheduleJob job, Page page) {
         page = sysScheduleJobService.list(job, page);
         return getJson(page);
     }
@@ -68,7 +68,7 @@ public class SysScheduleJobController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysScheduleJob job) throws Exception {
+    public String save(SysScheduleJob job) {
         sysScheduleJobService.save(job);
         return responseSuccess();
     }
@@ -80,7 +80,7 @@ public class SysScheduleJobController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysScheduleJob job) throws Exception {
+    public String delete(SysScheduleJob job) {
         sysScheduleJobService.delete(job);
         return responseSuccess();
     }
@@ -94,7 +94,7 @@ public class SysScheduleJobController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "logList")
-    public String logList(SysJobLog jobLog, Page page) throws NoSuchFieldException {
+    public String logList(SysJobLog jobLog, Page page) {
         return getJson(sysScheduleJobService.jobLogList(jobLog, page));
     }
 

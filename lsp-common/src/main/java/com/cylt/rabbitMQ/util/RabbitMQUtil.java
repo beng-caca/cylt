@@ -40,7 +40,7 @@ public class RabbitMQUtil {
      *
      * @param mq 消息对象
      */
-    private void send(MQEntity mq) throws Exception {
+    private void send(MQEntity mq) {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         redisUtil.save(mq.getSysLog(),60 * 60 * 24, user.getId());
         rabbitTemplate.convertAndSend(RabbitMQDictionary.ROOT, mq.getSysLog().getModule(), mq);
@@ -64,7 +64,7 @@ public class RabbitMQUtil {
      * @param declaredMethodName 操作名
      * @param obj                参数
      */
-    public void send(String routingKey, String serviceName, String declaredMethodName, BasePojo... obj) throws Exception {
+    public void send(String routingKey, String serviceName, String declaredMethodName, BasePojo... obj) {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(serviceName);
@@ -116,7 +116,7 @@ public class RabbitMQUtil {
      *
      * @param log 系统log
      */
-    public void send(SysLog log) throws Exception {
+    public void send(SysLog log) {
         MQEntity mq = new MQEntity();
         // 服务名
         mq.setServiceName(log.getServiceName());

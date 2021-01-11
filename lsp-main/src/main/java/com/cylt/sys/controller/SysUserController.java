@@ -29,7 +29,7 @@ public class SysUserController extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysUser user, Page page) throws NoSuchFieldException {
+    public String list(SysUser user, Page page) {
         List<Sort> sortList = new ArrayList<>();
         sortList.add(new Sort("name"));
         sortList.add(new Sort("enterpriseId" ));
@@ -51,7 +51,7 @@ public class SysUserController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysUser sysUser) throws Exception {
+    public String save(SysUser sysUser) {
         String msg = sysUserService.save(sysUser);
         if(!"保存成功".equals(msg)){
             return responseFail(msg);
@@ -66,7 +66,7 @@ public class SysUserController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysUser sysUser) throws Exception {
+    public String delete(SysUser sysUser) {
         sysUserService.delete(sysUser);
         return responseSuccess();
     }
@@ -79,7 +79,7 @@ public class SysUserController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "updatePassword")
-    public String updatePassword(String originalPassword, String newPassword) throws Exception {
+    public String updatePassword(String originalPassword, String newPassword) {
         if(sysUserService.updatePassword(originalPassword, newPassword)){
             return responseSuccess();
         }

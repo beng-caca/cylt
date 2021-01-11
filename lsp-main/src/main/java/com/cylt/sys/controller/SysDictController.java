@@ -32,7 +32,7 @@ public class SysDictController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysDict dict, Page page) throws Exception {
+    public String list(SysDict dict, Page page) {
         page = sysDictService.list(dict, page);
         return getJson(page);
     }

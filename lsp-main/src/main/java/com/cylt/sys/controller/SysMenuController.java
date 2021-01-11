@@ -53,7 +53,7 @@ public class SysMenuController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysMenu sysMenu) throws Exception {
+    public String save(SysMenu sysMenu) {
         sysMenuService.save(sysMenu);
         return responseSuccess();
     }
@@ -65,7 +65,7 @@ public class SysMenuController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysMenu sysMenu) throws Exception {
+    public String delete(SysMenu sysMenu) {
         sysMenuService.delete(sysMenu);
         return responseSuccess();
     }

@@ -34,7 +34,7 @@ public class SysNoticeController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysNotice notice, Page page) throws Exception {
+    public String list(SysNotice notice, Page page) {
         page = sysNoticeService.list(notice, page);
         return getJson(page);
     }
@@ -57,7 +57,7 @@ public class SysNoticeController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysNotice notice) throws Exception {
+    public String save(SysNotice notice) {
         sysNoticeService.save(notice);
         return responseSuccess();
     }
@@ -69,7 +69,7 @@ public class SysNoticeController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysNotice notice) throws Exception {
+    public String delete(SysNotice notice) {
         sysNoticeService.delete(notice);
         return responseSuccess();
     }

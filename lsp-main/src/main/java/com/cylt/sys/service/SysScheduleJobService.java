@@ -34,7 +34,7 @@ public class SysScheduleJobService extends BaseService {
      * @param job 筛选条件
      * @return 分页任务列表
      */
-    public Page list(SysScheduleJob job, Page page) throws Exception {
+    public Page list(SysScheduleJob job, Page page) {
         List<Sort> sortList = new ArrayList<>();
         sortList.add(new Sort("createTime"));
         job.setSort(sortList);
@@ -73,7 +73,7 @@ public class SysScheduleJobService extends BaseService {
      * @param job 任务
      * @return 保存结果
      */
-    public SysScheduleJob save(SysScheduleJob job) throws Exception {
+    public SysScheduleJob save(SysScheduleJob job) {
         //刷新缓存
         redisUtil.save(job);
         //发送消息队列持久保存到数据库
@@ -86,7 +86,7 @@ public class SysScheduleJobService extends BaseService {
      * 删除
      * @param job 任务
      */
-    public void delete(SysScheduleJob job) throws Exception {
+    public void delete(SysScheduleJob job) {
         redisUtil.del(job);
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,job);
     }
@@ -96,7 +96,7 @@ public class SysScheduleJobService extends BaseService {
      * @param jobLog 任务日志对象
      * @param page 分页属性
      */
-    public Page jobLogList(SysJobLog jobLog, Page page) throws NoSuchFieldException {
+    public Page jobLogList(SysJobLog jobLog, Page page) {
         List<Sort> sortList = new ArrayList<>();
         sortList.add(new Sort("createTime", false));
         jobLog.setSort(sortList);

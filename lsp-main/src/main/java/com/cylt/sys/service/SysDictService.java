@@ -35,7 +35,7 @@ public class SysDictService extends BaseService {
      * @param page 分页条件
      * @return 分页对象
      */
-    public Page list(SysDict sysDict, Page page) throws Exception {
+    public Page list(SysDict sysDict, Page page) {
         // 这里不用排序字段检索
         sysDict.setDictOrder(-1);
         List<Sort> sortList = new ArrayList<>();
@@ -77,7 +77,7 @@ public class SysDictService extends BaseService {
      * @param sysDict 保存对象
      * @return 保存后的字典
      */
-    public SysDict save(SysDict sysDict) throws Exception {
+    public SysDict save(SysDict sysDict) {
         //刷新缓存
         redisUtil.save(sysDict);
         //发送消息队列持久保存到数据库
@@ -90,7 +90,7 @@ public class SysDictService extends BaseService {
      * 删除 字典
      * @param sysDict 删除条件
      */
-    public void delete(SysDict sysDict) throws Exception {
+    public void delete(SysDict sysDict) {
         redisUtil.del(sysDict);
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,sysDict);
     }

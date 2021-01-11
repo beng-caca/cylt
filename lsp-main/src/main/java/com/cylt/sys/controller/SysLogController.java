@@ -31,7 +31,7 @@ public class SysLogController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "list")
-    public String list(SysLog log, Page page) throws Exception {
+    public String list(SysLog log, Page page) {
         page = sysLogService.list(log, page);
         return getJson(page);
     }
@@ -43,7 +43,7 @@ public class SysLogController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "retry")
-    public String retry(SysLog log) throws Exception {
+    public String retry(SysLog log) {
         sysLogService.retry(log);
         return responseSuccess();
     }

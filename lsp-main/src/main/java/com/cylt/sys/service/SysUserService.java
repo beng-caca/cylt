@@ -35,7 +35,7 @@ public class SysUserService extends BaseService {
      * @param page 分页条件
      * @return 分页列表
      */
-    public Page list(SysUser user, Page page) throws NoSuchFieldException {
+    public Page list(SysUser user, Page page) {
         page = redisUtil.list(user, page);
         // 如果当前一个用户都没有 就和同步一下
         if (page.getPageList().size() == 0) {
@@ -63,7 +63,7 @@ public class SysUserService extends BaseService {
      * @param sysUser 保存对象
      * @return 保存结果
      */
-    public String save(SysUser sysUser) throws Exception {
+    public String save(SysUser sysUser) {
         if(null == sysUser.getId() || "".equals(sysUser.getId())){
             SysUser userName = new SysUser();
             userName.setUsername(sysUser.getUsername());
@@ -97,7 +97,7 @@ public class SysUserService extends BaseService {
      * 删除用户
      * @param sysUser 删除用户
      */
-    public void delete(SysUser sysUser) throws Exception {
+    public void delete(SysUser sysUser) {
         redisUtil.del(sysUser);
         rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,sysUser);
     }
@@ -108,7 +108,7 @@ public class SysUserService extends BaseService {
      * @param newPassword 新密码
      * @return 是否保存成功
      */
-    public boolean updatePassword(String originalPassword, String newPassword) throws Exception {
+    public boolean updatePassword(String originalPassword, String newPassword) {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
         // 判断当前用户的密码是否等于原密码 如果等于就改密码 否则不作操作
         if(user.getPassword().equals(DESUtil.encrypt(originalPassword,DESUtil.KEY))){
