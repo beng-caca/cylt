@@ -79,22 +79,24 @@ Vue.prototype.$jurisdiction = jurisdiction
 function jurisdiction(menu, operation) {
   // 取当前菜单的权限
   let access = store.state.user.thisUser.access
-  let acces
+  let display = false
   for (let i in access) {
     if(access[i].menu.name === menu){
-      acces = access[i]
+      // 判断是否显示该标签
+      if (access[i]) {
+        if (operation === 'edit') { // 判断是否有编辑权限
+          display = access[i].edit
+        } else if (operation === 'del') { // 判断是否有删除权限
+          display = access[i].del
+        }
+      }
+      // 判断如果有权限则直接退出循环
+      if (display) {
+        break
+      }
     }
   }
-  let display = false
 
-  // 判断是否显示该标签
-  if (acces) {
-    if (operation === 'edit') { // 判断是否有编辑权限
-      display = acces.edit
-    } else if (operation === 'del') { // 判断是否有删除权限
-      display = acces.del
-    }
-  }
   return display
 }
 
