@@ -36,6 +36,9 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
     private SysNoticeDao sysNoticeDao;
 
     @Resource
+    private SysDictDao sysDictDao;
+
+    @Resource
     private SysScheduleJobDao sysScheduleJobDao;
 
 
@@ -65,8 +68,10 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
                 redisUtil.save(sysUserDao.findAll(),null);
                 // 保存消息
                 redisUtil.save(sysNoticeDao.findAll(),null);
-                // 保存消息
+                // 保存任务
                 redisUtil.save(sysScheduleJobDao.findAll(),null);
+                // 保存字典
+                redisUtil.save(sysDictDao.findAll(),null);
                 // 解除实体与session的链接防止修改数据库
                 entityManager.clear();
                 logger.info("redis init success");

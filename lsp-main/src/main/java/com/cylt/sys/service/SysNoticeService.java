@@ -1,7 +1,6 @@
 package com.cylt.sys.service;
 
 import com.cylt.common.SysUser;
-import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.service.BaseService;
 import com.cylt.pojo.sys.SysNotice;
 import com.cylt.pojo.sys.SysPush;
@@ -21,55 +20,12 @@ import java.util.Map;
 @Service("sysNoticeService")
 public class SysNoticeService extends BaseService {
 
-
-    //模块名
-    private final static String SERVICE_NAME = "sysNoticeService";
-
-
     /**
-     * 查询列表
-     *
-     * @param notice 通知
-     * @param page   分页
-     * @return 分页列表
+     * 初始化实例参数
      */
-    public Page list(SysNotice notice, Page page) {
-        page = redisUtil.list(notice, page);
-        return page;
-    }
-
-    /**
-     * 查询通知
-     * @param id 通知ID
-     * @return 通知信息
-     */
-    public SysNotice get(String id) {
-        SysNotice notice = new SysNotice();
-        notice.setId(id);
-        return (SysNotice) redisUtil.get(notice);
-    }
-
-    /**
-     * 保存
-     * @param notice 通知
-     * @return 保存信息
-     */
-    public SysNotice save(SysNotice notice) {
-        //刷新缓存
-        redisUtil.save(notice);
-        //发送消息队列持久保存到数据库
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, RabbitMQDictionary.SAVE, notice);
-        return notice;
-    }
-
-
-    /**
-     * 删除
-     * @param notice 通知
-     */
-    public void delete(SysNotice notice) {
-        redisUtil.del(notice);
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME, RabbitMQDictionary.DELETE, notice);
+    public void setRoutingKey(){
+        ROUTING_KEY = RabbitMQDictionary.SYS;
+        SERVICE_NAME = "sysNoticeService";
     }
 
     /**

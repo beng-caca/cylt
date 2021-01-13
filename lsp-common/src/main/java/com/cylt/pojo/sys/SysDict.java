@@ -32,7 +32,7 @@ public class SysDict extends BasePojo {
     /**
      * 字典键
      */
-    @Redis(vagueQuery = true)
+    @Redis(vagueQuery = true, sort = 1)
     @Column(name = "DICT_KEY")
     private String dictKey;
 
@@ -52,6 +52,7 @@ public class SysDict extends BasePojo {
     /**
      * 字典顺序
      */
+    @Redis(sort = 2)
     @Column(name = "DICT_ORDER")
     private int dictOrder;
 

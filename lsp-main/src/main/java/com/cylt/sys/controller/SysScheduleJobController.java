@@ -20,7 +20,7 @@ import java.util.List;
 public class SysScheduleJobController extends BaseController {
 
     /**
-     * 角色Service
+     * 任务Service
      */
     @Resource
     private SysScheduleJobService sysScheduleJobService;
@@ -48,17 +48,6 @@ public class SysScheduleJobController extends BaseController {
     public String list(SysScheduleJob job) {
         List<SysScheduleJob> list = sysScheduleJobService.list(job);
         return getJson(list);
-    }
-
-    /**
-     * 根据ID取得任务
-     * @param id ID
-     * @return 字典
-     */
-    @ResponseBody
-    @RequestMapping(value = "get")
-    public String get(String id) {
-        return getJson(sysScheduleJobService.get(id));
     }
 
     /**

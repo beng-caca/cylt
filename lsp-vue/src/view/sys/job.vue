@@ -24,7 +24,7 @@
       stripe
     >
       <template slot-scope="{ row, index }" slot="status">
-        <i-switch  v-jurisdiction="'edit'" @on-change="save(row)" v-model="row.status" true-color="#13ce66" false-color="#ff4949" true-value="0" false-value="1"/>
+        <i-switch  v-jurisdiction="'edit'" @on-change="save(row)" v-model="row.status" true-color="#13ce66" false-color="#ff4949" true-value="1" false-value="2"/>
       </template>
       <template slot-scope="{ row, index }" slot="action">
 

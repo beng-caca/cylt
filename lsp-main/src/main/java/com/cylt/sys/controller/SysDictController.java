@@ -51,24 +51,13 @@ public class SysDictController extends BaseController {
     }
 
     /**
-     * 根据ID取得字典
-     * @param id ID
-     * @return 字典
-     */
-    @ResponseBody
-    @RequestMapping(value = "get")
-    public String get(String id) {
-        return getJson(sysDictService.get(id));
-    }
-
-    /**
      * 保存字典
      * @param dict 字典
      * @return 保存结果
      */
     @ResponseBody
     @RequestMapping(value = "save")
-    public String save(SysDict dict) throws Exception {
+    public String save(SysDict dict) {
         sysDictService.save(dict);
         return responseSuccess();
     }
@@ -80,7 +69,7 @@ public class SysDictController extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "delete")
-    public String delete(SysDict dict) throws Exception {
+    public String delete(SysDict dict) {
         sysDictService.delete(dict);
         return responseSuccess();
     }

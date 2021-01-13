@@ -2,7 +2,6 @@ package com.cylt.sys.service;
 
 import com.cylt.common.DESUtil;
 import com.cylt.common.SysUser;
-import com.cylt.common.base.pojo.Page;
 import com.cylt.common.base.service.BaseService;
 import com.cylt.sys.dao.SysUserDao;
 import com.cylt.rabbitMQ.config.RabbitMQDictionary;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,43 +18,16 @@ import java.util.UUID;
 @Transactional
 @Service("sysUserService")
 public class SysUserService extends BaseService {
-
-
-    //模块名
-    private final static String SERVICE_NAME = "sysUserService";
+    /**
+     * 初始化实例参数
+     */
+    public void setRoutingKey() {
+        ROUTING_KEY = RabbitMQDictionary.SYS;
+        SERVICE_NAME = "sysUserService";
+    }
 
     @Resource
     private SysUserDao sysUserDao;
-
-
-    /**
-     * 查询用户列表
-     * @param user 查询条件
-     * @param page 分页条件
-     * @return 分页列表
-     */
-    public Page list(SysUser user, Page page) {
-        page = redisUtil.list(user, page);
-        // 如果当前一个用户都没有 就和同步一下
-        if (page.getPageList().size() == 0) {
-            List<SysUser> list = sysUserDao.findAll();
-            for(SysUser users : list){
-                redisUtil.set(users);
-            }
-            page = redisUtil.list(user, page);
-        }
-        return page;
-    }
-    /**
-     * 查询用户
-     * @param id 用户ID
-     * @return 用户对象
-     */
-    public SysUser get(String id) {
-        SysUser user = new SysUser();
-        user.setId(id);
-        return (SysUser) redisUtil.getId(user);
-    }
 
     /**
      * 保存
@@ -64,6 +35,7 @@ public class SysUserService extends BaseService {
      * @return 保存结果
      */
     public String save(SysUser sysUser) {
+        setRoutingKey();
         if(null == sysUser.getId() || "".equals(sysUser.getId())){
             SysUser userName = new SysUser();
             userName.setUsername(sysUser.getUsername());
@@ -93,14 +65,6 @@ public class SysUserService extends BaseService {
     public SysUser getUser(String userName) {
         return sysUserDao.findByUsername(userName);
     }
-    /**
-     * 删除用户
-     * @param sysUser 删除用户
-     */
-    public void delete(SysUser sysUser) {
-        redisUtil.del(sysUser);
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,sysUser);
-    }
 
     /**
      * 修改用户密码
@@ -109,6 +73,7 @@ public class SysUserService extends BaseService {
      * @return 是否保存成功
      */
     public boolean updatePassword(String originalPassword, String newPassword) {
+        setRoutingKey();
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
         // 判断当前用户的密码是否等于原密码 如果等于就改密码 否则不作操作
         if(user.getPassword().equals(DESUtil.encrypt(originalPassword,DESUtil.KEY))){

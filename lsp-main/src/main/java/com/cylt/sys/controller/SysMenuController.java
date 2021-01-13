@@ -36,17 +36,6 @@ public class SysMenuController extends BaseController {
     }
 
     /**
-     * 根据ID取得菜单
-     * @param id ID
-     * @return 订单
-     */
-    @ResponseBody
-    @RequestMapping(value = "get")
-    public String get(String id) {
-        return getJson(sysMenuService.get(id));
-    }
-
-    /**
      * 保存菜单
      * @param sysMenu 菜单
      * @return 保存结果

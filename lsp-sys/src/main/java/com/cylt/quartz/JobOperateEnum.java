@@ -1,9 +1,9 @@
 package com.cylt.quartz;
 
 public enum JobOperateEnum {
-    START(0, "启动"),
-    PAUSE(1, "暂停"),
-    DELETE(2, "删除");
+    START(1, "启动"),
+    PAUSE(2, "暂停"),
+    DELETE(3, "删除");
 
     private final Integer value;
     private final String desc;

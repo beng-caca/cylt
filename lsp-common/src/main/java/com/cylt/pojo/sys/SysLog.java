@@ -76,7 +76,7 @@ public class SysLog extends BasePojo {
     /**
      * 开始时间
      */
-    @Redis
+    @Redis(sort = 1, isAsc = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "START_DATE")

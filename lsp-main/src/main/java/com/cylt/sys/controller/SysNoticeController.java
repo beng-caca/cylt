@@ -40,17 +40,6 @@ public class SysNoticeController extends BaseController {
     }
 
     /**
-     * 根据ID取得通知
-     * @param id ID
-     * @return 角色
-     */
-    @ResponseBody
-    @RequestMapping(value = "get")
-    public String get(String id) {
-        return getJson(sysNoticeService.get(id));
-    }
-
-    /**
      * 保存通知
      * @param notice 通知对象
      * @return 保存结果

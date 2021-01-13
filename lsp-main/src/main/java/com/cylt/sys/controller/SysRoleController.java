@@ -51,17 +51,6 @@ public class SysRoleController extends BaseController {
     }
 
     /**
-     * 根据ID取得角色
-     * @param id ID
-     * @return 角色
-     */
-    @ResponseBody
-    @RequestMapping(value = "get")
-    public String get(String id) {
-        return getJson(sysRoleService.get(id));
-    }
-
-    /**
      * 保存角色
      * @param role 角色
      * @return 保存结果

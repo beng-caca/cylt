@@ -21,74 +21,12 @@ import java.util.List;
 @Service("sysScheduleJobService")
 public class SysScheduleJobService extends BaseService {
 
-
-    //模块名
-    private final static String SERVICE_NAME = "sysScheduleJobService";
-
-    @Resource
-    private SysScheduleJobDao sysScheduleJobDao;
-
-
     /**
-     * 查询列表
-     * @param job 筛选条件
-     * @return 分页任务列表
+     * set mq参数
      */
-    public Page list(SysScheduleJob job, Page page) {
-        List<Sort> sortList = new ArrayList<>();
-        sortList.add(new Sort("createTime"));
-        job.setSort(sortList);
-        page = redisUtil.list(job, page);
-        // 如果当前一个菜单都没有 就和同步一下
-        if (page.getPageList().size() == 0) {
-            List<SysScheduleJob> list = sysScheduleJobDao.findAll();
-            for(SysScheduleJob scheduleJob : list){
-                redisUtil.save(scheduleJob);
-            }
-            page = redisUtil.list(job, page);
-        }
-        return page;
-    }
-
-    /**
-     * 查询任务列表
-     * @param job 筛选条件
-     * @return 任务
-     */
-    public List<SysScheduleJob> list(SysScheduleJob job) {
-        return redisUtil.list(job);
-    }
-
-    /**
-     * 查询任务
-     * @param id 任务id
-     * @return 任务信息
-     */
-    public SysScheduleJob get(String id) {
-        return sysScheduleJobDao.getOne(id);
-    }
-
-    /**
-     * 保存
-     * @param job 任务
-     * @return 保存结果
-     */
-    public SysScheduleJob save(SysScheduleJob job) {
-        //刷新缓存
-        redisUtil.save(job);
-        //发送消息队列持久保存到数据库
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.SAVE,job);
-        return job;
-    }
-
-
-    /**
-     * 删除
-     * @param job 任务
-     */
-    public void delete(SysScheduleJob job) {
-        redisUtil.del(job);
-        rabbitMQUtil.send(RabbitMQDictionary.SYS, SERVICE_NAME,RabbitMQDictionary.DELETE,job);
+    public void setRoutingKey(){
+        ROUTING_KEY = RabbitMQDictionary.SYS;
+        SERVICE_NAME = "sysScheduleJobService";
     }
 
     /**

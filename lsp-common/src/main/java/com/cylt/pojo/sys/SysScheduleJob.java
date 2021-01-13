@@ -57,6 +57,7 @@ public class SysScheduleJob  extends BasePojo {
     /**
      * 状态 0 启动 1 停止
      */
+    @Redis(sort = 1)
     @Column(name = "STATUS")
     private int status;
 }

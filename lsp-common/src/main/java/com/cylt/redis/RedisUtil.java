@@ -297,12 +297,32 @@ public class RedisUtil {
      */
     private Set<String> sortKeys(Set<String> ids, BasePojo pojo) {
         List<Sort> sortList = pojo.getSort();
-        if (sortList == null || sortList.size() == 0) {
-            return ids;
-        }
         String field;
         List<String> fields = new ArrayList<>();
         List<Boolean> oreders = new ArrayList<>();
+        // 优先判断当前调用的查询是否有排序
+        if (sortList == null || sortList.size() == 0) {
+            List<Sort> sortLists = Arrays.asList(new Sort[pojo.getClass().getDeclaredFields().length]);
+            // 判断实体声明里有没有排序规则
+            Redis redis;
+            for (Field f : pojo.getClass().getDeclaredFields()) {
+                redis = f.getAnnotation(Redis.class);
+                if (redis != null && redis.sort() != -1) {
+                    sortLists.set(redis.sort(), new Sort(f.getName(), redis.isAsc()));
+                }
+            }
+            // 删除null
+            sortList = new ArrayList<>();
+            for(Sort sort : sortLists){
+                if (sort != null) {
+                    sortList.add(sort);
+                }
+            }
+            // 如果实体里也没设置任何排序规则直接返回乱序
+            if (sortList.size() == 0) {
+                return ids;
+            }
+        }
         // 遍历转属性名
         try {
             for (Sort sort : sortList) {
@@ -388,7 +408,7 @@ public class RedisUtil {
                     result = true;
                 }
             } else {// 接下来该判断string了
-                result = v2i.compareTo(v1i) != 0;
+                result = v2i.compareTo(v1i) > 0;
             }
 
             // 如果不是正序就取反
@@ -1065,7 +1085,7 @@ public class RedisUtil {
                             break;
                         case "int":
                             // 这里如果int值是-1的话 就是不把他当检索条件 (因为int没有null默认是0)
-                            if (-1 != (int) objColumnVal) {
+                            if (0 != (int) objColumnVal) {
                                 columnVal = objColumnVal.toString();
                             }
                             break;
