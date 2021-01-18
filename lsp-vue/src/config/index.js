@@ -17,13 +17,15 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'http://localhost:8888/',
-    pro: 'https://produce.com'
+    dev: 'https://cylt-main:8888',
+    pro: 'https://cylt-main:8888'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
    */
   homeName: 'home',
+  assetsSubDirectory: 'static',
+  assetsPublicPath: './',
   /**
    * @description 需要加载的插件
    */

@@ -1,10 +1,109 @@
 version: '3'
 
 services:
-  datahttpd:
+  web:
     image: httpd
-    container_name: datahttpd
+    container_name: cylt_web
+    restart: always
     ports:
     - "80:80"
+    networks:
+      cyltnet:
+        aliases:
+        - web
     volumes:
     - ../lsp-vue/dist:/usr/local/apache2/htdocs/
+    - ./httpd/conf:/usr/local/apache2/conf
+  mysql:
+    image: docker.io/mysql:5
+    restart: always
+    ports:
+    - 3306:3306
+    container_name: mysql
+    hostname: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456789"
+      MYSQL_USER: 'wuyh'
+      MYSQL_PASS: '123456789'
+    volumes:
+      - "./mysql/db:/var/lib/mysql"
+      - "./mysql/conf:/etc/my.cnf"
+      - "./mysql/init:/docker-entrypoint-initdb.d/"
+    networks:
+      cyltnet:
+        aliases:
+        - cylt-mysql
+  rabbitmq:
+    hostname: rabbitmq
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    image: "rabbitmq:3-management"
+    restart: always
+    volumes:
+    - "./rabbitmq/data:/var/lib/rabbitmq"
+    - "./rabbitmq/log:/var/log/rabbitmq/log"
+    ports:
+    - "15672:15672"
+    - "4369:4369"
+    - "5672:5672"
+    - "25672:25672"
+    networks:
+      cyltnet:
+        aliases:
+        - cylt-rabbitmq
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    restart: always
+    ports:
+    - 6379:6379
+    networks:
+      cyltnet:
+        aliases:
+        - cylt-redis
+    volumes:
+    - "./redis/data:/data"
+    - "./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf"
+    - "./redis/logs:/logs"
+  main:
+    container_name: lsp_main
+    build: ../lsp-main/
+    restart: always
+    volumes:
+    - "./java/log:/log"
+    ports:
+    - "8888:8888"
+    networks:
+      cyltnet:
+        aliases:
+        - cylt-main
+  log:
+    container_name: lsp_log
+    build: ../lsp-log/
+    restart: always
+    volumes:
+    - "./java/log:/log"
+    ports:
+    - "8010:8010"
+    networks:
+      cyltnet:
+        aliases:
+        - cylt-log
+  sys:
+    container_name: lsp_sys
+    build: ../lsp-sys/
+    restart: always
+    ports:
+    - "8002:8002"
+    volumes:
+    - "./java/log:/log"
+    networks:
+      cyltnet:
+        aliases:
+        - cylt-log
+networks:
+  cyltnet:
