@@ -29,3 +29,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+###  data  ###
+/lsp/mysql/db
+/lsp/rabbitmq
+/lsp/java/log

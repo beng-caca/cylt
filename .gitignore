@@ -35,12 +35,20 @@ jis.iml
 lsp-common/src/main/java/com/cylt/pojo/.DS_Store
 lsp-main/src/test/java/com/.DS_Store
 lsp-main/src/test/java/com/cylt/.DS_Store
-lsp-task/target/lsp-task-0.0.1-SNAPSHOT.jar.original
-lsp-task/target/maven-archiver/pom.properties
-lsp-task/target/maven-status/maven-compiler-plugin/compile/default-cli/createdFiles.lst
-lsp-task/target/maven-status/maven-compiler-plugin/compile/default-cli/inputFiles.lst
-lsp-task/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-lsp-task/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 lsp-common/src/main/java/com/cylt/pojo/.DS_Store
 lsp-main/src/test/java/com/.DS_Store
 lsp-main/src/test/java/com/cylt/.DS_Store
+
+
+###  data  ###
+/lsp/mysql/db
+/lsp/rabbitmq
+/lsp/java/log
+/lsp/redis/data
+/lsp-main/log
+
+###  package  ###
+lsp-log/target
+lsp-main/target
+lsp-vue/target
+
