@@ -1,5 +1,5 @@
 export default {
-  systemName: 'lsp系统',
+  systemName: 'cylt系统',
   home: '首頁',
   login: '登錄',
   components: '组件',

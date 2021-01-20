@@ -22,33 +22,33 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 *.xml
-lsp-main/.DS_Store
+cylt-main/.DS_Store
 *.xml
 *.xml
-lsp/.DS_Store
-lsp-sys/.DS_Store
-lsp-common/.DS_Store
+cylt/.DS_Store
+cylt-sys/.DS_Store
+cylt-common/.DS_Store
 *.xml
 .DS_Store
 jis.iml
-.idea/lsp.iml
-lsp-common/src/main/java/com/cylt/pojo/.DS_Store
-lsp-main/src/test/java/com/.DS_Store
-lsp-main/src/test/java/com/cylt/.DS_Store
-lsp-common/src/main/java/com/cylt/pojo/.DS_Store
-lsp-main/src/test/java/com/.DS_Store
-lsp-main/src/test/java/com/cylt/.DS_Store
+.idea/cylt.iml
+cylt-common/src/main/java/com/cylt/pojo/.DS_Store
+cylt-main/src/test/java/com/.DS_Store
+cylt-main/src/test/java/com/cylt/.DS_Store
+cylt-common/src/main/java/com/cylt/pojo/.DS_Store
+cylt-main/src/test/java/com/.DS_Store
+cylt-main/src/test/java/com/cylt/.DS_Store
 
 
 ###  data  ###
-/lsp/mysql/db
-/lsp/rabbitmq
-/lsp/java/log
-/lsp/redis/data
-/lsp-main/log
+/cylt/mysql/db
+/cylt/rabbitmq
+/cylt/java/log
+/cylt/redis/data
+/cylt-main/log
 
 ###  package  ###
-lsp-log/target
-lsp-main/target
-lsp-vue/target
+/cylt-log/target
+/cylt-main/target
+/cylt-vue/target
 

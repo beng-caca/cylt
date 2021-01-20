@@ -1,5 +1,5 @@
 export default {
-  systemName: 'lsp system',
+  systemName: 'cylt system',
   home: 'Home',
   login: 'Login',
   components: 'Components',

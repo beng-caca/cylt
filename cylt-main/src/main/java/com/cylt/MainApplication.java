@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class LspMainApplication {
+public class MainApplication {
 	@Bean
 	public HttpMessageConverters fastJsonConfigure(){
 		FastJsonHttpMessageConverter converter = new FastJsonHttpMessageConverter();
@@ -21,7 +21,7 @@ public class LspMainApplication {
 		return new HttpMessageConverters(converter);
 	}
 	public static void main(String[] args) {
-		SpringApplication.run(LspMainApplication.class, args);
+		SpringApplication.run(MainApplication.class, args);
 	}
 
 }

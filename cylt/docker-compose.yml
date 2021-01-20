@@ -12,7 +12,7 @@ services:
         aliases:
         - web
     volumes:
-    - ../lsp-vue/dist:/usr/local/apache2/htdocs/
+    - ../cylt-vue/dist:/usr/local/apache2/htdocs/
     - ./httpd/conf:/usr/local/apache2/conf
   mysql:
     image: docker.io/mysql:5
@@ -70,8 +70,8 @@ services:
     - "./redis/conf/redis.conf:/usr/local/etc/redis/redis.conf"
     - "./redis/logs:/logs"
   main:
-    container_name: lsp_main
-    build: ../lsp-main/
+    container_name: cylt_main
+    build: ../cylt-main/
     restart: always
     volumes:
     - "./java/log:/log"
@@ -82,8 +82,8 @@ services:
         aliases:
         - cylt-main
   log:
-    container_name: lsp_log
-    build: ../lsp-log/
+    container_name: cylt_log
+    build: ../cylt-log/
     restart: always
     volumes:
     - "./java/log:/log"
@@ -94,8 +94,8 @@ services:
         aliases:
         - cylt-log
   sys:
-    container_name: lsp_sys
-    build: ../lsp-sys/
+    container_name: cylt_sys
+    build: ../cylt-sys/
     restart: always
     ports:
     - "8002:8002"

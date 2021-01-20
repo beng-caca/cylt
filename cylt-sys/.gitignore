@@ -32,6 +32,6 @@ build/
 
 
 ###  data  ###
-/lsp/mysql/db
-/lsp/rabbitmq
-/lsp/java/log
+/cylt/mysql/db
+/cylt/rabbitmq
+/cylt/java/log
