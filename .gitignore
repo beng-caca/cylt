@@ -21,16 +21,13 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-*.xml
+.idea/
+profiles.xml
 cylt-main/.DS_Store
-*.xml
-*.xml
 cylt/.DS_Store
 cylt-sys/.DS_Store
 cylt-common/.DS_Store
-*.xml
 .DS_Store
-jis.iml
 .idea/cylt.iml
 cylt-common/src/main/java/com/cylt/pojo/.DS_Store
 cylt-main/src/test/java/com/.DS_Store
@@ -50,5 +47,5 @@ cylt-main/src/test/java/com/cylt/.DS_Store
 ###  package  ###
 /cylt-log/target
 /cylt-main/target
-/cylt-vue/target
+/cylt-sys/target
 
