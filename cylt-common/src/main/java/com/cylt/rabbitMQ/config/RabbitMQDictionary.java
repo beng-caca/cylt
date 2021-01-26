@@ -14,7 +14,7 @@ public class RabbitMQDictionary {
      */
     public final static String SYS = "SYS";
     /**
-     * 交换机：日志
+     * 路由器：日志
      */
     public final static String LOG = "LOG";
 

@@ -7,6 +7,7 @@ cylt是一个低代码的开发平台，居右较高的封装度、扩展性、�
 * 主框架：`Spring Boot2.2`、`Spring Security`
 * 持久层：`Spring Data JPA`、`Spring Data Redis`
 * 视图层：`Spring MVC`
+* 消息中间件：`RabbitMQ`
 * 前端组件：`vue2.5`、`vuex3.0` 、`iview3.2`、`vue-router3.0`、`push1.0`、`axios0.19`
 ### 准备环境
 1. 去Oracle官网下载`Java8`环境：
@@ -47,4 +48,6 @@ docker-compose up -d
 ```
 docker stop cylt_XXX
 ```
-然后按照部署生产环境的`第二步`和`第三步`骤重新编译docker环境
+按照部署生产环境的`第二步`和`第三步`骤重新编译docker环境
+
+如需本地调试 vue 在项目根路径下运行 `cd cylt-vue && npm run dev`

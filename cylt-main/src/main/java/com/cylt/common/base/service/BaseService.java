@@ -17,11 +17,18 @@ import java.util.List;
 @Transactional
 public abstract class BaseService {
 
-    // TODO 这里实例怎么通用了
     // 路由名
     protected String ROUTING_KEY;
     // 功能名
     protected String SERVICE_NAME;
+
+
+    /**
+     * 构造时初始化参数
+     */
+    public BaseService() {
+        setRoutingKey();
+    }
 
     /**
      * 缓存数据库
@@ -67,8 +74,6 @@ public abstract class BaseService {
      * @return 保存后的对象
      */
     public BasePojo save(BasePojo pojo) {
-        // set mq参数
-        setRoutingKey();
         //刷新缓存
         redisUtil.save(pojo);
         //发送消息队列持久保存到数据库
@@ -82,8 +87,6 @@ public abstract class BaseService {
      * @param pojo 删除条件
      */
     public void delete(BasePojo pojo) {
-        // set mq参数
-        setRoutingKey();
         redisUtil.del(pojo);
         rabbitMQUtil.send(ROUTING_KEY, SERVICE_NAME,RabbitMQDictionary.DELETE,pojo);
     }
