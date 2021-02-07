@@ -170,7 +170,6 @@ export default {
       })
     },
     add () {
-      this.$pushMessage('消息通知的内asdsa容')
       store.dispatch('getUserInfo', {})
       store.dispatch('getRoleNoPageList')
       this.isInfo = true

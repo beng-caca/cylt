@@ -70,8 +70,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .anyRequest().access("@rbacService.hasPermission(request,authentication)")    //必须经过认证以后才能访问
                 .and().exceptionHandling().accessDeniedHandler((request, response, authentication) -> {
-                    accessDeniedHandler(response, authentication);
-                })
+            accessDeniedHandler(response, authentication);
+        })
                 .and()
                 .logout()
                 //退出成功，返回json
@@ -89,6 +89,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 自定义登录处理
+     *
      * @return
      * @throws Exception
      */
@@ -115,7 +116,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 登录成功返回结果
-     * @param resp 响应对象
+     *
+     * @param resp           响应对象
      * @param authentication 用户信息
      * @throws IOException
      */
@@ -134,6 +136,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 权限错误
+     *
      * @param resp 响应对象
      * @param ex
      * @throws IOException
@@ -152,7 +155,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 登录成功
-     * @param resp 响应对象
+     *
+     * @param resp           响应对象
      * @param authentication
      * @throws IOException
      */
@@ -171,8 +175,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 登录失败
+     *
      * @param resp 响应对象
-     * @param ex 响应结果
+     * @param ex   响应结果
      * @throws IOException
      */
     protected void failureHandler(HttpServletResponse resp, AuthenticationException ex) throws IOException {
@@ -195,11 +200,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         out.close();
     }
 
-
     @Override
     public void configure(WebSecurity web) {
         //对于在header里面增加token等类似情况，放行所有OPTIONS请求。
         web.ignoring().antMatchers(HttpMethod.OPTIONS, "/**");
+        // 放行swagger框架API
+        web.ignoring().antMatchers(HttpMethod.GET, "/swagger-ui.html", "/webjars/**", "/swagger-resources/**", "/v2/api-docs");
     }
 
     @Bean

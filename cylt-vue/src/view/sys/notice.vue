@@ -193,6 +193,7 @@ export default {
       })
     },
     add () {
+      store.dispatch('getRoleNoPageList')
       store.dispatch('insertNotice', {})
       this.isInfo = true
     },
