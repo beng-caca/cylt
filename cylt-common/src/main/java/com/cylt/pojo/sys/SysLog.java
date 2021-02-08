@@ -3,6 +3,8 @@ package com.cylt.pojo.sys;
 import com.cylt.common.Redis;
 import com.cylt.common.base.pojo.BasePojo;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -20,6 +22,7 @@ import java.util.Date;
 @Getter
 @Setter
 @DynamicUpdate
+@ApiModel("系统日志")
 @Table(name = "SYS_LOG")
 public class SysLog extends BasePojo {
 
@@ -28,6 +31,7 @@ public class SysLog extends BasePojo {
      * 标题
      */
     @Redis(vagueQuery = true)
+    @ApiModelProperty(value = "标题")
     @Column(name = "TITLE")
     private String title;
 
@@ -35,6 +39,7 @@ public class SysLog extends BasePojo {
      * 状态
      */
     @Redis
+    @ApiModelProperty(value = "状态")
     @Column(name = "STATE")
     private String state;
 
@@ -42,6 +47,7 @@ public class SysLog extends BasePojo {
      * 用户id
      */
     @Redis
+    @ApiModelProperty(value = "用户id")
     @Column(name = "USER_ID")
     private String userId;
 
@@ -50,12 +56,14 @@ public class SysLog extends BasePojo {
      * 模块名
      */
     @Redis
+    @ApiModelProperty(value = "模块名")
     @Column(name = "MODULE")
     private String module;
 
     /**
      * 服务名
      */
+    @ApiModelProperty(value = "服务名")
     @Column(name = "SERVICE_NAME")
     private String serviceName;
 
@@ -63,6 +71,7 @@ public class SysLog extends BasePojo {
     /**
      * 方法名
      */
+    @ApiModelProperty(value = "方法名")
     @Column(name = "DECLARED_METHOD_NAME")
     private String declaredMethodName;
 
@@ -70,6 +79,7 @@ public class SysLog extends BasePojo {
     /**
      * 参数
      */
+    @ApiModelProperty(value = "参数")
     @Column(name = "POJO")
     private String pojo;
 
@@ -78,6 +88,7 @@ public class SysLog extends BasePojo {
      */
     @Redis(sort = 1, isAsc = false)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "开始时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "START_DATE")
     private Date startDate;
@@ -86,6 +97,7 @@ public class SysLog extends BasePojo {
      * 处理时间
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "处理时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "HANDLE_DATE")
     private Date handleDate;
@@ -94,6 +106,7 @@ public class SysLog extends BasePojo {
      * 结束时间
      */
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @ApiModelProperty(value = "结束时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "END_DATE")
     private Date endDate;
@@ -102,6 +115,7 @@ public class SysLog extends BasePojo {
     /**
      * 用时
      */
+    @ApiModelProperty(value = "用时")
     @Column(name = "TIME_USE")
     private float timeUse;
 
@@ -109,6 +123,7 @@ public class SysLog extends BasePojo {
      * 错误文本
      */
     @Redis(vagueQuery = true)
+    @ApiModelProperty(value = "错误文本")
     @Column(name = "ERROR_TEXT")
     private String errorText;
 

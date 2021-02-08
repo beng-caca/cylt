@@ -6,9 +6,12 @@ import com.cylt.common.base.pojo.Page;
 import com.cylt.pojo.sys.SysNotice;
 import com.cylt.pojo.sys.SysPush;
 import com.cylt.sys.service.SysNoticeService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -16,8 +19,9 @@ import javax.annotation.Resource;
 /**
  * 通知Controller
  */
+@Api(tags = "通知")
 @Controller
-@RequestMapping(value = "sys/notice", produces = "text/html;charset=utf-8")
+@RequestMapping(value = "sys/notice", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
 public class SysNoticeController extends BaseController {
 
     /**
@@ -32,7 +36,7 @@ public class SysNoticeController extends BaseController {
      * @param page 分页参数
      * @return 通知列表
      */
-    @ResponseBody
+    @ApiOperation(value = "分页查询通知模板")
     @RequestMapping(value = "list")
     public String list(SysNotice notice, Page page) {
         page = sysNoticeService.list(notice, page);
@@ -40,11 +44,11 @@ public class SysNoticeController extends BaseController {
     }
 
     /**
-     * 保存通知
+     * 保存通知模板
      * @param notice 通知对象
      * @return 保存结果
      */
-    @ResponseBody
+    @ApiOperation(value = "保存通知模板")
     @RequestMapping(value = "save")
     public String save(SysNotice notice) {
         sysNoticeService.save(notice);
@@ -52,11 +56,11 @@ public class SysNoticeController extends BaseController {
     }
 
     /**
-     * 删除通知
+     * 删除通知模板
      * @param notice 通知对象
      * @return 删除结果
      */
-    @ResponseBody
+    @ApiOperation(value = "删除通知模板")
     @RequestMapping(value = "delete")
     public String delete(SysNotice notice) {
         sysNoticeService.delete(notice);
@@ -70,7 +74,7 @@ public class SysNoticeController extends BaseController {
      * @param notice 通知对象
      * @return 推送结果
      */
-    @ResponseBody
+    @ApiOperation(value = "下发通知")
     @RequestMapping(value = "push")
     public String push(SysNotice notice) {
         sysNoticeService.push(notice);
@@ -81,7 +85,7 @@ public class SysNoticeController extends BaseController {
      * 推送通知
      * @return 推送列表
      */
-    @ResponseBody
+    @ApiOperation(value = "刷新推送")
     @RequestMapping(value = "news")
     public String news() {
         // 获取当前登录用户
@@ -93,7 +97,7 @@ public class SysNoticeController extends BaseController {
      * 推送已读
      * @param push 推送对象
      */
-    @ResponseBody
+    @ApiOperation(value = "推送已读")
     @RequestMapping(value = "read")
     public String read(SysPush push) {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
@@ -104,7 +108,7 @@ public class SysNoticeController extends BaseController {
     /**
      * 推送已读
      */
-    @ResponseBody
+    @ApiOperation(value = "全部已读")
     @RequestMapping(value = "readAll")
     public String readAll() {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();
@@ -115,7 +119,7 @@ public class SysNoticeController extends BaseController {
     /**
      * 推送删除
      */
-    @ResponseBody
+    @ApiOperation(value = "删除推送")
     @RequestMapping(value = "delPush")
     public String delPush(SysPush push) {
         SysUser user = (SysUser) SecurityContextHolder.getContext().getAuthentication() .getPrincipal();

@@ -3,8 +3,11 @@ package com.cylt.sys.controller;
 import com.cylt.common.base.controller.BaseController;
 import com.cylt.pojo.sys.SysMenu;
 import com.cylt.sys.service.SysMenuService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
@@ -13,8 +16,9 @@ import java.util.List;
 /**
  * 菜单Controller
  */
+@Api(tags = "菜单")
 @Controller
-@RequestMapping(value = "sys/menu", produces = "text/html;charset=utf-8")
+@RequestMapping(value = "sys/menu", method = RequestMethod.POST, produces = "text/html;charset=utf-8")
 public class SysMenuController extends BaseController {
 
     /**
@@ -29,6 +33,7 @@ public class SysMenuController extends BaseController {
      * @return 菜单列表
      */
     @ResponseBody
+    @ApiOperation(value = "菜单列表")
     @RequestMapping(value = "list")
     public String list(SysMenu menu) {
         List<SysMenu> list = sysMenuService.list(menu);
@@ -41,6 +46,7 @@ public class SysMenuController extends BaseController {
      * @return 保存结果
      */
     @ResponseBody
+    @ApiOperation(value = "保存菜单")
     @RequestMapping(value = "save")
     public String save(SysMenu sysMenu) {
         sysMenuService.save(sysMenu);
@@ -53,6 +59,7 @@ public class SysMenuController extends BaseController {
      * @return 删除结果
      */
     @ResponseBody
+    @ApiOperation(value = "删除菜单")
     @RequestMapping(value = "delete")
     public String delete(SysMenu sysMenu) {
         sysMenuService.delete(sysMenu);

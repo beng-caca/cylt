@@ -3,6 +3,7 @@ package com.cylt.common.base.pojo;
 
 import com.cylt.common.Redis;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
@@ -37,18 +38,21 @@ public class BasePojo implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "custom-id")
     @GenericGenerator(name = "custom-id", strategy = "com.cylt.common.ManulInsertGenerator")
+    @ApiModelProperty(value = "主键")
     private String id;
 
 
     /**
      * 删除标识
      */
+    @ApiModelProperty(hidden = true)
     @Column(name = "DEL_STATE")
     private String delState = "0";
 
     /**
      * 新增人
      */
+    @ApiModelProperty(hidden = true)
     @CreatedBy
     @Column(name = "CREATE_BY")
     private String createBy;
@@ -56,6 +60,7 @@ public class BasePojo implements java.io.Serializable {
     /**
      * 修改人
      */
+    @ApiModelProperty(hidden = true)
     @LastModifiedBy
     @Column(name = "UPDATE_BY")
     private String updateBy;
@@ -65,6 +70,7 @@ public class BasePojo implements java.io.Serializable {
      */
     @Redis
     @CreatedDate
+    @ApiModelProperty(hidden = true)
     @Column(name = "CREATE_TIME")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -76,6 +82,7 @@ public class BasePojo implements java.io.Serializable {
     @Redis
     @LastModifiedDate
     @Column(name = "UPDATE_TIME")
+    @ApiModelProperty(hidden = true)
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
@@ -85,5 +92,6 @@ public class BasePojo implements java.io.Serializable {
      * 排序条件
      */
     @Transient
+    @ApiModelProperty(hidden = true)
     private List<Sort> sort;
 }

@@ -2,6 +2,7 @@ package com.cylt.common.base.controller;
 
 
 import com.alibaba.fastjson.JSON;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Map;
 /**
  * 控制层基类
  */
+@ResponseBody
 public abstract class BaseController {
     /**
      * 将对象转换成json

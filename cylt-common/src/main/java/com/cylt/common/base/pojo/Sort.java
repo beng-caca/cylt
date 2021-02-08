@@ -1,5 +1,7 @@
 package com.cylt.common.base.pojo;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * 分页bean
  */
@@ -9,11 +11,13 @@ public class Sort {
     /**
      * 是否正序
      */
+    @ApiModelProperty(hidden = true)
     private Boolean isAsc;
 
     /**
      * 排序字段
      */
+    @ApiModelProperty(hidden = true)
     private String field;
 
 

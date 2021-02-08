@@ -3,6 +3,7 @@ package com.cylt.common;
 import com.cylt.common.base.pojo.BasePojo;
 import com.cylt.pojo.sys.SysJurisdiction;
 import com.cylt.pojo.sys.SysRole;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ResultCheckStyle;
@@ -36,18 +37,21 @@ public class SysUser extends BasePojo implements UserDetails {
      */
     @Redis
     @LogTitle
+    @ApiModelProperty(value = "登录名")
     @Column(name = "USER_NAME")
     private String username;
 
     /**
      * 登录密码
      */
+    @ApiModelProperty(value = "登录密码")
     @Column(name = "PASSWORD")
     private String password;
 
     /**
      * 用户名
      */
+    @ApiModelProperty(value = "用户名")
     @Redis(vagueQuery = true)
     @Column(name = "NAME")
     private String name;
@@ -56,6 +60,7 @@ public class SysUser extends BasePojo implements UserDetails {
      * 企业id
      */
     @Redis
+    @ApiModelProperty(value = "企业id")
     @Column(name = "ENTERPRISE_ID")
     private String enterpriseId;
 
@@ -63,6 +68,7 @@ public class SysUser extends BasePojo implements UserDetails {
      * 角色列表
      */
     @ManyToMany
+    @ApiModelProperty(value = "角色列表")
     @JoinTable(name = "SYS_USER_ROLE",joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
     private List<SysRole> roleList;
