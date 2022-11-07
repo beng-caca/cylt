@@ -1,5 +1,5 @@
 export default {
-  systemName: 'cylt系统',
+  systemName: 'Neugart',
   home: '首頁',
   login: '登錄',
   components: '组件',
@@ -10,7 +10,7 @@ export default {
   editor_page: '富文本編輯器',
   icons_page: '自定義圖標',
   img_cropper_page: '圖片編輯器',
-  update: '上傳數據',
+  update: '上傳',
   join_page: 'QQ群',
   doc: '文檔',
   update_table_page: '上傳CSV文件',
@@ -135,6 +135,26 @@ export default {
       methodName: '方法名称'
     }
   },
+  neugart: {
+    title: '标题',
+    icon: '图标',
+    value: '内容',
+    valuationType: '计费类型',
+    valuation: '计费值',
+    custType: '用户类型',
+    order: '顺序',
+    defaultData: '默认选中',
+    discount: {
+      number: '折扣数量',
+      discount: '折扣(%)'
+    }
+  },
+  customer: {
+    loginId: '登录名(手机号)',
+    customerName: '客户名称',
+    customerType: '客户类型',
+    remakes: '备注'
+  },
   // menu
   menu: {
     name: '菜单名称',
@@ -151,6 +171,11 @@ export default {
       dict: '字典',
       notice: '通知',
       job: '任务'
+    },
+    customer: {
+      name: '门户管理',
+      product: '产品',
+      user: '用户'
     }
   },
   // dict
@@ -165,6 +190,21 @@ export default {
       job: {
         start: '启动',
         suspend: '暂停'
+      }
+    },
+    neugart: {
+      customerType: {
+        v1: '一级采购方',
+        v2: '二级采购方',
+        v3: '三级采购方',
+        v4: '四级采购方',
+        v5: '五级采购方',
+        v6: '六级采购方'
+      },
+      valuationType: {
+        noCharge: '不计费',
+        RMB: '人民币',
+        percentage: '百分比'
       }
     }
   }

@@ -17,8 +17,8 @@ export default {
    * @description api请求基础路径
    */
   baseUrl: {
-    dev: 'https://cylt-main:8888',
-    pro: 'https://cylt-main:8888'
+    dev: 'http://localhost:8888',
+    pro: 'http://localhost:8888'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

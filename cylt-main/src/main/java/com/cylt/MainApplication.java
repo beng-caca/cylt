@@ -7,9 +7,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
-import springfox.documentation.spring.web.readers.parameter.ModelAttributeParameterExpander;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableSwagger2

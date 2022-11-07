@@ -454,6 +454,8 @@ export const addTreeList = (list, addTree) => {
     menus = list[i]
     data = addTrees(data, menus, addTree)
   }
+  // 排序
+  data = treeOrder(data)
   return data
 }
 
@@ -470,6 +472,10 @@ export const addTrees = (datas, data, addTree) => {
   if (len !== 0 && data.pid !== undefined) {
     // 遍历当前节点
     for (let i = 0; i < len; i++) {
+      // 初始化子级
+      if (!datas[i].children) {
+        datas[i].children = []
+      }
       // 判断是不是当前的子节点
       if (datas[i].id === data.pid) {
         datas[i].children[datas[i].children.length] = addTree(data)
@@ -487,9 +493,23 @@ export const addTrees = (datas, data, addTree) => {
       }
     }
   } else {
-    datas[datas.length] = addTree(data)
+    datas.push(addTree(data))
   }
   return datas
+}
+
+export const treeOrder = (data) => {
+  if (data[0] && data[0].orderBy !== undefined) {
+    data = data.sort((a, b) => {
+      return a.orderBy - b.orderBy
+    })
+    for (let i in data) {
+      if (data[i].children && data[i].children.length !== 0) {
+        data[i].children = treeOrder(data[i].children)
+      }
+    }
+  }
+  return data
 }
 
 /**

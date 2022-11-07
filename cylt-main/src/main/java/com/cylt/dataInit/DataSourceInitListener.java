@@ -1,5 +1,8 @@
 package com.cylt.dataInit;
 
+import com.cylt.neugart.dao.NeCustomerDao;
+import com.cylt.neugart.dao.NeProductDao;
+import com.cylt.pojo.neugart.NeCustomer;
 import com.cylt.pojo.sys.SysScheduleJob;
 import com.cylt.redis.RedisUtil;
 import com.cylt.sys.dao.*;
@@ -41,6 +44,11 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
     @Resource
     private SysScheduleJobDao sysScheduleJobDao;
 
+    @Resource
+    private NeProductDao neProductDao;
+
+    @Resource
+    private NeCustomerDao neCustomerDao;
 
     /**
      * 缓存数据库
@@ -72,6 +80,10 @@ public class DataSourceInitListener  implements ApplicationListener<ContextRefre
                 redisUtil.save(sysScheduleJobDao.findAll(),null);
                 // 保存字典
                 redisUtil.save(sysDictDao.findAll(),null);
+                // 保存产品树
+                redisUtil.save(neProductDao.findAll(),null);
+                // 保存门户用户
+                redisUtil.save(neCustomerDao.findAll(),null);
                 // 解除实体与session的链接防止修改数据库
                 entityManager.clear();
                 logger.info("redis init success");

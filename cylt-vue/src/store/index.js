@@ -10,6 +10,9 @@ import log from './module/sys/log'
 import dict from './module/sys/dict'
 import notice from './module/sys/notice'
 import job from './module/sys/job'
+import custApp from './cust/app'
+import product from './module/neugart/product'
+import customer from './module/neugart/customer'
 
 Vue.use(Vuex)
 
@@ -21,7 +24,7 @@ export default new Vuex.Store({
     //
   },
   actions: {
-    //
+    //t
   },
   modules: {
     user,
@@ -31,7 +34,10 @@ export default new Vuex.Store({
     log,
     dict,
     notice,
-    job
+    job,
+    custApp,
+    product,
+    customer
   },
   plugins: [
     createVuexAlong({

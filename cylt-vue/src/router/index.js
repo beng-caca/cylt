@@ -12,11 +12,11 @@ const router = new Router({
   routes,
   mode: 'history'
 })
-const LOGIN_PAGE_NAME = 'login'
+const LOGIN_PAGE_NAME = 'custLogin'
 let start = true
 const turnTo = (to, access, next) => {
   if (access === undefined) { // 未登录 重新登录
-    next({ replace: true, name: 'login' })
+    next({ replace: true, name: 'custLogin' })
     return
   }
   if (to.name.indexOf('error_') !== -1) { // 跳过权限检测
@@ -31,6 +31,15 @@ const turnTo = (to, access, next) => {
 }
 
 router.beforeEach((to, from, next) => {
+  // 如果是后台登录或者包含/cust的页面 跳过验证权限直接跳转
+  if (to.name === 'login' || to.path.indexOf('/cust') !== -1) {
+    next()
+  } else {
+    routerNext(to, from, next)
+  }
+})
+
+const routerNext = (to, from, next) => {
   // 判断是否初始化了路由 如果初始化了 就重新添加业务路由 并且重新请求
   if (start && store.getters.menuList.length !== 0) {
     router.addRoutes(store.getters.menuList)
@@ -78,7 +87,7 @@ router.beforeEach((to, from, next) => {
       })
     }
   }
-})
+}
 
 router.afterEach(to => {
   setTitle(to, router.app)

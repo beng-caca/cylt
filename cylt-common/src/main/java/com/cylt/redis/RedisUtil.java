@@ -608,7 +608,7 @@ public class RedisUtil {
      * @param item 项 不能为null
      * @return 值
      */
-    private Object hget(String key, String item) {
+    public Object hget(String key, String item) {
         return redisTemplate.opsForHash().get(key, item);
     }
 
@@ -751,13 +751,26 @@ public class RedisUtil {
      * @param key  键
      * @param item 项
      * @param pojo 值
+     * @param time 过期时间
      * @return true 成功 false失败
      */
-    public boolean mapSet(String key, String item, Object pojo) {
+    public boolean mapSet(String key, String item, Object pojo, long time) {
         // 把当前数据转换到jsonstring
         String data = JSON.toJSONString(pojo, getJpaFilter(), SerializerFeature.UseSingleQuotes,
                 SerializerFeature.WriteDateUseDateFormat);
-        return hset(key, item, data);
+        return hset(key, item, data, time);
+    }
+
+    /**
+     * 封装mapset
+     *
+     * @param key  键
+     * @param item 项
+     * @param pojo 值
+     * @return true 成功 false失败
+     */
+    public boolean mapSet(String key, String item, Object pojo) {
+        return hset(key, item, pojo, 0);
     }
 
     /**
@@ -772,8 +785,7 @@ public class RedisUtil {
         if (!hHasKey(key, item)) {
             return new ArrayList<>();
         }
-        List<T> list = JSON.parseArray((String) hget(key, item), classz);
-        return list;
+        return (List<T>) hget(key, item);
     }
 
 

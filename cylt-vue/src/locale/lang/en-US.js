@@ -1,5 +1,5 @@
 export default {
-  systemName: 'cylt system',
+  systemName: 'Neugart system',
   home: 'Home',
   login: 'Login',
   components: 'Components',
@@ -133,6 +133,26 @@ export default {
       methodName: 'Method Name'
     }
   },
+  neugart: {
+    title: 'Title',
+    icon: 'Icon',
+    value: 'Value',
+    valuationType: 'Valuation Type',
+    valuation: 'Valuation',
+    custType: 'Customer Type',
+    order: 'Order',
+    defaultData: 'Default',
+    discount: {
+      number: 'Number',
+      discount: 'Discount (%)'
+    }
+  },
+  customer: {
+    loginId: 'Login Id',
+    customerName: 'Customer Name',
+    customerType: 'Customer Type',
+    remakes: 'Remakes'
+  },
   // menu
   menu: {
     name: 'Menu Name',
@@ -150,6 +170,11 @@ export default {
       dict: 'Dict',
       notice: 'Notice',
       job: 'Job'
+    },
+    customer: {
+      name: 'Gateway',
+      product: 'Product',
+      user: 'User'
     }
   },
   // dict
@@ -164,6 +189,21 @@ export default {
       job: {
         start: 'Start',
         suspend: 'Suspend'
+      }
+    },
+    neugart: {
+      customerType: {
+        v1: 'Level 1',
+        v2: 'Level 2',
+        v3: 'Level 3',
+        v4: 'Level 4',
+        v5: 'Level 5',
+        v6: 'Level 6'
+      },
+      valuationType: {
+        noCharge: 'No Charge',
+        RMB: 'RMB',
+        percentage: 'Percentage'
       }
     }
   }

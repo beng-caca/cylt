@@ -74,7 +74,21 @@
           </Col>
           <Col span="12">
           <FormItem :label="$t('system.notice.callbackUrl')"  prop="callbackUrl">
-            <Input v-model="$store.state.notice.info.callbackUrl" :placeholder="$t('system.pleaseEnter') + $t('system.notice.callbackUrl')" />
+            <AutoComplete
+              v-model="$store.state.notice.info.callbackUrl"
+              icon="ios-search"
+              placeholder="input here"
+              >
+              <div class="demo-auto-complete-item" v-for="item in $store.getters.menuList">
+                <div class="demo-auto-complete-group">
+                  <span>{{ $t(item.name) }}</span>
+                </div>
+                <Option v-for="option in item.children" :value="option.path" :key="option.path">
+                  <span class="demo-auto-complete-title">{{ $t(option.name) }}</span>
+                  <span class="demo-auto-complete-count">{{ option.path }}</span>
+                </Option>
+              </div>
+            </AutoComplete>
           </FormItem>
           </Col>
           <Col span="12">
@@ -247,5 +261,26 @@ export default {
   }
   .operation{
     text-align: right;
+  }
+</style>
+<style>
+  .demo-auto-complete-item{
+    padding: 4px 0;
+    border-bottom: 1px solid #F6F6F6;
+  }
+  .demo-auto-complete-group{
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+  .demo-auto-complete-group span{
+    color: #666;
+    font-weight: bold;
+  }
+  .demo-auto-complete-group a{
+    float: right;
+  }
+  .demo-auto-complete-count{
+    float: right;
+    color: #999;
   }
 </style>

@@ -28,7 +28,7 @@ export default [
     component: resolve => require(['@/view/login/login.vue'], resolve)
   },
   {
-    path: '/',
+    path: '/home',
     name: '_home',
     redirect: '/home',
     component: Main,
@@ -487,6 +487,24 @@ export default [
       hideInMenu: true
     },
     component: () => import('@/view/error-page/404.vue')
+  },
+  {
+    path: '/custLogin',
+    name: 'custLogin',
+    meta: {
+      hideInMenu: true,
+      title: 'neugart'
+    },
+    component: () => import('@/view/cust/login/login.vue')
+  },
+  {
+    path: '/cust/optional',
+    name: '选配系统',
+    meta: {
+      hideInMenu: true,
+      title: '选配系统'
+    },
+    component: () => import('@/view/cust/optional.vue')
   }
   // {
   //   path: '/sys',
@@ -517,7 +535,7 @@ export default [
   //       hideInBread: false,
   //       title: '用户'
   //     },
-  //     component: () => import('@/view/sys/user.vue')
+  //     component: () => import('@/view/sys/customer.vue')
   //   }, {
   //     path: 'role',
   //     name: 'menu.sys.role',

@@ -166,7 +166,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         map.put("message", "登录成功");
         map.put("data", authentication);
         resp.setContentType("text/html;charset=utf-8");
-        resp.setHeader("Set-Cookie", "HttpOnly;Secure;SameSite=None");
         PrintWriter out = resp.getWriter();
         out.write(objectMapper.writeValueAsString(map));
         out.flush();

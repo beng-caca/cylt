@@ -84,5 +84,5 @@ public class SysMenu extends BasePojo {
      */
     @ApiModelProperty(value = "子菜单")
     @OneToMany(mappedBy = "pid" ,cascade = { CascadeType.REMOVE})
-    private List<SysMenu> childrenList = new ArrayList<>();
+    private List<SysMenu> children = new ArrayList<>();
 }

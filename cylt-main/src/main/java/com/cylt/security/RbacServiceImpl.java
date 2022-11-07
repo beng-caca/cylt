@@ -26,7 +26,7 @@ public class RbacServiceImpl implements RbacService {
             if (principal instanceof UserDetails) { //首先判断先当前用户是否是我们UserDetails对象。
                   // 以下路径将跳过权限检测
                   String[] filterUrl = new String[] {"/sys/notice/news", "/sys/notice/delPush", "/sys/notice/readAll",
-                          "/sys/notice/read", "/sys/dict/noPageList", "/sys/menu/list"};
+                          "/sys/notice/read", "/sys/dict/noPageList", "/sys/menu/list", "/api/"};
                   if (Arrays.asList(filterUrl).contains(request.getRequestURI())) {
                         return true;
                   }
@@ -39,6 +39,11 @@ public class RbacServiceImpl implements RbacService {
                                     break;
                               }
                         }
+                  }
+            } else if("anonymousUser".equals(principal)) { // 匿名用户
+                  // 以下路径将跳过权限检测
+                  if (request.getRequestURI().contains("/api/")) {
+                        return true;
                   }
             }
             return hasPermission;

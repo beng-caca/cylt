@@ -1,0 +1,39 @@
+
+
+#访问端口号
+server:
+  port: 8002
+
+spring:
+  datasource:
+    url: jdbc:mysql://cylt-mysql:3306/test?useUnicode=true&characterEncoding=utf8
+    username: root
+    password: 123456789
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+  redis:
+    database: 0
+    host: cylt-redis
+    port: 6379
+  rabbitmq:
+    host: cylt-rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    publisher-returns: true
+# 消费者消息确认--手动 ACK
+    listener:
+      direct:
+        acknowledge-mode: manual
+      simple:
+        acknowledge-mode: manual
+  application:
+    name: cylt-sys
+  cloud:
+    nacos:
+      server-addr: cylt-mysql:8848
+
+logging:
+  file:
+    name: log/sys.log

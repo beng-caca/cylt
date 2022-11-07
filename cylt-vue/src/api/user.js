@@ -19,7 +19,7 @@ export const getUserInfo = (token) => {
     params: {
       id: getToken()
     },
-    method: 'get'
+    method: 'post'
   })
 }
 
